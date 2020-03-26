@@ -3,11 +3,11 @@ import { combineReducers } from 'redux';
 import errorReducer from '../errorReducer';
 
 const rootReducer = combineReducers({
-    errors: errorReducer
+  errors: errorReducer
 });
 
 const store = configureStore({
-    reducer: rootReducer
+  reducer: rootReducer
 });
 
 export default store;
