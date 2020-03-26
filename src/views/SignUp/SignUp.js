@@ -40,6 +40,7 @@ const schema = {
   password: {
     presence: { allowEmpty: false, message: 'is required' },
     length: {
+      minimum: 6,
       maximum: 128
     }
   },
@@ -162,7 +163,10 @@ const SignUp = ({ history, registerUserAction }) => {
     const errors = validate(formState.values, schema);
 
     // Check if passwords matches
-    if (formState.values.password !== formState.values.confirmPassword) {
+    if (
+      errors !== undefined &&
+      formState.values.password !== formState.values.confirmPassword
+    ) {
       errors.confirmPassword = ['Confirm password must match'];
     }
 
@@ -197,16 +201,33 @@ const SignUp = ({ history, registerUserAction }) => {
   };
 
   const register = async () => {
-    const dataToSend = formState.values;
-
+    const dataToSend = Object.assign({}, formState.values);
+    // const dataToSend = formState.values;
     delete dataToSend.confirmPassword;
     delete dataToSend.policy;
 
     const response = await registerUserAction(dataToSend);
     console.log(response);
-    if (!response.ok) throw new Error('Error during registration');
     const user = await response.json();
     console.log(user);
+
+    if (response.status === 400) {
+      console.log(formState.values, schema);
+      const errors = validate(formState.values, schema);
+      console.log(errors);
+      const { error, message } = user;
+
+      //TODO Consider better solution of handling responses
+      if (error === 'ResourceAlreadyExists') errors.email = [message];
+
+      setFormState(formState => ({
+        ...formState,
+        isValid: !errors,
+        errors: errors || {}
+      }));
+    } else {
+      throw new Error('Error during registration');
+    }
 
     // history.push('/');
   };

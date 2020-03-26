@@ -7,10 +7,8 @@ export const registerUser = userData => dispatch => {
 
   return fetch(path, {
     method: 'POST',
-    mode: 'no-cors',
     headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(userData)
   });

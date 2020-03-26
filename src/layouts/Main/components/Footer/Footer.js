@@ -16,24 +16,19 @@ const Footer = props => {
   const classes = useStyles();
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <Typography variant="body1">
         &copy;{' '}
         <Link
           component="a"
-          href="https://devias.io/"
-          target="_blank"
-        >
-          Devias IO
+          href="https://www.pk.edu.pl/index.php?lang=pl"
+          target="_blank">
+          Projekt Zespołowy Studentów Politechniki Krakowskiej
         </Link>
-        . 2019
+        . 2020
       </Typography>
       <Typography variant="caption">
-        Created with love for the environment. By designers and developers who
-        love to work together in offices!
+        Created with love for the guides.
       </Typography>
     </div>
   );
