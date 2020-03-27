@@ -16,6 +16,8 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { registerUser } from '../../actions/sign-up';
 import { connect } from 'react-redux';
+import { USER_ALREADY_EXIST } from '../../helpers/types';
+import isEmpty from '../../helpers/isEmpty';
 
 const schema = {
   firstName: {
@@ -45,10 +47,7 @@ const schema = {
     }
   },
   confirmPassword: {
-    presence: { allowEmpty: false, message: 'must match' },
-    length: {
-      maximum: 128
-    }
+    presence: { allowEmpty: false, message: 'must match' }
   },
   policy: {
     presence: { allowEmpty: false, message: 'is required' },
@@ -160,19 +159,16 @@ const SignUp = ({ history, registerUserAction }) => {
   });
 
   useEffect(() => {
-    const errors = validate(formState.values, schema);
+    const errors = validate(formState.values, schema) || {};
 
     // Check if passwords matches
-    if (
-      errors !== undefined &&
-      formState.values.password !== formState.values.confirmPassword
-    ) {
+    if (formState.values.password !== formState.values.confirmPassword) {
       errors.confirmPassword = ['Confirm password must match'];
     }
 
     setFormState(formState => ({
       ...formState,
-      isValid: !errors,
+      isValid: isEmpty(errors),
       errors: errors || {}
     }));
   }, [formState.values]);
@@ -201,35 +197,31 @@ const SignUp = ({ history, registerUserAction }) => {
   };
 
   const register = async () => {
+    // Copy the object and delete unnecessary
+    // field that server don't want to store
     const dataToSend = Object.assign({}, formState.values);
-    // const dataToSend = formState.values;
     delete dataToSend.confirmPassword;
     delete dataToSend.policy;
 
     const response = await registerUserAction(dataToSend);
-    console.log(response);
     const user = await response.json();
-    console.log(user);
 
     if (response.status === 400) {
-      console.log(formState.values, schema);
-      const errors = validate(formState.values, schema);
-      console.log(errors);
+      const errors = validate(formState.values, schema) || {};
       const { error, message } = user;
 
-      //TODO Consider better solution of handling responses
-      if (error === 'ResourceAlreadyExists') errors.email = [message];
+      if (error === USER_ALREADY_EXIST) errors.email = [message];
 
       setFormState(formState => ({
         ...formState,
         isValid: !errors,
         errors: errors || {}
       }));
+    } else if (response.status === 200) {
+      history.push('/sign-in');
     } else {
       throw new Error('Error during registration');
     }
-
-    // history.push('/');
   };
 
   const handleSignUp = event => {
