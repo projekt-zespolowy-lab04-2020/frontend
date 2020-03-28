@@ -13,6 +13,8 @@ import './assets/scss/index.scss';
 import validators from './common/validators';
 import Routes from './Routes';
 import store from './redux/reducers';
+import { setCurrentUser } from './redux/authReducer';
+import combineTokenAndUserData from './helpers/combineTokenAndUserData';
 
 const browserHistory = createBrowserHistory();
 
@@ -24,6 +26,17 @@ validate.validators = {
   ...validate.validators,
   ...validators
 };
+
+(async function keepUserLoggedIn() {
+  if (localStorage.jwtToken) {
+    const token = localStorage.jwtToken;
+    combineTokenAndUserData(token)
+      .then(obj => store.dispatch(setCurrentUser(obj)))
+      .catch(e =>
+        console.error('Error during combining token and user data ', e)
+      );
+  }
+})();
 
 export default class App extends Component {
   render() {

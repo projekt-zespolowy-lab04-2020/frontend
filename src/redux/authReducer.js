@@ -3,9 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const isEmpty = require('is-empty');
 
 const initialState = {
-  isAuthenticated: false,
-  user: {},
-  loading: false
+  isAuthenticated: false
 };
 
 const authContextSlice = createSlice({
@@ -16,8 +14,7 @@ const authContextSlice = createSlice({
       return {
         ...state,
         isAuthenticated: !isEmpty(action.payload),
-        user: action.payload,
-        loading: !isEmpty(action.payload)
+        ...action.payload
       };
     }
   }

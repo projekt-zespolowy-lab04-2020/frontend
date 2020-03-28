@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// noinspection ES6CheckImport
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
@@ -14,6 +15,10 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
+import { connect } from 'react-redux';
+import { loginUser } from '../../actions/sign-in';
+import { setCurrentUser } from '../../redux/authReducer';
+import combineTokenAndUserData from '../../helpers/combineTokenAndUserData';
 
 const schema = {
   email: {
@@ -125,9 +130,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SignIn = props => {
-  const { history } = props;
-
+const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
   const classes = useStyles();
 
   const [formState, setFormState] = useState({
@@ -142,7 +145,7 @@ const SignIn = props => {
 
     setFormState(formState => ({
       ...formState,
-      isValid: errors ? false : true,
+      isValid: !errors,
       errors: errors || {}
     }));
   }, [formState.values]);
@@ -170,13 +173,42 @@ const SignIn = props => {
     }));
   };
 
+  const login = async () => {
+    const response = await loginUserAction(formState.values);
+    const res = await response.json();
+    const { token } = res;
+
+    if (response.status === 200 && token) {
+      localStorage.setItem('jwtToken', token);
+      combineTokenAndUserData(token)
+        .then(obj => setCurrentUserAction(obj))
+        .catch(e =>
+          console.error('Error during combining token and user data ', e)
+        );
+
+      history.push('/dashboard');
+    } else if (response.status === 400) {
+      const errors = validate(formState.values, schema) || {};
+      const { message } = res;
+      errors.email = [message];
+
+      setFormState(formState => ({
+        ...formState,
+        isValid: !errors,
+        errors: errors || {}
+      }));
+    } else {
+      throw new Error('Error during login');
+    }
+  };
+
   const handleSignIn = event => {
     event.preventDefault();
-    history.push('/');
+    login().catch(e => console.error(e.message));
   };
 
   const hasError = field =>
-    formState.touched[field] && formState.errors[field] ? true : false;
+    !!(formState.touched[field] && formState.errors[field]);
 
   return (
     <div className={classes.root}>
@@ -295,8 +327,14 @@ const SignIn = props => {
   );
 };
 
+// TODO Change history propTypes
 SignIn.propTypes = {
-  history: PropTypes.object
+  history: PropTypes.object,
+  loginUserAction: PropTypes.func.isRequired,
+  setCurrentUserAction: PropTypes.func.isRequired
 };
 
-export default withRouter(SignIn);
+export default connect(null, {
+  loginUserAction: loginUser,
+  setCurrentUserAction: setCurrentUser
+})(withRouter(SignIn));

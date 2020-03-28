@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// noinspection ES6CheckImport
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
@@ -16,7 +17,6 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { registerUser } from '../../actions/sign-up';
 import { connect } from 'react-redux';
-import { USER_ALREADY_EXIST } from '../../helpers/types';
 import isEmpty from '../../helpers/isEmpty';
 
 const schema = {
@@ -208,9 +208,9 @@ const SignUp = ({ history, registerUserAction }) => {
 
     if (response.status === 400) {
       const errors = validate(formState.values, schema) || {};
-      const { error, message } = user;
+      const { message } = user;
 
-      if (error === USER_ALREADY_EXIST) errors.email = [message];
+      errors.email = [message];
 
       setFormState(formState => ({
         ...formState,
@@ -226,7 +226,7 @@ const SignUp = ({ history, registerUserAction }) => {
 
   const handleSignUp = event => {
     event.preventDefault();
-    register();
+    register().catch(e => e.message);
   };
 
   const hasError = field =>
@@ -393,6 +393,7 @@ const SignUp = ({ history, registerUserAction }) => {
   );
 };
 
+// TODO Change history propTypes
 SignUp.propTypes = {
   history: PropTypes.object,
   registerUserAction: PropTypes.func.isRequired
