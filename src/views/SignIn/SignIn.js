@@ -173,6 +173,7 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
     }));
   };
 
+
   const login = async () => {
     const response = await loginUserAction(formState.values);
     const res = await response.json();
