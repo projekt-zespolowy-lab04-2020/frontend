@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
+import CustomAvatar from '../../../../layouts/Main/components/Sidebar/components/Profile/Avatar/';
 import {
   Card,
   CardActions,
   CardContent,
-  Avatar,
   Checkbox,
   Table,
   TableBody,
@@ -18,8 +18,7 @@ import {
   Typography,
   TablePagination
 } from '@material-ui/core';
-
-import { getInitials } from 'helpers';
+import { green } from '../../../../theme/palette';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -34,7 +33,10 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center'
   },
   avatar: {
-    marginRight: theme.spacing(2)
+    marginRight: theme.spacing(2),
+    backgroundColor: green,
+    fontWeight: 500,
+    letterSpacing: 3
   },
   actions: {
     justifyContent: 'flex-end'
@@ -93,10 +95,7 @@ const UsersTable = props => {
   };
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -127,8 +126,7 @@ const UsersTable = props => {
                     className={classes.tableRow}
                     hover
                     key={user.id}
-                    selected={selectedUsers.indexOf(user.id) !== -1}
-                  >
+                    selected={selectedUsers.indexOf(user.id) !== -1}>
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={selectedUsers.indexOf(user.id) !== -1}
@@ -139,13 +137,13 @@ const UsersTable = props => {
                     </TableCell>
                     <TableCell>
                       <div className={classes.nameContainer}>
-                        <Avatar
+                        <CustomAvatar
+                          to="#"
+                          firstName={user.firstName}
+                          lastName={user.lastName}
                           className={classes.avatar}
-                          src={user.avatarUrl}
-                        >
-                          {getInitials(user.name)}
-                        </Avatar>
-                        <Typography variant="body1">{user.name}</Typography>
+                        />
+                        <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
                       </div>
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
