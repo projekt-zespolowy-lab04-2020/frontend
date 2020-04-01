@@ -1,24 +1,25 @@
+/* eslint-disable */
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import moment from 'moment';
 import { makeStyles } from '@material-ui/styles';
 import {
   Card,
-  CardActions,
   CardContent,
   Typography,
   Divider,
-  Button,
   LinearProgress
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
 import AvatarWrapper from '../../../../layouts/Main/components/Sidebar/components/Profile/Avatar';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {},
   details: {
-    display: 'flex'
+    display: 'flex',
+    alignItems: 'center'
   },
   avatar: {
     marginLeft: 'auto',
@@ -41,64 +42,55 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const AccountProfile = props => {
-  const { className, ...rest } = props;
-
+  const {
+    profileCompleteness,
+    userObject,
+    dispatch,
+    className,
+    ...rest
+  } = props;
   const classes = useStyles();
 
-  const user = {
-    name: 'Shen Zhi',
-    city: 'Los Angeles',
-    country: 'USA',
-    timezone: 'GTM-7',
-    avatar: '/images/avatars/avatar_11.png'
-  };
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent>
         <div className={classes.details}>
-          <div>
-            <Typography gutterBottom variant="h2">
-              John Doe
-            </Typography>
-            <Typography
-              className={classes.locationText}
-              color="textSecondary"
-              variant="body1">
-              {user.city}, {user.country}
-            </Typography>
-            <Typography
-              className={classes.dateText}
-              color="textSecondary"
-              variant="body1">
-              {moment().format('hh:mm A')} ({user.timezone})
-            </Typography>
-          </div>
+          <Typography gutterBottom variant="h2">
+            {`${userObject.firstName} ${userObject.lastName}`}
+          </Typography>
           <AvatarWrapper
             className={classes.avatar}
-            firstName="ELO"
-            lastName="Elo"
+            firstName={userObject.firstName?.charAt(0).toUpperCase()}
+            lastName={userObject.lastName?.charAt(0).toUpperCase()}
             to="/settings"
           />
         </div>
         <div className={classes.progress}>
-          <Typography variant="body1">Profile Completeness: 70%</Typography>
-          <LinearProgress value={70} variant="determinate" />
+          <Typography variant="body1">
+            Profile Completeness: {profileCompleteness}%
+          </Typography>
+          <LinearProgress value={profileCompleteness} variant="determinate" />
         </div>
       </CardContent>
       <Divider />
-      <CardActions>
-        <Button className={classes.uploadButton} color="primary" variant="text">
-          Upload picture
-        </Button>
-        <Button variant="text">Remove picture</Button>
-      </CardActions>
     </Card>
   );
 };
 
 AccountProfile.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  userObject: PropTypes.object
 };
 
-export default AccountProfile;
+const mapStateToProps = state => {
+  const { user } = state;
+
+  return {
+    userObject: user
+  };
+};
+
+export default connect(mapStateToProps, null)(withRouter(AccountProfile));
