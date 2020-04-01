@@ -26,6 +26,8 @@ const Profile = props => {
   // eslint-disable-next-line
   const { userObject, className, dispatch, ...rest } = props;
   const classes = useStyles();
+
+  //TODO Find better solution to get out with staticContext Warning
   delete rest.staticContext;
 
   useEffect(() => {}, [userObject]);
