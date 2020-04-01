@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
 
 
 const Topbar = props => {
-  const { history,className, onSidebarOpen, ...rest } = props;
+  const { history,className, onSidebarOpen, getCurrentUserAction, setCurrentUserAction, ...rest } = props;
 
   const classes = useStyles();
 
@@ -43,12 +43,11 @@ const Topbar = props => {
   };
 
   const logout = async () => {
-  const currentUserRes = await store.dispatch(getCurrentUser(localStorage.getItem('jwtToken')));
-  const currentUser = await currentUserRes.json()
-    .then(obj => setCurrentUser(null))
-    .catch(e =>
-      console.error('Error during logout ', e)
-    );
+    getCurrentUserAction(localStorage.getItem('jwtToken'))
+    .then(obj=>obj.json())
+    .then(setCurrentUserAction(null))
+    .catch(e=> console.error('Error during logout ', e));
+  
   localStorage.removeItem('jwtToken');
   history.push('/sign-in');
   
@@ -100,9 +99,14 @@ const Topbar = props => {
 
 Topbar.propTypes = {
   className: PropTypes.string,
-  onSidebarOpen: PropTypes.func
+  onSidebarOpen: PropTypes.func,
+  setCurrentUserAction: PropTypes.func.isRequired,
+  getCurrentUserAction: PropTypes.func.isRequired,
+  history: PropTypes.object
+
 };
 
 export default connect(null, {
-  setCurrentUserAction: setCurrentUser
+  setCurrentUserAction: setCurrentUser,
+  getCurrentUserAction: getCurrentUser
 })(withRouter(Topbar));
