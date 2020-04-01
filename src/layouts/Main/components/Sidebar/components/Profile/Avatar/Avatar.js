@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { Avatar } from '@material-ui/core';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { green } from '../../../../../../../theme/palette';
@@ -18,7 +17,7 @@ const useStyles = makeStyles({
 
 const AvatarWrapper = props => {
   // eslint-disable-next-line
-  const { firstName, lastName, userObject, dispatch, ...rest } = props;
+  const { firstName, lastName, dispatch, ...rest } = props;
 
   //TODO Find better solution to get out with staticContext Warning
   delete rest.staticContext;
@@ -38,16 +37,7 @@ const AvatarWrapper = props => {
 };
 
 AvatarWrapper.propTypes = {
-  className: PropTypes.string,
-  userObject: PropTypes.object
+  className: PropTypes.string
 };
 
-const mapStateToProps = state => {
-  const { user } = state;
-
-  return {
-    userObject: user
-  };
-};
-
-export default connect(mapStateToProps, null)(withRouter(AvatarWrapper));
+export default AvatarWrapper;
