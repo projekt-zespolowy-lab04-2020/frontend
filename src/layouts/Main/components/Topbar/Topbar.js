@@ -24,12 +24,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
-
-
-
-
-
 const Topbar = props => {
   const { history,className, onSidebarOpen, getCurrentUserAction, setCurrentUserAction, ...rest } = props;
 
