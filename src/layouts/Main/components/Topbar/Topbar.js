@@ -46,11 +46,14 @@ const Topbar = props => {
   };
 
   const logout = async () => {
-    getCurrentUserAction(localStorage.getItem('jwtToken'))
-      .then(obj => obj.json())
-      .then(setCurrentUserAction(null))
-      .catch(e => console.error('Error during logout ', e));
-
+    // getCurrentUserAction(localStorage.getItem('jwtToken'))
+    //   .then(obj => obj.json())
+    //   .then(setCurrentUserAction(null))
+    //   .catch(e => console.error('Error during logout ', e));
+    //
+    // localStorage.removeItem('jwtToken');
+    // history.push('/sign-in');
+    setCurrentUserAction({});
     localStorage.removeItem('jwtToken');
     history.push('/sign-in');
   };

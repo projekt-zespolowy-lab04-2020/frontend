@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
 import { baseURL } from '../helpers/paths';
 
-export const patch = (data, token) => dispatch => {
-  const path = baseURL + `/user/${'p15sebek@gmail.com'}`;
+export const patch = (email, data, token) => dispatch => {
+  const path = baseURL + `/user/${email}`;
+
   return fetch(path, {
     method: 'PATCH',
     headers: {

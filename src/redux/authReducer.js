@@ -12,7 +12,6 @@ const authContextSlice = createSlice({
   reducers: {
     setCurrentUser(state, action) {
       return {
-        ...state,
         isAuthenticated: !isEmpty(action.payload),
         ...action.payload
       };
