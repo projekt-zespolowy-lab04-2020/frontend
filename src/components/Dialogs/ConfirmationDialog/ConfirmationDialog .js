@@ -7,7 +7,13 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import PropTypes from 'prop-types';
 
-const LogoutDialog = ({ openDialog, setOpenDialog, setUpdateData }) => {
+const ConfirmationDialog = ({
+  openDialog,
+  setOpenDialog,
+  setUpdateData,
+  title,
+  content
+}) => {
   const handleClose = () => {
     setOpenDialog(false);
   };
@@ -30,14 +36,10 @@ const LogoutDialog = ({ openDialog, setOpenDialog, setUpdateData }) => {
         aria-labelledby="alert-dialog-title"
         onClose={handleClose}
         open={openDialog}>
-        <DialogTitle id="alert-dialog-title">
-          Confirmation of data change
-        </DialogTitle>
+        <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Changing the data logs out the user. After logging out and re-login
-            your data will be changed.Click Agree if you are sure you want to
-            change the data or Disagree if you changed your mind.
+            {content}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -58,10 +60,12 @@ const LogoutDialog = ({ openDialog, setOpenDialog, setUpdateData }) => {
   );
 };
 
-LogoutDialog.propTypes = {
+ConfirmationDialog.propTypes = {
+  content: PropTypes.string,
   openDialog: PropTypes.bool,
   setOpenDialog: PropTypes.func,
-  setUpdateData: PropTypes.func
+  setUpdateData: PropTypes.func,
+  title: PropTypes.string
 };
 
-export default LogoutDialog;
+export default ConfirmationDialog;
