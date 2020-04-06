@@ -9,7 +9,8 @@ import {
   CardActions,
   Divider,
   Button,
-  TextField
+  TextField,
+  Typography
 } from '@material-ui/core';
 import validate from 'validate.js';
 import { connect } from 'react-redux';
@@ -17,7 +18,7 @@ import { withRouter } from 'react-router-dom';
 import isEmpty from 'helpers/isEmpty';
 import { patch } from 'actions/patch';
 import { setCurrentUser } from 'redux/authReducer';
-import LogoutDialog from 'components/Dialogs/LogoutDialog';
+import ConfirmationDialog from 'components/Dialogs/ConfirmationDialog';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -57,6 +58,7 @@ const Password = props => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [updateData, setUpdateData] = useState(false);
+  const [isPasswordUpdated, setIsPasswordUpdated] = useState(false);
 
   useEffect(() => {
     const errors = validate(formState.values, schema) || {};
@@ -86,6 +88,9 @@ const Password = props => {
         [event.target.name]: true
       }
     });
+
+    // Get rid of successful message when the user begins to type again
+    setIsPasswordUpdated(false);
   };
 
   const hasError = field => formState.touched[field] && !!formState.errors[field];
@@ -106,11 +111,16 @@ const Password = props => {
     updatePassword();
   }, [updateData]);
 
-  const logout = async () => {
-    setCurrentUserAction({});
-    localStorage.removeItem('jwtToken');
-    history.push('/sign-in');
-  };
+  const onPasswordUpdate = () => {
+    setFormState({
+      isValid: false,
+      values: {},
+      touched: {},
+      errors: {}
+    });
+    setUpdateData(!updateData);
+    setIsPasswordUpdated(true);
+  }
 
   const patch = async () => {
     const body = { ...formState.values };
@@ -122,7 +132,7 @@ const Password = props => {
       const response = await patchAction(email, body, token);
 
       if (response.status === 200) {
-        logout();
+        onPasswordUpdate();
       } else {
         throw new Error('Error during patching. There is no token available');
       }
@@ -132,10 +142,16 @@ const Password = props => {
   return (
     <>
       {openDialog && (
-        <LogoutDialog
+        <ConfirmationDialog
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
           setUpdateData={setUpdateData}
+          title={`Confirmation of password change`}
+          content={`
+            You are about to change your password. 
+            After this operation you will have to use the new password the next time you log in. 
+            Click Agree if you are sure you want to change the password or Disagree if you changed your mind.`
+          }
         />
       )}
       <Card
@@ -159,7 +175,7 @@ const Password = props => {
               name="password"
               onChange={handleChange}
               type="password"
-              value={formState.password}
+              value={formState.values.password || ''}
               variant="outlined"
             />
             <TextField
@@ -173,9 +189,16 @@ const Password = props => {
               onChange={handleChange}
               style={{ marginTop: '1rem' }}
               type="password"
-              value={formState.confirm}
+              value={formState.values.confirm || ''}
               variant="outlined"
             />
+            {isPasswordUpdated && 
+              <Typography
+                color="primary"
+                style={{ marginTop: '1rem' }}>
+                  Password has been successfully changed!
+              </Typography>
+            }
           </CardContent>
           <Divider />
           <CardActions>
