@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { setCurrentUser } from '../../../../redux/authReducer';
 import { patch } from '../../../../actions/patch';
-import LogoutDialog from '../../../../components/Dialogs/LogoutDialog';
+import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -111,10 +111,16 @@ const AccountDetails = props => {
   return (
     <>
       {openDialog && (
-        <LogoutDialog
+        <ConfirmationDialog
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
           setUpdateData={setUpdateData}
+          title={'Confirmation of data change'}
+          content={
+            '            Changing the data logs out the user. After logging out and re-login\n' +
+            '            your data will be changed.Click Agree if you are sure you want to\n' +
+            '            change the data or Disagree if you changed your mind.'
+          }
         />
       )}
       <Card {...rest} className={clsx(classes.root, className)}>
