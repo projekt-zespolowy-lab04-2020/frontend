@@ -1,86 +1,134 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/styles';
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Grid,
-  Divider
-} from '@material-ui/core';
-import AccessTimeIcon from '@material-ui/icons/AccessTime';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { red } from '@material-ui/core/colors';
+import FavoriteIcon from '@material-ui/icons/Favorite';
+import ShareIcon from '@material-ui/icons/Share';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
-  imageContainer: {
-    height: 64,
-    width: 64,
-    margin: '0 auto',
-    border: `1px solid ${theme.palette.divider}`,
+  root: {
+    maxWidth: 800
+  },
+  media: {
+    height: 0,
+    paddingTop: '56.25%' // 16:9
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest
+    })
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
+  },
+  avatar: {
+    backgroundColor: red[500]
+  },
+  footerCommentsWrapper: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginRight: '10px'
+  },
+  comments: {
+    background: '#F4F6F8',
     borderRadius: '5px',
-    overflow: 'hidden',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
+    padding: '20px 20px',
+    marginTop: '15px'
   },
-  image: {
-    width: '100%'
+  author: {
+    fontWeight: 600
   },
-  statsItem: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  statsIcon: {
-    color: theme.palette.icon,
-    marginRight: theme.spacing(1)
+  footerComments: {
+    display: 'inline',
+    padding: '3px 3px'
   }
 }));
 
-const TicketsCard = props => {
-  const { className, product, ...rest } = props;
-
+const TicketsCard = () => {
   const classes = useStyles();
+  const [expanded, setExpanded] = useState(false);
+  const [edited, setEdited] = useState(false);
+
+  const handleExpandClick = () => {
+    setExpanded(!expanded);
+  };
 
   return (
-    <Card {...rest} className={clsx(classes.root, className)}>
+    <Card className={classes.root}>
+      <CardHeader
+        avatar={
+          <Avatar aria-label="recipe" className={classes.avatar}>
+            R
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings">
+            <MoreVertIcon />
+          </IconButton>
+        }
+        title="Shrimp and Chorizo Paella"
+        subheader="September 14, 2016"
+      />
       <CardContent>
-        <div className={classes.imageContainer}>
-          <img alt="Product" className={classes.image} src={product.imageUrl} />
-        </div>
-        <Typography align="center" gutterBottom variant="h4">
-          {product.title}
-        </Typography>
-        <Typography align="center" variant="body1">
-          {product.description}
+        <Typography variant="body2" color="textSecondary" component="p">
+          This impressive paella is a perfect party dish and a fun meal to cook
+          together with your guests. Add 1 cup of frozen peas along with the
+          mussels, if you like.
         </Typography>
       </CardContent>
-      <Divider />
-      <CardActions>
-        <Grid container justify="space-between">
-          <Grid className={classes.statsItem} item>
-            <AccessTimeIcon className={classes.statsIcon} />
-            <Typography display="inline" variant="body2">
-              Updated 2hr ago
-            </Typography>
-          </Grid>
-          <Grid className={classes.statsItem} item>
-            <GetAppIcon className={classes.statsIcon} />
-            <Typography display="inline" variant="body2">
-              {product.totalDownloads} Downloads
-            </Typography>
-          </Grid>
-        </Grid>
+      <CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <FavoriteIcon />
+        </IconButton>
+        <IconButton aria-label="share">
+          <ShareIcon />
+        </IconButton>
+        <IconButton
+          className={clsx(classes.expand, {
+            [classes.expandOpen]: expanded
+          })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="show more">
+          <ExpandMoreIcon />
+        </IconButton>
       </CardActions>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <CardContent>
+          <>
+            <Typography className={classes.comments}>
+              <span className={classes.author}>Laex Adsd </span>
+              Set aside off of the heat to let rest for 10 minutes, and then
+              serve.Set aside off of the heat to let rest for 10 minutes, and
+              then serve.
+            </Typography>
+            <div className={classes.footerCommentsWrapper}>
+              <Typography className={classes.footerComments}>
+                5 hours ago
+              </Typography>{' '}
+              {edited && (
+                <Typography className={classes.footerComments}>
+                  Edited
+                </Typography>
+              )}
+            </div>
+          </>
+        </CardContent>
+      </Collapse>
     </Card>
   );
-};
-
-TicketsCard.propTypes = {
-  className: PropTypes.string,
-  product: PropTypes.object.isRequired
 };
 
 export default TicketsCard;

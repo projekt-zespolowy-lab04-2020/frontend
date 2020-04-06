@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
 import { ProductsToolbar, ProductCard } from './components';
 import mockData from './data';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { ADMIN } from '../../helpers/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -26,25 +30,49 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsList = () => {
+const TicketsList = ({ userObject }) => {
+  const [admin, setAdmin] = useState(false);
   const classes = useStyles();
-
   const [tickets] = useState(mockData);
 
+  const isAdmin = roles => roles.includes(ADMIN);
+
+  useEffect(() => {
+    // noinspection JSUnresolvedVariable
+    const roles = userObject.roles || [];
+    setAdmin(isAdmin(roles));
+  }, [userObject]);
+
   return (
-    <div className={classes.root}>
-      <ProductsToolbar />
-      <div className={classes.content}>
-        <Grid className={classes.tickets} container spacing={3}>
-          {tickets.map(product => (
-            <Grid item key={product.id} lg={12} md={12} xs={12}>
-              <ProductCard product={product} />
+    <>
+      {admin && (
+        <div className={classes.root}>
+          <ProductsToolbar />
+          <div className={classes.content}>
+            <Grid className={classes.tickets} container spacing={3}>
+              {tickets.map(product => (
+                <Grid item key={product.id} lg={12} md={12} xs={12}>
+                  <ProductCard product={product} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
-      </div>
-    </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
-export default TicketsList;
+TicketsList.propTypes = {
+  userObject: PropTypes.object
+};
+
+const mapStateToProps = state => {
+  const { user } = state;
+
+  return {
+    userObject: user
+  };
+};
+
+export default connect(mapStateToProps, null)(withRouter(TicketsList));
