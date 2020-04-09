@@ -5,7 +5,7 @@ pipeline {
       steps {
         sh 'docker stop reactapp || true'
         sh 'docker rm reactapp || true'
-        sh 'docker image rm jenkins/reactapp'
+        sh 'docker image rm jenkins/reactapp || true'
       }
     }
 
