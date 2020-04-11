@@ -14,6 +14,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
+import TicketsCardComments from './TicketsCardComments';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,31 +36,12 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     backgroundColor: red[500]
-  },
-  footerCommentsWrapper: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    marginRight: '10px'
-  },
-  comments: {
-    background: '#F4F6F8',
-    borderRadius: '5px',
-    padding: '20px 20px',
-    marginTop: '15px'
-  },
-  author: {
-    fontWeight: 600
-  },
-  footerComments: {
-    display: 'inline',
-    padding: '3px 3px'
   }
 }));
 
 const TicketsCard = () => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
-  const [edited, setEdited] = useState(false);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -106,26 +88,7 @@ const TicketsCard = () => {
         </IconButton>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
-          <>
-            <Typography className={classes.comments}>
-              <span className={classes.author}>Laex Adsd </span>
-              Set aside off of the heat to let rest for 10 minutes, and then
-              serve.Set aside off of the heat to let rest for 10 minutes, and
-              then serve.
-            </Typography>
-            <div className={classes.footerCommentsWrapper}>
-              <Typography className={classes.footerComments}>
-                5 hours ago
-              </Typography>{' '}
-              {edited && (
-                <Typography className={classes.footerComments}>
-                  Edited
-                </Typography>
-              )}
-            </div>
-          </>
-        </CardContent>
+        <TicketsCardComments />
       </Collapse>
     </Card>
   );
