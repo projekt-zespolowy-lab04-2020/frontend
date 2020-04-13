@@ -16,7 +16,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
 import { connect } from 'react-redux';
-import { loginUser } from '../../actions/sign-in';
+import { loginUser } from '../../actions/users/signIn';
 import { setCurrentUser } from '../../redux/authReducer';
 import combineTokenAndUserData from '../../helpers/combineTokenAndUserData';
 

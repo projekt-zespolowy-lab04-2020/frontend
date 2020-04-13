@@ -75,37 +75,30 @@ const TicketsCardComments = ({ userObject }) => {
     }
   };
 
-  const createComments = (index, author, content) => {
-    return (
-      <div key={index}>
-        <Typography className={classes.comments}>
-          <span className={classes.author}>
-            {author}
-            <span className={classes.date}>
-              {' '}
-              {new Date().toLocaleDateString()}
-            </span>
-          </span>
-          {content}
-        </Typography>
-        <div className={classes.footerCommentsWrapper}>
-          {/*<Typography className={classes.footerComments}>*/}
-          {/*  5 hours ago*/}
-          {/*</Typography>{' '}*/}
-          {edited && (
-            <Typography className={classes.footerComments}>Edited</Typography>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <CardContent>
       <>
-        {comments.map((comment, index) =>
-          createComments(index, comment.author, comment.content)
-        )}
+        {comments.map((comment, index) => (
+          <div key={index}>
+            <Typography className={classes.comments}>
+              <span className={classes.author}>
+                {comment.author}
+                <span className={classes.date}>
+                  {' '}
+                  {new Date().toLocaleDateString()}
+                </span>
+              </span>
+              {comment.content}
+            </Typography>
+            <div className={classes.footerCommentsWrapper}>
+              {edited && (
+                <Typography className={classes.footerComments}>
+                  Edited
+                </Typography>
+              )}
+            </div>
+          </div>
+        ))}
 
         <form className={classes.root} noValidate autoComplete="off">
           <TextField

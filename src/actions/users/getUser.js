@@ -1,4 +1,4 @@
-import { baseURL } from '../helpers/paths';
+import { baseURL } from '../../helpers/paths';
 
 const path = baseURL + '/user';
 

@@ -1,15 +1,14 @@
 /* eslint-disable no-unused-vars */
 import { baseURL } from '../helpers/paths';
 
-export const patch = (email, data, token) => dispatch => {
-  const path = baseURL + `/user/${email}`;
+export const getTicketByID = (ticketID, token) => dispatch => {
+  const path = baseURL + `/ticket/${ticketID}`;
 
   return fetch(path, {
-    method: 'PATCH',
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(data)
+    }
   });
 };

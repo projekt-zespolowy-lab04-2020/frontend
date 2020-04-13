@@ -15,10 +15,9 @@ import {
 import validate from 'validate.js';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import isEmpty from 'helpers/isEmpty';
-import { patch } from 'actions/patch';
-import { setCurrentUser } from 'redux/authReducer';
-import ConfirmationDialog from 'components/Dialogs/ConfirmationDialog';
+import { patchUser } from '../../../../actions/users/patchUser';
+import isEmpty from '../../../../helpers/isEmpty';
+import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -34,18 +33,11 @@ const schema = {
   },
   confirm: {
     presence: { allowEmpty: false, message: 'must match' }
-  },
-}
+  }
+};
 
 const Password = props => {
-  const { 
-    className,
-    userObject,
-    patchAction,
-    history,
-    setCurrentUserAction,
-    ...rest
-  } = props;
+  const { className, userObject, patchAction, ...rest } = props;
 
   const classes = useStyles();
 
@@ -93,19 +85,20 @@ const Password = props => {
     setIsPasswordUpdated(false);
   };
 
-  const hasError = field => formState.touched[field] && !!formState.errors[field];
+  const hasError = field =>
+    formState.touched[field] && !!formState.errors[field];
 
   const handleUpdatePassword = event => {
     event.preventDefault();
     setOpenDialog(!openDialog);
     updatePassword();
-  }
+  };
 
   const updatePassword = () => {
     if (updateData) {
       patch().catch(e => console.error(e.message));
     }
-  }
+  };
 
   useEffect(() => {
     updatePassword();
@@ -120,7 +113,7 @@ const Password = props => {
     });
     setUpdateData(!updateData);
     setIsPasswordUpdated(true);
-  }
+  };
 
   const patch = async () => {
     const body = { ...formState.values };
@@ -146,23 +139,16 @@ const Password = props => {
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
           setUpdateData={setUpdateData}
-          title={`Confirmation of password change`}
+          title={'Confirmation of password change'}
           content={`
             You are about to change your password. 
             After this operation you will have to use the new password the next time you log in. 
-            Click Agree if you are sure you want to change the password or Disagree if you changed your mind.`
-          }
+            Click Agree if you are sure you want to change the password or Disagree if you changed your mind.`}
         />
       )}
-      <Card
-        {...rest}
-        className={clsx(classes.root, className)}
-      >
+      <Card {...rest} className={clsx(classes.root, className)}>
         <form>
-          <CardHeader
-            subheader="Update password"
-            title="Password"
-          />
+          <CardHeader subheader="Update password" title="Password" />
           <Divider />
           <CardContent>
             <TextField
@@ -174,7 +160,8 @@ const Password = props => {
               label="Password"
               name="password"
               onChange={handleChange}
-              type="password"
+              typ
+              e="password"
               value={formState.values.password || ''}
               variant="outlined"
             />
@@ -192,13 +179,11 @@ const Password = props => {
               value={formState.values.confirm || ''}
               variant="outlined"
             />
-            {isPasswordUpdated && 
-              <Typography
-                color="primary"
-                style={{ marginTop: '1rem' }}>
-                  Password has been successfully changed!
+            {isPasswordUpdated && (
+              <Typography color="primary" style={{ marginTop: '1rem' }}>
+                Password has been successfully changed!
               </Typography>
-            }
+            )}
           </CardContent>
           <Divider />
           <CardActions>
@@ -206,8 +191,7 @@ const Password = props => {
               disabled={!formState.isValid}
               onClick={handleUpdatePassword}
               color="primary"
-              variant="outlined"
-            >
+              variant="outlined">
               Update
             </Button>
           </CardActions>
@@ -220,9 +204,7 @@ const Password = props => {
 Password.propTypes = {
   className: PropTypes.string,
   patchAction: PropTypes.func,
-  userObject: PropTypes.object,
-  history: PropTypes.object,
-  setCurrentUserAction: PropTypes.func,
+  userObject: PropTypes.object
 };
 
 const mapStateToProps = state => {
@@ -234,6 +216,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  patchAction: patch,
-  setCurrentUserAction: setCurrentUser
+  patchAction: patchUser
 })(withRouter(Password));

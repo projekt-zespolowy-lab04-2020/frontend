@@ -16,7 +16,7 @@ import {
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { setCurrentUser } from '../../../../redux/authReducer';
-import { patch } from '../../../../actions/patch';
+import { patchUser } from '../../../../actions/users/patchUser';
 import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
 
 const useStyles = makeStyles(() => ({
@@ -205,5 +205,5 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   setCurrentUserAction: setCurrentUser,
-  patchAction: patch
+  patchAction: patchUser
 })(withRouter(AccountDetails));
