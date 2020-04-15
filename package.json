@@ -63,6 +63,7 @@
     "prettier-eslint": "^8.8.2",
     "prettier-eslint-cli": "^5.0.0",
     "redux-devtools": "^3.5.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.1",
+    "lodash": "latest"
   }
 }
