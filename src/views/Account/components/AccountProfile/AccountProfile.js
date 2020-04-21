@@ -28,10 +28,11 @@ const useStyles = makeStyles(theme => ({
     alignItems: 'center',
     backgroundColor: green,
     fontWeight: 500,
-    letterSpacing: 3,
     width: 100,
     flexShrink: 0,
-    flexGrow: 0
+    flexGrow: 0,
+    fontSize: 45,
+    border: '1px solid #008160'
   },
   progress: {
     marginTop: theme.spacing(2)
