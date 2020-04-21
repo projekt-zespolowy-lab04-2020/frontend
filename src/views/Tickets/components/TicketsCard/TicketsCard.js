@@ -11,10 +11,13 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import TicketsCardComments from './TicketsCardComments';
+import PropTypes from 'prop-types';
+import PublicIcon from '@material-ui/icons/Public';
+import TodayIcon from '@material-ui/icons/Today';
+import PeopleIcon from '@material-ui/icons/People';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,10 +39,24 @@ const useStyles = makeStyles(theme => ({
   },
   avatar: {
     backgroundColor: red[500]
+  },
+  tripDetails: {
+    display: 'flex',
+    alignItems: 'center',
+    '&:last-of-type': {
+      marginBottom: 20
+    }
+  },
+  icons: {
+    marginRight: 10
+  },
+  title: {
+    display: 'flex',
+    justifyContent: 'center'
   }
 }));
 
-const TicketsCard = () => {
+const TicketsCard = ({ data }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
 
@@ -52,7 +69,7 @@ const TicketsCard = () => {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+            {`${data.firstName[0]} ${data.lastName[0]}`}
           </Avatar>
         }
         action={
@@ -60,22 +77,42 @@ const TicketsCard = () => {
             <MoreVertIcon />
           </IconButton>
         }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        title={`${data.firstName} ${data.lastName}`}
+        subheader={new Date().toLocaleString()}
       />
       <CardContent>
+        <div className={classes.title}>
+          <Typography variant="h4" color="textSecondary" component="p">
+            {data.subject}
+          </Typography>
+        </div>
+        <div className={classes.tripDetails}>
+          <PublicIcon className={classes.icons} color="primary" />
+          <Typography variant="h6" color="textSecondary" component="p">
+            Where: {data.destination}
+          </Typography>
+        </div>
+        <div className={classes.tripDetails}>
+          <TodayIcon className={classes.icons} color="primary" />
+          <Typography variant="h6" color="textSecondary" component="p">
+            When: {data.dateAndTime}
+          </Typography>
+        </div>
+
+        <div className={classes.tripDetails}>
+          <PeopleIcon className={classes.icons} color="primary" />
+          <Typography variant="h6" color="textSecondary" component="p">
+            Peoples: {data.numberOfPeople}
+          </Typography>
+        </div>
+
         <Typography variant="body2" color="textSecondary" component="p">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.
+          {data.content}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
           <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
         </IconButton>
         <IconButton
           className={clsx(classes.expand, {
@@ -92,6 +129,10 @@ const TicketsCard = () => {
       </Collapse>
     </Card>
   );
+};
+
+TicketsCard.propTypes = {
+  data: PropTypes.object
 };
 
 export default TicketsCard;

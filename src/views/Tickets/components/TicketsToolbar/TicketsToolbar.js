@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import { Button } from '@material-ui/core';
-
 import { SearchInput } from 'components';
 import TicketCreator from '../TicketCreator';
 

@@ -8,8 +8,6 @@ import Slide from '@material-ui/core/Slide';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/styles';
 import CloseIcon from '@material-ui/icons/Close';
-import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
-import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
@@ -19,12 +17,15 @@ import {
   KeyboardTimePicker
 } from '@material-ui/pickers';
 import SliderWrapper from './SliderWrapper';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { setTickets } from '../../../../redux/ticketsReducer';
 
 const useStyles = makeStyles({
   root: {},
   textField: {
-    width: '100%',
-    marginBottom: 20
+    width: '100%'
   },
   dialog: {},
   title: {
@@ -48,19 +49,18 @@ const useStyles = makeStyles({
     marginRight: 23
   },
   row: {
-    height: '42px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 50
+    marginBottom: 30
   },
   additionalQuestions: {
-    marginLeft: 46,
+    marginLeft: 30,
     width: 490
   },
   destination: {
-    marginLeft: 46,
+    marginLeft: 30,
     width: 490
+  },
+  buttons: {
+    margin: '20px 20px'
   }
 });
 
@@ -68,13 +68,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TicketCreator = () => {
+const TicketCreator = ({ setTicketsAction }) => {
   const classes = useStyles();
   const [ticket, setTicket] = useState({
     firstName: '',
     lastName: '',
     subject: '',
     numberOfPeople: 0,
+    destination: '',
     dateAndTime: new Date().toLocaleString(),
     content: ''
   });
@@ -96,10 +97,19 @@ const TicketCreator = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setTicket({
+      firstName: '',
+      lastName: '',
+      subject: '',
+      numberOfPeople: 0,
+      dateAndTime: new Date().toLocaleString(),
+      content: ''
+    });
   };
 
   const handleSend = () => {
-    console.log(ticket);
+    setTicketsAction(ticket);
+    handleClose();
   };
 
   const handleChanged = event => {
@@ -122,83 +132,116 @@ const TicketCreator = () => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description">
-        <DialogTitle className={classes.title} id="alert-dialog-slide-title">
-          Ticket creator
-          <CloseIcon className={classes.closeIcon} onClick={handleClose} />
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            id="standard-basic"
-            label="Subject"
-            name="subject"
-            className={classes.textField}
-            onChange={handleChanged}
-          />
-          <div className={classes.row}>
-            <TextField
-              id="standard-basic"
-              label="Destination"
-              name="destination"
-              className={classes.destination}
-              onChange={handleChanged}
-            />
-          </div>
-          <div className={classes.row}>
-            <QueryBuilderIcon />
-            <MuiPickersUtilsProvider utils={DateFnsUtils}>
-              <Grid container justify="space-around">
-                {' '}
-                <KeyboardDatePicker
-                  margin="normal"
-                  id="date-picker-dialog"
-                  label="Date picker dialog"
-                  format="MM/dd/yyyy"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  KeyboardButtonProps={{
-                    'aria-label': 'change date'
-                  }}
-                />
-                <KeyboardTimePicker
-                  margin="normal"
-                  id="time-picker"
-                  label="Time picker"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  KeyboardButtonProps={{
-                    'aria-label': 'change time'
-                  }}
-                />
-              </Grid>
-            </MuiPickersUtilsProvider>
-          </div>
-          <div className={classes.row}>
-            <PeopleAltIcon className={classes.icons} />
-            <SliderWrapper ticket={ticket} setTicket={setTicket} />
-          </div>
-          <div className={classes.row}>
-            <TextField
-              className={classes.additionalQuestions}
-              id="standard-multiline-static"
-              label="Additional questions"
-              multiline
-              rows={4}
-              name="content"
-              onChange={handleChanged}
-            />
-          </div>
-        </DialogContent>
-        <DialogActions>
-          <Button color="primary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button color="primary" onClick={handleSend} variant="contained">
-            Create and send
-          </Button>
-        </DialogActions>
+        <div className={classes.row}>
+          <DialogTitle className={classes.title} id="alert-dialog-slide-title">
+            Ticket creator
+            <CloseIcon className={classes.closeIcon} onClick={handleClose} />
+          </DialogTitle>
+        </div>
+        <Grid container>
+          <DialogContent>
+            <div className={classes.row}>
+              <TextField
+                label="Subject"
+                name="subject"
+                value={ticket.subject}
+                className={classes.textField}
+                onChange={handleChanged}
+              />
+            </div>
+            <div className={classes.row}>
+              <TextField
+                label="Destination"
+                name="destination"
+                className={classes.destination}
+                onChange={handleChanged}
+              />
+            </div>
+            <div className={classes.row}>
+              <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                <Grid container>
+                  <Grid
+                    item
+                    xs={12}
+                    lg={6}
+                    container
+                    className={'MuiGrid-justify-xs-center'}>
+                    <KeyboardDatePicker
+                      margin="normal"
+                      id="date-picker-dialog"
+                      label="Date picker dialog"
+                      format="MM/dd/yyyy"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change date'
+                      }}
+                    />
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    lg={6}
+                    container
+                    className={'MuiGrid-justify-xs-center'}>
+                    <KeyboardTimePicker
+                      margin="normal"
+                      id="time-picker"
+                      label="Time picker"
+                      value={selectedDate}
+                      onChange={handleDateChange}
+                      KeyboardButtonProps={{
+                        'aria-label': 'change time'
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </MuiPickersUtilsProvider>
+            </div>
+            <div className={classes.row}>
+              <SliderWrapper ticket={ticket} setTicket={setTicket} />
+            </div>
+            <div className={classes.row}>
+              <TextField
+                className={classes.additionalQuestions}
+                id="standard-multiline-static"
+                label="Additional questions"
+                multiline
+                rows={4}
+                name="content"
+                onChange={handleChanged}
+              />
+            </div>
+          </DialogContent>
+        </Grid>
+        <div className={classes.buttons}>
+          <DialogActions>
+            <Button color="primary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button color="primary" onClick={handleSend} variant="contained">
+              Create and send
+            </Button>
+          </DialogActions>
+        </div>
       </Dialog>
     </div>
   );
 };
 
-export default TicketCreator;
+TicketCreator.propTypes = {
+  setTicketsAction: PropTypes.func
+};
+
+// const mapStateToProps = state => {
+//   const { user, tickets } = state;
+//
+//   return {
+//     userObject: user,
+//     ticketsObject: tickets
+//   };
+// };
+
+export default connect(null, { setTicketsAction: setTickets })(
+  withRouter(TicketCreator)
+);

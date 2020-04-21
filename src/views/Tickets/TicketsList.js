@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
 import { TicketsToolbar, TicketsCard } from './components';
-import mockData from './data';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -30,10 +29,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsList = ({ userObject }) => {
+const TicketsList = ({ userObject, ticketsObject }) => {
   const [admin, setAdmin] = useState(false);
   const classes = useStyles();
-  const [tickets] = useState(mockData);
+  const [tickets, setTickets] = useState({});
+
+  useEffect(() => {
+    setTickets(ticketsObject);
+  }, [ticketsObject]);
 
   const isAdmin = roles => roles.includes(ADMIN);
 
@@ -41,37 +44,45 @@ const TicketsList = ({ userObject }) => {
     // noinspection JSUnresolvedVariable
     const roles = userObject.roles || [];
     setAdmin(isAdmin(roles));
+
+    if (isAdmin(roles)) {
+      // TODO get all users tickets
+    } else {
+      // TODO get only current user tickets
+    }
+
+    setAdmin(true);
   }, [userObject]);
 
   return (
-    // <>
     <div className={classes.root}>
       <TicketsToolbar />
       {admin && (
         <div className={classes.content}>
           <Grid className={classes.tickets} container spacing={3}>
-            {tickets.map(product => (
-              <Grid item key={product.id} lg={12} md={12} xs={12}>
-                <TicketsCard product={product} />
+            {tickets.map((data, index) => (
+              <Grid item key={index} lg={12} md={12} xs={12}>
+                <TicketsCard data={data} />
               </Grid>
             ))}
           </Grid>
         </div>
       )}
     </div>
-    // </>
   );
 };
 
 TicketsList.propTypes = {
+  ticketsObject: PropTypes.arrayOf(PropTypes.object),
   userObject: PropTypes.object
 };
 
 const mapStateToProps = state => {
-  const { user } = state;
+  const { user, tickets } = state;
 
   return {
-    userObject: user
+    userObject: user,
+    ticketsObject: tickets
   };
 };
 
