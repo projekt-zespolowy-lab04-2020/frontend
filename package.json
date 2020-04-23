@@ -61,5 +61,6 @@
     "prettier-eslint-cli": "^5.0.0",
     "redux-devtools": "^3.5.0",
     "typescript": "^3.5.1"
-  }
+  },
+  "proxy": "http://149.156.146.249:60001"
 }
