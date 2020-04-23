@@ -9,9 +9,10 @@ const useStyles = makeStyles({
   avatar: {
     width: 60,
     height: 60,
+    fontSize: 25,
     backgroundColor: green,
     fontWeight: 500,
-    letterSpacing: 3
+    border: '1px solid #008160'
   }
 });
 
@@ -30,8 +31,9 @@ const AvatarWrapper = props => {
       className={classes.avatar}
       component={RouterLink}
       {...rest}>
-      {firstName?.charAt(0).toUpperCase()}
-      {lastName?.charAt(0).toUpperCase()}
+      {/*{firstName?.charAt(0).toUpperCase()}*/}
+      {/*{lastName?.charAt(0).toUpperCase()}*/}
+      AS
     </Avatar>
   );
 };

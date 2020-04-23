@@ -15,9 +15,9 @@ import {
 import validate from 'validate.js';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { patchUser } from '../../../../actions/users/patchUser';
-import isEmpty from '../../../../helpers/isEmpty';
 import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
+import isEmpty from '../../../../helpers/isEmpty';
+import { patch } from '../../../../actions/patch';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -139,7 +139,7 @@ const Password = props => {
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
           setUpdateData={setUpdateData}
-          title={'Confirmation of password change'}
+          title={`Confirmation of password change`}
           content={`
             You are about to change your password. 
             After this operation you will have to use the new password the next time you log in. 
@@ -160,8 +160,7 @@ const Password = props => {
               label="Password"
               name="password"
               onChange={handleChange}
-              typ
-              e="password"
+              type="password"
               value={formState.values.password || ''}
               variant="outlined"
             />
@@ -216,5 +215,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  patchAction: patchUser
+  patchAction: patch
 })(withRouter(Password));

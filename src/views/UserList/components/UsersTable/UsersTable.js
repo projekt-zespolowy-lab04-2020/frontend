@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2),
     backgroundColor: green,
     fontWeight: 500,
-    letterSpacing: 3
+    border: '1px solid #008160'
   },
   actions: {
     justifyContent: 'flex-end'
