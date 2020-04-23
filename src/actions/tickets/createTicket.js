@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { baseURL } from '../../helpers/paths';
 
-export const createTicket = (content, token) => dispatch => {
+export const createTicket = (data, token) => dispatch => {
   const path = baseURL + '/ticket';
 
   return fetch(path, {
@@ -10,6 +10,6 @@ export const createTicket = (content, token) => dispatch => {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(content)
+    body: JSON.stringify(data)
   });
 };

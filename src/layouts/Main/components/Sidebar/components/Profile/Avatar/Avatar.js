@@ -31,9 +31,8 @@ const AvatarWrapper = props => {
       className={classes.avatar}
       component={RouterLink}
       {...rest}>
-      {/*{firstName?.charAt(0).toUpperCase()}*/}
-      {/*{lastName?.charAt(0).toUpperCase()}*/}
-      AS
+      {firstName?.charAt(0).toUpperCase()}
+      {lastName?.charAt(0).toUpperCase()}
     </Avatar>
   );
 };

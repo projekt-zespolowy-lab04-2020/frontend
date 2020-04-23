@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { baseURL } from '../../helpers/paths';
 
-export const createTicket = (content, option, token) => dispatch => {
+export const getTickets = (option, token) => dispatch => {
   const path =
     baseURL +
     '/ticket' +

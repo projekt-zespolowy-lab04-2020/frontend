@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { setTickets } from '../../../../redux/ticketsReducer';
+import { createTicket } from '../../../../actions/tickets/createTicket';
 
 const useStyles = makeStyles({
   root: {},
@@ -68,16 +69,24 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TicketCreator = ({ setTicketsAction }) => {
+const TicketCreator = ({
+  userObject,
+  setTicketsAction,
+  createTicketAction
+}) => {
   const classes = useStyles();
-  const [ticket, setTicket] = useState({
-    firstName: '',
-    lastName: '',
-    subject: '',
-    numberOfPeople: 0,
-    destination: '',
-    dateAndTime: new Date().toLocaleString(),
-    content: ''
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: {
+      firstName: '',
+      lastName: '',
+      subject: '',
+      numberOfPeople: 10,
+      destination: '',
+      dateAndTime: new Date().toLocaleString(),
+      content: ''
+    },
+    touched: {}
   });
 
   const [open, setOpen] = useState(false);
@@ -85,11 +94,22 @@ const TicketCreator = ({ setTicketsAction }) => {
 
   const handleDateChange = date => {
     setSelectedDate(date);
-    setTicket({
-      ...ticket,
-      dateAndTime: date.toLocaleString()
+    setFormState({
+      ...formState,
+      values: { ...formState.values, dateAndTime: date.toLocaleString() }
     });
   };
+
+  useEffect(() => {
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        firstName: userObject.firstName,
+        lastName: userObject.lastName
+      }
+    });
+  }, [userObject]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -97,25 +117,55 @@ const TicketCreator = ({ setTicketsAction }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setTicket({
-      firstName: '',
-      lastName: '',
-      subject: '',
-      numberOfPeople: 0,
-      dateAndTime: new Date().toLocaleString(),
-      content: ''
+    setFormState({
+      ...formState,
+      values: {
+        firstName: userObject.firstName,
+        lastName: userObject.lastName,
+        subject: '',
+        numberOfPeople: 10,
+        destination: '',
+        dateAndTime: new Date().toLocaleString(),
+        content: ''
+      },
+      isValid: false
     });
   };
 
+  const createTicket = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const response = await createTicketAction(
+        { content: JSON.stringify(formState.values) },
+        token
+      );
+
+      if (response.status === 200) {
+        // Set content to redux
+        setTicketsAction(formState.values);
+      } else {
+        throw new Error('Error during creating ticket.');
+      }
+    }
+  };
+
   const handleSend = () => {
-    setTicketsAction(ticket);
+    createTicket().catch(e => console.error(e.message));
     handleClose();
   };
 
   const handleChanged = event => {
-    setTicket({
-      ...ticket,
-      [event.target.name]: event.target.value
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        [event.target.name]: event.target.value
+      },
+      touched: {
+        ...formState.touched,
+        [event.target.name]: true
+      },
+      isValid: Object.keys(formState.touched).length === 3
     });
   };
 
@@ -144,7 +194,7 @@ const TicketCreator = ({ setTicketsAction }) => {
               <TextField
                 label="Subject"
                 name="subject"
-                value={ticket.subject}
+                value={formState.values.subject}
                 className={classes.textField}
                 onChange={handleChanged}
               />
@@ -153,6 +203,7 @@ const TicketCreator = ({ setTicketsAction }) => {
               <TextField
                 label="Destination"
                 name="destination"
+                value={formState.values.destination}
                 className={classes.destination}
                 onChange={handleChanged}
               />
@@ -199,7 +250,7 @@ const TicketCreator = ({ setTicketsAction }) => {
               </MuiPickersUtilsProvider>
             </div>
             <div className={classes.row}>
-              <SliderWrapper ticket={ticket} setTicket={setTicket} />
+              <SliderWrapper ticket={formState} setTicket={setFormState} />
             </div>
             <div className={classes.row}>
               <TextField
@@ -208,6 +259,7 @@ const TicketCreator = ({ setTicketsAction }) => {
                 label="Additional questions"
                 multiline
                 rows={4}
+                value={formState.values.content}
                 name="content"
                 onChange={handleChanged}
               />
@@ -219,7 +271,11 @@ const TicketCreator = ({ setTicketsAction }) => {
             <Button color="primary" onClick={handleClose}>
               Close
             </Button>
-            <Button color="primary" onClick={handleSend} variant="contained">
+            <Button
+              disabled={!formState.isValid}
+              color="primary"
+              onClick={handleSend}
+              variant="contained">
               Create and send
             </Button>
           </DialogActions>
@@ -230,18 +286,20 @@ const TicketCreator = ({ setTicketsAction }) => {
 };
 
 TicketCreator.propTypes = {
-  setTicketsAction: PropTypes.func
+  createTicketAction: PropTypes.func,
+  setTicketsAction: PropTypes.func,
+  userObject: PropTypes.object
 };
 
-// const mapStateToProps = state => {
-//   const { user, tickets } = state;
-//
-//   return {
-//     userObject: user,
-//     ticketsObject: tickets
-//   };
-// };
+const mapStateToProps = state => {
+  const { user } = state;
 
-export default connect(null, { setTicketsAction: setTickets })(
-  withRouter(TicketCreator)
-);
+  return {
+    userObject: user
+  };
+};
+
+export default connect(mapStateToProps, {
+  setTicketsAction: setTickets,
+  createTicketAction: createTicket
+})(withRouter(TicketCreator));

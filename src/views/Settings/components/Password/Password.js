@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
 import isEmpty from '../../../../helpers/isEmpty';
-import { patch } from '../../../../actions/patch';
+import { patchUser } from '../../../../actions/users/patchUser';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -139,7 +139,7 @@ const Password = props => {
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
           setUpdateData={setUpdateData}
-          title={`Confirmation of password change`}
+          title="Confirmation of password change"
           content={`
             You are about to change your password. 
             After this operation you will have to use the new password the next time you log in. 
@@ -215,5 +215,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  patchAction: patch
+  patchAction: patchUser
 })(withRouter(Password));
