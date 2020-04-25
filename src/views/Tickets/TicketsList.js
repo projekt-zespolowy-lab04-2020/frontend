@@ -3,12 +3,13 @@ import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
 import { TicketsToolbar, TicketsCard } from './components';
-import PropTypes, { func } from 'prop-types';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { ADMIN } from '../../helpers/types';
 import { getTickets } from '../../actions/tickets/getTickets';
 import { getTicketByID } from '../../actions/tickets/getTicketByID';
+import { addTicket } from '../../redux/ticketsReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,6 +36,7 @@ const TicketsList = ({
   userObject,
   ticketsObject,
   getTicketsAction,
+  addTicketAction,
   getTicketByIDAction
 }) => {
   const classes = useStyles();
@@ -53,6 +55,7 @@ const TicketsList = ({
     return Promise.all(
       ticketsList.map(obj => {
         const { id } = obj;
+
         return getTicketAsync(id, token);
       })
     );
@@ -63,11 +66,25 @@ const TicketsList = ({
     if (token) {
       const response = await getTicketsAction(isAdmin, token);
       const res = await response.json();
-      console.log(res);
+
       if (response.status === 200) {
         getAllUserTickets(res, token)
-          // TODO when content arrives we should setTicket
-          .then(tickets => console.log(tickets))
+          .then(tickets => {
+            // console.log(tickets);
+            tickets.map(ticketObject => {
+              const { ticket } = ticketObject;
+              const { content } = ticket;
+              const ticketTempObject = {
+                ...ticketObject,
+                ticket: {
+                  ...ticketObject.ticket,
+                  content: JSON.parse(content)
+                }
+              };
+
+              addTicketAction(ticketTempObject);
+            });
+          })
           .catch(e => console.error(e.message));
       } else {
         throw new Error('Error retrieving tickets.');
@@ -83,9 +100,11 @@ const TicketsList = ({
 
   useEffect(() => {
     // noinspection JSUnresolvedVariable
-    const roles = userObject.roles || [];
-    setAdmin(isAdmin(roles));
-    getTicketsList(isAdmin(roles)).catch(e => console.error(e.message));
+    const { isAuthenticated } = userObject;
+    if (isAuthenticated) {
+      const roles = userObject.roles || [];
+      getTicketsList(isAdmin(roles)).catch(e => console.error(e.message));
+    }
   }, [userObject]);
 
   return (
@@ -107,6 +126,7 @@ const TicketsList = ({
 };
 
 TicketsList.propTypes = {
+  addTicketAction: PropTypes.func,
   getTicketByIDAction: PropTypes.func,
   getTicketsAction: PropTypes.func,
   ticketsObject: PropTypes.arrayOf(PropTypes.object),
@@ -124,5 +144,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   getTicketsAction: getTickets,
-  getTicketByIDAction: getTicketByID
+  getTicketByIDAction: getTicketByID,
+  addTicketAction: addTicket
 })(withRouter(TicketsList));

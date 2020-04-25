@@ -20,7 +20,7 @@ import SliderWrapper from './SliderWrapper';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { setTickets } from '../../../../redux/ticketsReducer';
+import { addTicket } from '../../../../redux/ticketsReducer';
 import { createTicket } from '../../../../actions/tickets/createTicket';
 
 const useStyles = makeStyles({
@@ -69,11 +69,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TicketCreator = ({
-  userObject,
-  setTicketsAction,
-  createTicketAction
-}) => {
+const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
   const classes = useStyles();
   const [formState, setFormState] = useState({
     isValid: false,
@@ -139,10 +135,18 @@ const TicketCreator = ({
         { content: JSON.stringify(formState.values) },
         token
       );
-
+      const res = await response.json();
+      console.log(res);
       if (response.status === 200) {
-        // Set content to redux
-        setTicketsAction(formState.values);
+        // Set temp ticket wit content only to render immediately
+        // and when the user refresh the page it will replaces
+        // temporary object with normal one
+        const ticketTempObject = {
+          ticket: {
+            content: formState.values
+          }
+        };
+        addTicketAction(ticketTempObject);
       } else {
         throw new Error('Error during creating ticket.');
       }
@@ -286,8 +290,8 @@ const TicketCreator = ({
 };
 
 TicketCreator.propTypes = {
+  addTicketAction: PropTypes.func,
   createTicketAction: PropTypes.func,
-  setTicketsAction: PropTypes.func,
   userObject: PropTypes.object
 };
 
@@ -300,6 +304,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  setTicketsAction: setTickets,
+  addTicketAction: addTicket,
   createTicketAction: createTicket
 })(withRouter(TicketCreator));

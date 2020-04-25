@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { createComments } from '../../../../../actions/tickets/createComments';
 
 const useStyles = makeStyles({
   root: {
@@ -40,23 +41,39 @@ const useStyles = makeStyles({
   }
 });
 
-const TicketsCardComments = ({ userObject }) => {
+const TicketsCardComments = ({
+  author,
+  commentsObj,
+  createCommentsAction,
+  id,
+  userObject
+}) => {
   const [edited, setEdited] = useState(true);
-  const [comments, setComments] = useState([
-    {
-      content: 'content content content content',
-      author: 'John '
-    },
-    {
-      content: 'string string string',
-      author: 'Sins '
-    }
-  ]);
+  const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
   const classes = useStyles();
 
   const handleChange = event => {
     setFormValue(event.target.value);
+  };
+
+  useEffect(() => {
+    setComments(commentsObj);
+  }, [commentsObj]);
+
+  const createComments = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const content = {
+        author: `${userObject.firstName} ${userObject.lastName}`,
+        content: formValue
+      };
+
+      const response = await createCommentsAction(content, id, token);
+      if (response.status !== 200) {
+        throw new Error('Error during creating comments tickets.');
+      }
+    }
   };
 
   const handleKeyPress = event => {
@@ -70,6 +87,7 @@ const TicketsCardComments = ({ userObject }) => {
           }
         ]);
       }
+      createComments().catch(e => console.error(e.message));
       setFormValue('');
       event.preventDefault();
     }
@@ -82,7 +100,7 @@ const TicketsCardComments = ({ userObject }) => {
           <div key={index}>
             <Typography className={classes.comments}>
               <span className={classes.author}>
-                {comment.author}
+                {`${author.firstName} ${author.lastName}`}
                 <span className={classes.date}>
                   {' '}
                   {new Date().toLocaleDateString()}
@@ -119,6 +137,10 @@ const TicketsCardComments = ({ userObject }) => {
 };
 
 TicketsCardComments.propTypes = {
+  author: PropTypes.object,
+  commentsObj: PropTypes.arrayOf(PropTypes.object),
+  createCommentsAction: PropTypes.func,
+  id: PropTypes.number,
   userObject: PropTypes.object
 };
 
@@ -130,4 +152,6 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, null)(withRouter(TicketsCardComments));
+export default connect(mapStateToProps, {
+  createCommentsAction: createComments
+})(withRouter(TicketsCardComments));

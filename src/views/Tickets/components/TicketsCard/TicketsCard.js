@@ -59,6 +59,12 @@ const useStyles = makeStyles(theme => ({
 const TicketsCard = ({ data }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const { comments, ticket } = data;
+  const { content } = ticket;
+  const author = {
+    firstName: content.firstName,
+    lastName: content.lastName
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -69,7 +75,7 @@ const TicketsCard = ({ data }) => {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {`${data.firstName[0]} ${data.lastName[0]}`}
+            {`${content.firstName[0]}${content.lastName[0]}`}
           </Avatar>
         }
         action={
@@ -77,13 +83,13 @@ const TicketsCard = ({ data }) => {
             <MoreVertIcon />
           </IconButton>
         }
-        title={`${data.firstName} ${data.lastName}`}
+        title={`${content.firstName} ${content.lastName}`}
         subheader={new Date().toLocaleString()}
       />
       <CardContent>
         <div className={classes.title}>
           <Typography variant="h4" color="textSecondary" component="p">
-            {data.subject}
+            {content.subject}
           </Typography>
         </div>
         <div className={classes.tripDetails}>
@@ -107,7 +113,7 @@ const TicketsCard = ({ data }) => {
         </div>
 
         <Typography variant="body2" color="textSecondary" component="p">
-          {data.content}
+          {content.content}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -125,7 +131,11 @@ const TicketsCard = ({ data }) => {
         </IconButton>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <TicketsCardComments />
+        <TicketsCardComments
+          id={ticket.id}
+          commentsObj={comments}
+          author={author}
+        />
       </Collapse>
     </Card>
   );

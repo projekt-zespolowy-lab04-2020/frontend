@@ -18,6 +18,7 @@ import { withRouter } from 'react-router-dom';
 import { setCurrentUser } from '../../../../redux/authReducer';
 import { patchUser } from '../../../../actions/users/patchUser';
 import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
+import { clearTickets } from '../../../../redux/ticketsReducer';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -26,6 +27,7 @@ const useStyles = makeStyles(() => ({
 const AccountDetails = props => {
   const {
     className,
+    clearTicketsAction,
     // eslint-disable-next-line
     dispatch,
     history,
@@ -71,6 +73,7 @@ const AccountDetails = props => {
 
   const logout = async () => {
     setCurrentUserAction({});
+    clearTicketsAction();
     localStorage.removeItem('jwtToken');
     history.push('/sign-in');
   };
@@ -188,6 +191,7 @@ const AccountDetails = props => {
 
 AccountDetails.propTypes = {
   className: PropTypes.string,
+  clearTicketsAction: PropTypes.func,
   history: PropTypes.object,
   patchAction: PropTypes.func,
   setCurrentUserAction: PropTypes.func,
@@ -204,6 +208,7 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
+  clearTicketsAction: clearTickets,
   setCurrentUserAction: setCurrentUser,
   patchAction: patchUser
 })(withRouter(AccountDetails));

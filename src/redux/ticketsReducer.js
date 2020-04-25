@@ -10,9 +10,9 @@ const ticketsSlice = createSlice({
       return state;
     },
     clearTickets() {
-      return {};
+      return [];
     },
-    setTickets(state, action) {
+    addTicket(state, action) {
       const tempTickets = [...state];
       tempTickets.push(action.payload);
 
@@ -21,6 +21,6 @@ const ticketsSlice = createSlice({
   }
 });
 
-export const { getTicket, clearTickets, setTickets } = ticketsSlice.actions;
+export const { getTicket, clearTickets, addTicket } = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

@@ -10,6 +10,7 @@ import InputIcon from '@material-ui/icons/Input';
 import { getCurrentUser } from '../../../../actions/users/getUser';
 import { setCurrentUser } from '../../../../redux/authReducer';
 import { connect } from 'react-redux';
+import { clearTickets } from '../../../../redux/ticketsReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,10 +26,10 @@ const useStyles = makeStyles(theme => ({
 
 const Topbar = props => {
   const {
-    history,
     className,
+    clearTicketsAction,
+    history,
     onSidebarOpen,
-    getCurrentUserAction,
     setCurrentUserAction,
     ...rest
   } = props;
@@ -54,6 +55,7 @@ const Topbar = props => {
     // localStorage.removeItem('jwtToken');
     // history.push('/sign-in');
     setCurrentUserAction({});
+    clearTicketsAction();
     localStorage.removeItem('jwtToken');
     history.push('/sign-in');
   };
@@ -93,7 +95,7 @@ const Topbar = props => {
 
 Topbar.propTypes = {
   className: PropTypes.string,
-  getCurrentUserAction: PropTypes.func.isRequired,
+  clearTicketsAction: PropTypes.func,
   history: PropTypes.object,
   onSidebarOpen: PropTypes.func,
   setCurrentUserAction: PropTypes.func.isRequired
@@ -101,5 +103,5 @@ Topbar.propTypes = {
 
 export default connect(null, {
   setCurrentUserAction: setCurrentUser,
-  getCurrentUserAction: getCurrentUser
+  clearTicketsAction: clearTickets
 })(withRouter(Topbar));
