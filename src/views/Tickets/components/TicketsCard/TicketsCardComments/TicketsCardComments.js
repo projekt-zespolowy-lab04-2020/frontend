@@ -11,7 +11,8 @@ import { createComments } from '../../../../../actions/tickets/createComments';
 const useStyles = makeStyles({
   root: {
     maxWidth: 800,
-    borderRadius: '20px'
+    borderRadius: 20,
+    marginTop: 30
   },
   footerCommentsWrapper: {
     display: 'flex',
@@ -48,7 +49,6 @@ const TicketsCardComments = ({
   id,
   userObject
 }) => {
-  const [edited, setEdited] = useState(true);
   const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
   const classes = useStyles();
@@ -108,13 +108,6 @@ const TicketsCardComments = ({
               </span>
               {comment.content}
             </Typography>
-            <div className={classes.footerCommentsWrapper}>
-              {edited && (
-                <Typography className={classes.footerComments}>
-                  Edited
-                </Typography>
-              )}
-            </div>
           </div>
         ))}
 

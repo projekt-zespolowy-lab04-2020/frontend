@@ -56,7 +56,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsCard = ({ data }) => {
+const TicketsCard = ({ data, isTrip }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const { comments, ticket } = data;
@@ -87,31 +87,34 @@ const TicketsCard = ({ data }) => {
         subheader={new Date().toLocaleString()}
       />
       <CardContent>
-        <div className={classes.title}>
-          <Typography variant="h4" color="textSecondary" component="p">
-            {content.subject}
-          </Typography>
-        </div>
-        <div className={classes.tripDetails}>
-          <PublicIcon className={classes.icons} color="primary" />
-          <Typography variant="h6" color="textSecondary" component="p">
-            Where: {data.destination}
-          </Typography>
-        </div>
-        <div className={classes.tripDetails}>
-          <TodayIcon className={classes.icons} color="primary" />
-          <Typography variant="h6" color="textSecondary" component="p">
-            When: {data.dateAndTime}
-          </Typography>
-        </div>
+        {isTrip && (
+          <>
+            <div className={classes.title}>
+              <Typography variant="h4" color="textSecondary" component="p">
+                {content.subject}
+              </Typography>
+            </div>
+            <div className={classes.tripDetails}>
+              <PublicIcon className={classes.icons} color="primary" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                Where: {data.destination}
+              </Typography>
+            </div>
+            <div className={classes.tripDetails}>
+              <TodayIcon className={classes.icons} color="primary" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                When: {data.dateAndTime}
+              </Typography>
+            </div>
 
-        <div className={classes.tripDetails}>
-          <PeopleIcon className={classes.icons} color="primary" />
-          <Typography variant="h6" color="textSecondary" component="p">
-            Peoples: {data.numberOfPeople}
-          </Typography>
-        </div>
-
+            <div className={classes.tripDetails}>
+              <PeopleIcon className={classes.icons} color="primary" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                Peoples: {data.numberOfPeople}
+              </Typography>
+            </div>
+          </>
+        )}
         <Typography variant="body2" color="textSecondary" component="p">
           {content.content}
         </Typography>
@@ -142,7 +145,8 @@ const TicketsCard = ({ data }) => {
 };
 
 TicketsCard.propTypes = {
-  data: PropTypes.object
+  data: PropTypes.object,
+  isTrip: PropTypes.bool
 };
 
 export default TicketsCard;

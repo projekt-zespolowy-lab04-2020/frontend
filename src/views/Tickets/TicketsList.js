@@ -115,7 +115,7 @@ const TicketsList = ({
           <Grid className={classes.tickets} container spacing={3}>
             {tickets.map((data, index) => (
               <Grid item key={index} lg={12} md={12} xs={12}>
-                <TicketsCard data={data} />
+                <TicketsCard data={data} isTrip={false} />
               </Grid>
             ))}
           </Grid>

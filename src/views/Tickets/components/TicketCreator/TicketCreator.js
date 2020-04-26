@@ -22,6 +22,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { addTicket } from '../../../../redux/ticketsReducer';
 import { createTicket } from '../../../../actions/tickets/createTicket';
+import Contact from './Contact';
 
 const useStyles = makeStyles({
   root: {},
@@ -68,20 +69,36 @@ const useStyles = makeStyles({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-
-const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
+//TODO (react/no-multi-comp disable
+const TicketCreator = ({
+  userObject,
+  addTicketAction,
+  createTicketAction,
+  isTrip
+}) => {
   const classes = useStyles();
+  const tripValues = {
+    firstName: '',
+    lastName: '',
+    contact: '',
+    subject: '',
+    numberOfPeople: 10,
+    destination: '',
+    dateAndTime: new Date().toLocaleString(),
+    content: ''
+  };
+  const ticketValues = {
+    firstName: '',
+    lastName: '',
+    contact: '',
+    subject: '',
+    dateAndTime: new Date().toLocaleString(),
+    content: ''
+  };
+
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {
-      firstName: '',
-      lastName: '',
-      subject: '',
-      numberOfPeople: 10,
-      destination: '',
-      dateAndTime: new Date().toLocaleString(),
-      content: ''
-    },
+    values: isTrip ? tripValues : ticketValues,
     touched: {}
   });
 
@@ -115,15 +132,7 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
     setOpen(false);
     setFormState({
       ...formState,
-      values: {
-        firstName: userObject.firstName,
-        lastName: userObject.lastName,
-        subject: '',
-        numberOfPeople: 10,
-        destination: '',
-        dateAndTime: new Date().toLocaleString(),
-        content: ''
-      },
+      values: isTrip ? tripValues : ticketValues,
       isValid: false
     });
   };
@@ -135,16 +144,19 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
         { content: JSON.stringify(formState.values) },
         token
       );
-      const res = await response.json();
-      console.log(res);
+      // const res = await response.json();
+      // console.log(res);
+      // const { id } = res;
+
       if (response.status === 200) {
-        // Set temp ticket wit content only to render immediately
+        // Set temp ticket with content only to render immediately
         // and when the user refresh the page it will replaces
         // temporary object with normal one
         const ticketTempObject = {
           ticket: {
             content: formState.values
-          }
+          },
+          comments: []
         };
         addTicketAction(ticketTempObject);
       } else {
@@ -154,7 +166,8 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
   };
 
   const handleSend = () => {
-    createTicket().catch(e => console.error(e.message));
+    console.log(formState.values);
+    // createTicket().catch(e => console.error(e.message));
     handleClose();
   };
 
@@ -169,7 +182,9 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
         ...formState.touched,
         [event.target.name]: true
       },
-      isValid: Object.keys(formState.touched).length === 3
+      // When the prop isTrip is available we should
+      // check if 3 inputs are no empty 2 otherwise
+      isValid: Object.keys(formState.touched).length === (isTrip ? 3 : 2)
     });
   };
 
@@ -204,58 +219,65 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
               />
             </div>
             <div className={classes.row}>
-              <TextField
-                label="Destination"
-                name="destination"
-                value={formState.values.destination}
-                className={classes.destination}
-                onChange={handleChanged}
-              />
+              <Contact ticket={formState} setTicket={setFormState} />
             </div>
-            <div className={classes.row}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                <Grid container>
-                  <Grid
-                    item
-                    xs={12}
-                    lg={6}
-                    container
-                    className={'MuiGrid-justify-xs-center'}>
-                    <KeyboardDatePicker
-                      margin="normal"
-                      id="date-picker-dialog"
-                      label="Date picker dialog"
-                      format="MM/dd/yyyy"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change date'
-                      }}
-                    />
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    lg={6}
-                    container
-                    className={'MuiGrid-justify-xs-center'}>
-                    <KeyboardTimePicker
-                      margin="normal"
-                      id="time-picker"
-                      label="Time picker"
-                      value={selectedDate}
-                      onChange={handleDateChange}
-                      KeyboardButtonProps={{
-                        'aria-label': 'change time'
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-              </MuiPickersUtilsProvider>
-            </div>
-            <div className={classes.row}>
-              <SliderWrapper ticket={formState} setTicket={setFormState} />
-            </div>
+            {isTrip && (
+              <>
+                <div className={classes.row}>
+                  <TextField
+                    label="Destination"
+                    name="destination"
+                    value={formState.values.destination}
+                    className={classes.destination}
+                    onChange={handleChanged}
+                  />
+                </div>
+                <div className={classes.row}>
+                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                    <Grid container>
+                      <Grid
+                        item
+                        xs={12}
+                        lg={6}
+                        container
+                        className={'MuiGrid-justify-xs-center'}>
+                        <KeyboardDatePicker
+                          margin="normal"
+                          id="date-picker-dialog"
+                          label="Date picker dialog"
+                          format="MM/dd/yyyy"
+                          value={selectedDate}
+                          onChange={handleDateChange}
+                          KeyboardButtonProps={{
+                            'aria-label': 'change date'
+                          }}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={12}
+                        lg={6}
+                        container
+                        className={'MuiGrid-justify-xs-center'}>
+                        <KeyboardTimePicker
+                          margin="normal"
+                          id="time-picker"
+                          label="Time picker"
+                          value={selectedDate}
+                          onChange={handleDateChange}
+                          KeyboardButtonProps={{
+                            'aria-label': 'change time'
+                          }}
+                        />
+                      </Grid>
+                    </Grid>
+                  </MuiPickersUtilsProvider>
+                </div>
+                <div className={classes.row}>
+                  <SliderWrapper ticket={formState} setTicket={setFormState} />
+                </div>
+              </>
+            )}
             <div className={classes.row}>
               <TextField
                 className={classes.additionalQuestions}
@@ -292,6 +314,7 @@ const TicketCreator = ({ userObject, addTicketAction, createTicketAction }) => {
 TicketCreator.propTypes = {
   addTicketAction: PropTypes.func,
   createTicketAction: PropTypes.func,
+  isTrip: PropTypes.bool,
   userObject: PropTypes.object
 };
 

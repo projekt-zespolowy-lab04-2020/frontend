@@ -38,7 +38,7 @@ const TicketsToolbar = props => {
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
-        <TicketCreator />
+        <TicketCreator isTrip={false} />
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
