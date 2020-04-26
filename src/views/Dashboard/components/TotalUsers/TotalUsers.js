@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { Card, CardContent, Grid, Typography, Avatar, Button, CardActions } from '@material-ui/core';
+import { Card, CardContent, Grid, Typography, Avatar, CircularProgress } from '@material-ui/core';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import PeopleIcon from '@material-ui/icons/PeopleOutlined';
-import { getUsers } from '../../../../actions/get-users';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,34 +41,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TotalUsers = props => {
-  const { className, getUsersAction, ...rest } = props;
-
-  const [users, setUsers] = useState(0);
-
-  // @TODO: extract code responsible for http request to higher component 
-  //  and pass number to this component as props
-  const getUsers = async () => {
-    const token = localStorage.getItem('jwtToken');
-
-    if (token) {
-      const response = getUsersAction(token);
-
-      // Need to be admin in order to get 200 from /users
-      if (response.status === 200) {
-        console.log(response);
-        setUsers(response.length);
-      } else {
-        throw new Error('Error during getting all users!');
-      }
-    }
-  }
-
-  const getUserNumber = () => {
-    getUsers().catch(err => console.log(err.message));
-  };
-
-  useEffect(() => getUserNumber());
-
+  const { className, totalUsers, ...rest } = props;
   const classes = useStyles();
 
   return (
@@ -93,7 +63,10 @@ const TotalUsers = props => {
             >
               TOTAL USERS
             </Typography>
-            <Typography variant="h3">{users}</Typography>
+            { !!totalUsers ? 
+              <Typography variant="h3">{totalUsers}</Typography> :
+              <CircularProgress />
+            }      
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -123,9 +96,7 @@ const TotalUsers = props => {
 
 TotalUsers.propTypes = {
   className: PropTypes.string,
-  getUsersAction: PropTypes.func
+  totalUsers: PropTypes.number
 };
 
-export default connect(null, {
-  getUsersAction: getUsers 
-})(withRouter(TotalUsers));
+export default TotalUsers;

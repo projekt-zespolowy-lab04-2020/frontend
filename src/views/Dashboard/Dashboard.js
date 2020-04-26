@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
-
+import PropTypes from 'prop-types';
+import { getUsers } from 'actions/get-users';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import {
   Budget,
   TotalUsers,
@@ -17,8 +20,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = () => {
+const Dashboard = props => {
   const classes = useStyles();
+  const { getUsersAction } = props;
+
+  const [usersCount, setUsersCount] = useState(null);
+
+  const getUsers = async () => {
+    const token = localStorage.getItem('jwtToken');
+
+    if (token) {
+      const response = await getUsersAction(token);
+
+      // Need to be admin in order to get 200 from /users
+      if (response.status === 200) {
+        const users = await response.json();
+        setUsersCount(users.length);
+      } else {
+        throw new Error('Error during getting all users!');
+      }
+    }
+  }
+
+  const getUserNumber = () => {
+    getUsers().catch(err => console.log(err.message));
+  };
+
+  useEffect(getUserNumber, []);
 
   return (
     <div className={classes.root}>
@@ -27,7 +55,7 @@ const Dashboard = () => {
           <Budget />
         </Grid>
         <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TotalUsers />
+          <TotalUsers totalUsers={usersCount} />
         </Grid>
         <Grid item lg={3} sm={6} xl={3} xs={12}>
           <TasksProgress />
@@ -46,4 +74,10 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+TotalUsers.propTypes = {
+  getUsersAction: PropTypes.func
+};
+
+export default connect(null, {
+  getUsersAction: getUsers 
+})(withRouter(Dashboard));
