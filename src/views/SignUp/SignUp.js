@@ -205,8 +205,6 @@ const SignUp = ({ history, registerUserAction }) => {
 
     const response = await registerUserAction(dataToSend);
     const user = await response.json();
-    console.log(response);
-    console.log(user);
     if (response.status === 400) {
       const errors = validate(formState.values, schema) || {};
       const { message } = user;

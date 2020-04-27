@@ -35,7 +35,7 @@ const Routes = () => {
         component={TicketsList}
         exact
         layout={MainLayout}
-        path="/tickets"
+        path="/support"
       />
       <RouteWithLayout
         component={AccountView}

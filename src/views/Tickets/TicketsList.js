@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
@@ -9,7 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { ADMIN } from '../../helpers/types';
 import { getTickets } from '../../actions/tickets/getTickets';
 import { getTicketByID } from '../../actions/tickets/getTicketByID';
-import { addTicket } from '../../redux/ticketsReducer';
+import { addTicket, clearTickets } from '../../redux/ticketsReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,10 +37,10 @@ const TicketsList = ({
   ticketsObject,
   getTicketsAction,
   addTicketAction,
-  getTicketByIDAction
+  getTicketByIDAction,
+  clearTicketsAction
 }) => {
   const classes = useStyles();
-  const [tickets, setTickets] = useState([]);
 
   const getTicketAsync = async (ID, token) => {
     const response = await getTicketByIDAction(ID, token);
@@ -69,9 +69,16 @@ const TicketsList = ({
 
       if (response.status === 200) {
         getAllUserTickets(res, token)
+          .then(tickets =>
+            tickets.filter(obj => {
+              const { ticket } = obj;
+              const { closed } = ticket;
+              return !closed;
+            })
+          )
           .then(tickets => {
-            // console.log(tickets);
-            tickets.map(ticketObject => {
+            clearTicketsAction();
+            tickets.forEach(ticketObject => {
               const { ticket } = ticketObject;
               const { content } = ticket;
               const ticketTempObject = {
@@ -81,7 +88,6 @@ const TicketsList = ({
                   content: JSON.parse(content)
                 }
               };
-
               addTicketAction(ticketTempObject);
             });
           })
@@ -91,10 +97,6 @@ const TicketsList = ({
       }
     }
   };
-
-  useEffect(() => {
-    setTickets(ticketsObject);
-  }, [ticketsObject]);
 
   const isAdmin = roles => roles.includes(ADMIN);
 
@@ -113,7 +115,7 @@ const TicketsList = ({
       {
         <div className={classes.content}>
           <Grid className={classes.tickets} container spacing={3}>
-            {tickets.map((data, index) => (
+            {ticketsObject.map((data, index) => (
               <Grid item key={index} lg={12} md={12} xs={12}>
                 <TicketsCard data={data} isTrip={false} />
               </Grid>
@@ -127,6 +129,7 @@ const TicketsList = ({
 
 TicketsList.propTypes = {
   addTicketAction: PropTypes.func,
+  clearTicketsAction: PropTypes.func,
   getTicketByIDAction: PropTypes.func,
   getTicketsAction: PropTypes.func,
   ticketsObject: PropTypes.arrayOf(PropTypes.object),
@@ -145,5 +148,6 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getTicketsAction: getTickets,
   getTicketByIDAction: getTicketByID,
-  addTicketAction: addTicket
+  addTicketAction: addTicket,
+  clearTicketsAction: clearTickets
 })(withRouter(TicketsList));

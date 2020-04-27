@@ -12,12 +12,12 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import TicketsCardComments from './TicketsCardComments';
 import PropTypes from 'prop-types';
 import PublicIcon from '@material-ui/icons/Public';
 import TodayIcon from '@material-ui/icons/Today';
 import PeopleIcon from '@material-ui/icons/People';
+import CloseEditButton from './CloseEditButton';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -60,7 +60,8 @@ const TicketsCard = ({ data, isTrip }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const { comments, ticket } = data;
-  const { content } = ticket;
+  const { content, id } = ticket;
+  const { contact } = content;
   const author = {
     firstName: content.firstName,
     lastName: content.lastName
@@ -78,11 +79,7 @@ const TicketsCard = ({ data, isTrip }) => {
             {`${content.firstName[0]}${content.lastName[0]}`}
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
+        action={<CloseEditButton id={id} />}
         title={`${content.firstName} ${content.lastName}`}
         subheader={new Date().toLocaleString()}
       />
@@ -139,6 +136,7 @@ const TicketsCard = ({ data, isTrip }) => {
           id={ticket.id}
           commentsObj={comments}
           author={author}
+          contact={contact}
         />
       </Collapse>
     </Card>

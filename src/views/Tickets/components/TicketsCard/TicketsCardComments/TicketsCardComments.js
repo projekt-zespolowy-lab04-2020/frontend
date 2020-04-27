@@ -23,11 +23,15 @@ const useStyles = makeStyles({
     background: '#F4F6F8',
     borderRadius: '5px',
     padding: '20px 20px',
-    marginTop: '15px'
+    marginBottom: '15px'
   },
   author: {
     fontWeight: 600,
     display: 'block',
+    marginBottom: '10px'
+  },
+  contact: {
+    fontWeight: 600,
     marginBottom: '10px'
   },
   footerComments: {
@@ -39,6 +43,10 @@ const useStyles = makeStyles({
   },
   commentsInput: {
     background: '#F4F6F8'
+  },
+  commentsText: {
+    fontWeight: 600,
+    marginLeft: 3
   }
 });
 
@@ -47,7 +55,8 @@ const TicketsCardComments = ({
   commentsObj,
   createCommentsAction,
   id,
-  userObject
+  userObject,
+  contact
 }) => {
   const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
@@ -87,6 +96,7 @@ const TicketsCardComments = ({
           }
         ]);
       }
+
       createComments().catch(e => console.error(e.message));
       setFormValue('');
       event.preventDefault();
@@ -96,11 +106,19 @@ const TicketsCardComments = ({
   return (
     <CardContent>
       <>
+        <Typography className={classes.comments}>
+          <span className={classes.contact}>Contact: </span>
+          {contact}
+        </Typography>
+        <Typography color={'primary'}>
+          <span className={classes.commentsText}>Comments</span>
+        </Typography>
         {comments.map((comment, index) => (
           <div key={index}>
             <Typography className={classes.comments}>
               <span className={classes.author}>
                 {`${author.firstName} ${author.lastName}`}
+                {/*{`${comment.author}`}*/}
                 <span className={classes.date}>
                   {' '}
                   {new Date().toLocaleDateString()}
@@ -132,6 +150,7 @@ const TicketsCardComments = ({
 TicketsCardComments.propTypes = {
   author: PropTypes.object,
   commentsObj: PropTypes.arrayOf(PropTypes.object),
+  contact: PropTypes.string,
   createCommentsAction: PropTypes.func,
   id: PropTypes.number,
   userObject: PropTypes.object

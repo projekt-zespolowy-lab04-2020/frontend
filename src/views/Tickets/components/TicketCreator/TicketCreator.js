@@ -20,9 +20,17 @@ import SliderWrapper from './SliderWrapper';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { addTicket } from '../../../../redux/ticketsReducer';
+import {
+  addTicket,
+  changeTicketInPlace
+} from '../../../../redux/ticketsReducer';
 import { createTicket } from '../../../../actions/tickets/createTicket';
 import Contact from './Contact';
+import {
+  toggleEditMode,
+  toggleOpen
+} from '../../../../redux/ticketCreatorReducer';
+import { patchTicket } from '../../../../actions/tickets/patchTicket';
 
 const useStyles = makeStyles({
   root: {},
@@ -74,7 +82,13 @@ const TicketCreator = ({
   userObject,
   addTicketAction,
   createTicketAction,
-  isTrip
+  isTrip,
+  ticketsObj,
+  ticketCreatorObj,
+  toggleOpenAction,
+  toggleEditModeAction,
+  patchTicketAction,
+  changeTicketInPlaceAction
 }) => {
   const classes = useStyles();
   const tripValues = {
@@ -106,6 +120,54 @@ const TicketCreator = ({
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
+  useEffect(() => {
+    setOpen(ticketCreatorObj.isOpen);
+    const { ticketIdToEdit } = ticketCreatorObj;
+    const editedTempTicket = ticketsObj.find(obj => {
+      const { ticket } = obj;
+      const { id } = ticket;
+      return id === ticketIdToEdit ? obj : null;
+    });
+    const tripValuesTemp = {
+      firstName: userObject.firstName,
+      lastName: userObject.lastName,
+      contact: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.contact
+        : '',
+      subject: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.subject
+        : '',
+      numberOfPeople: 10,
+      destination: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.destination
+        : '',
+      dateAndTime: new Date().toLocaleString(),
+      content: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.content
+        : ''
+    };
+
+    const ticketValuesTemp = {
+      firstName: userObject.firstName,
+      lastName: userObject.lastName,
+      contact: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.contact
+        : '',
+      subject: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.subject
+        : '',
+      dateAndTime: new Date().toLocaleString(),
+      content: ticketCreatorObj.isEditMode
+        ? editedTempTicket.ticket.content.content
+        : ''
+    };
+
+    setFormState({
+      ...formState,
+      values: isTrip ? tripValuesTemp : ticketValuesTemp
+    });
+  }, [ticketCreatorObj]);
+
   const handleDateChange = date => {
     setSelectedDate(date);
     setFormState({
@@ -126,11 +188,12 @@ const TicketCreator = ({
   }, [userObject]);
 
   const handleClickOpen = () => {
-    setOpen(true);
+    toggleOpenAction(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    toggleOpenAction(false);
+    toggleEditModeAction(false);
     setFormState({
       ...formState,
       values: isTrip ? tripValues : ticketValues,
@@ -147,7 +210,6 @@ const TicketCreator = ({
         token
       );
       const res = await response.json();
-      console.log(res);
       const { id } = res;
 
       if (response.status === 200) {
@@ -173,6 +235,46 @@ const TicketCreator = ({
     handleClose();
   };
 
+  const editAndSend = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const response = await patchTicketAction(
+        { content: JSON.stringify(formState.values), closed: false },
+        ticketCreatorObj.ticketIdToEdit,
+        token
+      );
+      const { content } = await response.json();
+
+      const editedTempTicket = ticketsObj.find(obj => {
+        const { ticket } = obj;
+        const { id } = ticket;
+        return id === ticketCreatorObj.ticketIdToEdit ? obj : null;
+      });
+
+      const patchedTicket = {
+        ...editedTempTicket,
+        ticket: {
+          ...editedTempTicket.ticket,
+          content: JSON.parse(content)
+        }
+      };
+
+      if (response.status === 200) {
+        changeTicketInPlaceAction({
+          tempId: ticketCreatorObj.ticketIdToEdit,
+          patchedTicket
+        });
+      } else {
+        throw new Error('Error during editing ticket.');
+      }
+    }
+  };
+
+  const handleEditAndSend = () => {
+    editAndSend().catch(e => console.error(e.message));
+    handleClose();
+  };
+
   const handleChanged = event => {
     setFormState({
       ...formState,
@@ -193,7 +295,7 @@ const TicketCreator = ({
   return (
     <div>
       <Button variant="contained" color="primary" onClick={handleClickOpen}>
-        create new ticket
+        create new support ticket
       </Button>
       <Dialog
         className={classes.root}
@@ -205,7 +307,7 @@ const TicketCreator = ({
         aria-describedby="alert-dialog-slide-description">
         <div className={classes.row}>
           <DialogTitle className={classes.title} id="alert-dialog-slide-title">
-            Ticket creator
+            Ticket creator {ticketCreatorObj.isEditMode ? '(Edit Mode)' : ''}
             <CloseIcon className={classes.closeIcon} onClick={handleClose} />
           </DialogTitle>
         </div>
@@ -225,6 +327,7 @@ const TicketCreator = ({
                 ticket={formState}
                 setTicket={setFormState}
                 open={open}
+                isEditMode={ticketCreatorObj.isEditMode}
               />
             </div>
             {isTrip && (
@@ -306,9 +409,11 @@ const TicketCreator = ({
             <Button
               disabled={!formState.isValid || !formState.contactValid}
               color="primary"
-              onClick={handleSend}
+              onClick={
+                ticketCreatorObj.isEditMode ? handleEditAndSend : handleSend
+              }
               variant="contained">
-              Create and send
+              {ticketCreatorObj.isEditMode ? 'Edit' : 'Create'} and send
             </Button>
           </DialogActions>
         </div>
@@ -319,20 +424,32 @@ const TicketCreator = ({
 
 TicketCreator.propTypes = {
   addTicketAction: PropTypes.func,
+  changeTicketInPlaceAction: PropTypes.func,
   createTicketAction: PropTypes.func,
   isTrip: PropTypes.bool,
+  patchTicketAction: PropTypes.func,
+  ticketCreatorObj: PropTypes.object,
+  ticketsObj: PropTypes.arrayOf(PropTypes.object),
+  toggleEditModeAction: PropTypes.func,
+  toggleOpenAction: PropTypes.func,
   userObject: PropTypes.object
 };
 
 const mapStateToProps = state => {
-  const { user } = state;
+  const { user, ticketCreator, tickets } = state;
 
   return {
-    userObject: user
+    userObject: user,
+    ticketsObj: tickets,
+    ticketCreatorObj: ticketCreator
   };
 };
 
 export default connect(mapStateToProps, {
   addTicketAction: addTicket,
-  createTicketAction: createTicket
+  createTicketAction: createTicket,
+  toggleOpenAction: toggleOpen,
+  toggleEditModeAction: toggleEditMode,
+  patchTicketAction: patchTicket,
+  changeTicketInPlaceAction: changeTicketInPlace
 })(withRouter(TicketCreator));

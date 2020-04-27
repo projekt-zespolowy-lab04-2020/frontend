@@ -49,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Contact = ({ ticket, setTicket, open }) => {
+const Contact = ({ ticket, setTicket, open, isEditMode }) => {
   const classes = useStyles();
   const [option, setOption] = useState('Email');
   const [formState, setFormState] = useState({
@@ -63,7 +63,9 @@ const Contact = ({ ticket, setTicket, open }) => {
     setFormState({
       isValid: false,
       option: '',
-      value: '',
+      value: isEditMode
+        ? ticket.values.contact.substring(7, ticket.values.contact.length)
+        : '',
       errorMessage: ''
     });
     setOption('Email');
@@ -159,6 +161,8 @@ const Contact = ({ ticket, setTicket, open }) => {
 };
 
 Contact.propTypes = {
+  isEditMode: PropTypes.bool,
+  open: PropTypes.bool,
   setTicket: PropTypes.func,
   ticket: PropTypes.object
 };
