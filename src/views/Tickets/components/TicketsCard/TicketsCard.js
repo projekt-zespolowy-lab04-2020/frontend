@@ -86,14 +86,15 @@ const TicketsCard = ({ data, isTrip }) => {
         title={`${content.firstName} ${content.lastName}`}
         subheader={new Date().toLocaleString()}
       />
+
       <CardContent>
+        <div className={classes.title}>
+          <Typography variant="h4" color="textSecondary" component="p">
+            {content.subject}
+          </Typography>
+        </div>
         {isTrip && (
           <>
-            <div className={classes.title}>
-              <Typography variant="h4" color="textSecondary" component="p">
-                {content.subject}
-              </Typography>
-            </div>
             <div className={classes.tripDetails}>
               <PublicIcon className={classes.icons} color="primary" />
               <Typography variant="h6" color="textSecondary" component="p">
@@ -115,7 +116,7 @@ const TicketsCard = ({ data, isTrip }) => {
             </div>
           </>
         )}
-        <Typography variant="body2" color="textSecondary" component="p">
+        <Typography variant="body1" color="textSecondary" component="p">
           {content.content}
         </Typography>
       </CardContent>

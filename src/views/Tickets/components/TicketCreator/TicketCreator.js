@@ -78,8 +78,8 @@ const TicketCreator = ({
 }) => {
   const classes = useStyles();
   const tripValues = {
-    firstName: '',
-    lastName: '',
+    firstName: userObject.firstName,
+    lastName: userObject.lastName,
     contact: '',
     subject: '',
     numberOfPeople: 10,
@@ -88,8 +88,8 @@ const TicketCreator = ({
     content: ''
   };
   const ticketValues = {
-    firstName: '',
-    lastName: '',
+    firstName: userObject.firstName,
+    lastName: userObject.lastName,
     contact: '',
     subject: '',
     dateAndTime: new Date().toLocaleString(),
@@ -98,6 +98,7 @@ const TicketCreator = ({
 
   const [formState, setFormState] = useState({
     isValid: false,
+    contactValid: false,
     values: isTrip ? tripValues : ticketValues,
     touched: {}
   });
@@ -133,7 +134,8 @@ const TicketCreator = ({
     setFormState({
       ...formState,
       values: isTrip ? tripValues : ticketValues,
-      isValid: false
+      isValid: false,
+      contactValid: false
     });
   };
 
@@ -144,9 +146,9 @@ const TicketCreator = ({
         { content: JSON.stringify(formState.values) },
         token
       );
-      // const res = await response.json();
-      // console.log(res);
-      // const { id } = res;
+      const res = await response.json();
+      console.log(res);
+      const { id } = res;
 
       if (response.status === 200) {
         // Set temp ticket with content only to render immediately
@@ -154,6 +156,7 @@ const TicketCreator = ({
         // temporary object with normal one
         const ticketTempObject = {
           ticket: {
+            id,
             content: formState.values
           },
           comments: []
@@ -166,8 +169,7 @@ const TicketCreator = ({
   };
 
   const handleSend = () => {
-    console.log(formState.values);
-    // createTicket().catch(e => console.error(e.message));
+    createTicket().catch(e => console.error(e.message));
     handleClose();
   };
 
@@ -219,7 +221,11 @@ const TicketCreator = ({
               />
             </div>
             <div className={classes.row}>
-              <Contact ticket={formState} setTicket={setFormState} />
+              <Contact
+                ticket={formState}
+                setTicket={setFormState}
+                open={open}
+              />
             </div>
             {isTrip && (
               <>
@@ -298,7 +304,7 @@ const TicketCreator = ({
               Close
             </Button>
             <Button
-              disabled={!formState.isValid}
+              disabled={!formState.isValid || !formState.contactValid}
               color="primary"
               onClick={handleSend}
               variant="contained">

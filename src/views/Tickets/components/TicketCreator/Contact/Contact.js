@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -7,7 +7,6 @@ import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import TicketsCard from '../../TicketsCard';
 
 const BootstrapInput = withStyles(theme => ({
   root: {
@@ -50,7 +49,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Contact = ({ ticket, setTicket }) => {
+const Contact = ({ ticket, setTicket, open }) => {
   const classes = useStyles();
   const [option, setOption] = useState('Email');
   const [formState, setFormState] = useState({
@@ -60,6 +59,16 @@ const Contact = ({ ticket, setTicket }) => {
     errorMessage: ''
   });
 
+  useEffect(() => {
+    setFormState({
+      isValid: false,
+      option: '',
+      value: '',
+      errorMessage: ''
+    });
+    setOption('Email');
+  }, [open]);
+
   const validate = (value, option) => {
     return option === 'Email' ? isEmailValid(value) : isPhoneValid(value);
   };
@@ -67,7 +76,6 @@ const Contact = ({ ticket, setTicket }) => {
   const handleChange = event => {
     setOption(event.target.value);
     const tempIsValid = validate(formState.value, event.target.value);
-    console.log(tempIsValid);
 
     setFormState({
       ...formState,
@@ -79,7 +87,7 @@ const Contact = ({ ticket, setTicket }) => {
 
     setTicket({
       ...ticket,
-      contact: `${event.target.value}: ${formState.value}`
+      contactValid: tempIsValid
     });
   };
 
@@ -108,7 +116,11 @@ const Contact = ({ ticket, setTicket }) => {
 
     setTicket({
       ...ticket,
-      contact: `${option}: ${formState.value}`
+      contactValid: tempIsValid,
+      values: {
+        ...ticket.values,
+        contact: `${option}: ${val}`
+      }
     });
   };
 
@@ -125,6 +137,7 @@ const Contact = ({ ticket, setTicket }) => {
           {formState.errorMessage}
         </InputLabel>
         <BootstrapInput
+          value={formState.value}
           id="demo-customized-textbox"
           onChange={handleChangeInput}
         />
@@ -145,7 +158,7 @@ const Contact = ({ ticket, setTicket }) => {
   );
 };
 
-TicketsCard.propTypes = {
+Contact.propTypes = {
   setTicket: PropTypes.func,
   ticket: PropTypes.object
 };
