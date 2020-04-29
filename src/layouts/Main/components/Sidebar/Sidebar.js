@@ -71,8 +71,9 @@ const Sidebar = props => {
     },
     {
       title: 'LogOut',
-      href: '/logout',
-      icon: <InputIcon />
+      href: '/sign-in',
+      icon: <InputIcon />,
+      onClick: 'logout'
     }
   ];
 
