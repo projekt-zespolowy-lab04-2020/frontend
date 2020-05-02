@@ -51,11 +51,9 @@ const useStyles = makeStyles({
 });
 
 const TicketsCardComments = ({
-  author,
   commentsObj,
   createCommentsAction,
   id,
-  userObject,
   contact
 }) => {
   const [comments, setComments] = useState([]);
@@ -74,11 +72,21 @@ const TicketsCardComments = ({
     const token = localStorage.getItem('jwtToken');
     if (token) {
       const content = {
-        author: `${userObject.firstName} ${userObject.lastName}`,
         content: formValue
       };
 
       const response = await createCommentsAction(content, id, token);
+      const res = await response.json();
+      const { author } = res;
+
+      setComments([
+        ...comments,
+        {
+          author: author,
+          content: formValue
+        }
+      ]);
+
       if (response.status !== 200) {
         throw new Error('Error during creating comments tickets.');
       }
@@ -87,16 +95,6 @@ const TicketsCardComments = ({
 
   const handleKeyPress = event => {
     if (event.key === 'Enter') {
-      if (formValue) {
-        setComments([
-          ...comments,
-          {
-            author: `${userObject.firstName} ${userObject.lastName}`,
-            content: formValue
-          }
-        ]);
-      }
-
       createComments().catch(e => console.error(e.message));
       setFormValue('');
       event.preventDefault();
@@ -117,8 +115,7 @@ const TicketsCardComments = ({
           <div key={index}>
             <Typography className={classes.comments}>
               <span className={classes.author}>
-                {`${author.firstName} ${author.lastName}`}
-                {/*{`${comment.author}`}*/}
+                {`${comment.author.firstName} ${comment.author.firstName}`}
                 <span className={classes.date}>
                   {' '}
                   {new Date().toLocaleDateString()}
@@ -148,22 +145,12 @@ const TicketsCardComments = ({
 };
 
 TicketsCardComments.propTypes = {
-  author: PropTypes.object,
   commentsObj: PropTypes.arrayOf(PropTypes.object),
   contact: PropTypes.string,
   createCommentsAction: PropTypes.func,
-  id: PropTypes.number,
-  userObject: PropTypes.object
+  id: PropTypes.number
 };
 
-const mapStateToProps = state => {
-  const { user } = state;
-
-  return {
-    userObject: user
-  };
-};
-
-export default connect(mapStateToProps, {
+export default connect(null, {
   createCommentsAction: createComments
 })(withRouter(TicketsCardComments));

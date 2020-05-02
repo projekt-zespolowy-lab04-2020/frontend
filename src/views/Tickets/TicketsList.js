@@ -9,7 +9,12 @@ import { withRouter } from 'react-router-dom';
 import { ADMIN } from '../../helpers/types';
 import { getTickets } from '../../actions/tickets/getTickets';
 import { getTicketByID } from '../../actions/tickets/getTicketByID';
-import { addTicket, clearTickets } from '../../redux/ticketsReducer';
+import {
+  addTicket,
+  clearTickets,
+  toggleLoadedFromDB
+} from '../../redux/ticketsReducer';
+import Spinner from '../../components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +43,8 @@ const TicketsList = ({
   getTicketsAction,
   addTicketAction,
   getTicketByIDAction,
-  clearTicketsAction
+  clearTicketsAction,
+  toggleLoadedFromDBAction
 }) => {
   const classes = useStyles();
 
@@ -112,14 +118,19 @@ const TicketsList = ({
   return (
     <div className={classes.root}>
       <TicketsToolbar />
+      <Spinner />
       {
         <div className={classes.content}>
           <Grid className={classes.tickets} container spacing={3}>
-            {ticketsObject.map((data, index) => (
-              <Grid item key={index} lg={12} md={12} xs={12}>
-                <TicketsCard data={data} isTrip={false} />
-              </Grid>
-            ))}
+            {ticketsObject.tickets.map((data, index) => {
+              if (index === ticketsObject.tickets.length - 1)
+                toggleLoadedFromDBAction();
+              return (
+                <Grid item key={index} lg={12} md={12} xs={12}>
+                  <TicketsCard data={data} isTrip={false} />
+                </Grid>
+              );
+            })}
           </Grid>
         </div>
       }
@@ -132,7 +143,8 @@ TicketsList.propTypes = {
   clearTicketsAction: PropTypes.func,
   getTicketByIDAction: PropTypes.func,
   getTicketsAction: PropTypes.func,
-  ticketsObject: PropTypes.arrayOf(PropTypes.object),
+  ticketsObject: PropTypes.object,
+  toggleLoadedFromDBAction: PropTypes.func,
   userObject: PropTypes.object
 };
 
@@ -149,5 +161,6 @@ export default connect(mapStateToProps, {
   getTicketsAction: getTickets,
   getTicketByIDAction: getTicketByID,
   addTicketAction: addTicket,
-  clearTicketsAction: clearTickets
+  clearTicketsAction: clearTickets,
+  toggleLoadedFromDBAction: toggleLoadedFromDB
 })(withRouter(TicketsList));

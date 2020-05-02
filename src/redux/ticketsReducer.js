@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = [];
+const initialState = {
+  loadedFromDB: false,
+  tickets: []
+};
 
 const ticketsSlice = createSlice({
   name: 'Tickets',
@@ -9,20 +12,26 @@ const ticketsSlice = createSlice({
     getTickets(state) {
       return state;
     },
-    clearTickets() {
-      return [];
+    clearTickets(state) {
+      return {
+        ...state,
+        tickets: []
+      };
     },
     addTicket(state, action) {
-      const tempTickets = [...state];
+      const tempTickets = [...state.tickets];
       tempTickets.push(action.payload);
 
-      return tempTickets;
+      return {
+        ...state,
+        tickets: tempTickets
+      };
     },
     changeTicketInPlace(state, action) {
       const { tempId, patchedTicket } = action.payload;
-      const tempState = [...state];
+      const tempState = [...state.tickets];
 
-      const index = state.findIndex(obj => {
+      const index = state.tickets.findIndex(obj => {
         const { ticket } = obj;
         const { id } = ticket;
 
@@ -30,16 +39,28 @@ const ticketsSlice = createSlice({
       });
       tempState[index] = patchedTicket;
 
-      return tempState;
+      return {
+        ...state,
+        tickets: tempState
+      };
     },
     deleteTicketById(state, action) {
       const { tempId } = action.payload;
 
-      return state.filter(obj => {
-        const { ticket } = obj;
-        const { id } = ticket;
-        return tempId !== id;
-      });
+      return {
+        ...state,
+        tickets: state.tickets.filter(obj => {
+          const { ticket } = obj;
+          const { id } = ticket;
+          return tempId !== id;
+        })
+      };
+    },
+    toggleLoadedFromDB(state) {
+      return {
+        ...state,
+        loadedFromDB: !state.loadedFromDB
+      };
     }
   }
 });
@@ -49,7 +70,8 @@ export const {
   clearTickets,
   addTicket,
   changeTicketInPlace,
-  deleteTicketById
+  deleteTicketById,
+  toggleLoadedFromDB
 } = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

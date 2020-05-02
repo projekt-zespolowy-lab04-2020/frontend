@@ -62,10 +62,6 @@ const TicketsCard = ({ data, isTrip }) => {
   const { comments, ticket } = data;
   const { content, id } = ticket;
   const { contact } = content;
-  const author = {
-    firstName: content.firstName,
-    lastName: content.lastName
-  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -135,7 +131,6 @@ const TicketsCard = ({ data, isTrip }) => {
         <TicketsCardComments
           id={ticket.id}
           commentsObj={comments}
-          author={author}
           contact={contact}
         />
       </Collapse>

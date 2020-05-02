@@ -123,7 +123,7 @@ const TicketCreator = ({
   useEffect(() => {
     setOpen(ticketCreatorObj.isOpen);
     const { ticketIdToEdit } = ticketCreatorObj;
-    const editedTempTicket = ticketsObj.find(obj => {
+    const editedTempTicket = ticketsObj.tickets.find(obj => {
       const { ticket } = obj;
       const { id } = ticket;
       return id === ticketIdToEdit ? obj : null;
@@ -429,7 +429,7 @@ TicketCreator.propTypes = {
   isTrip: PropTypes.bool,
   patchTicketAction: PropTypes.func,
   ticketCreatorObj: PropTypes.object,
-  ticketsObj: PropTypes.arrayOf(PropTypes.object),
+  ticketsObj: PropTypes.object,
   toggleEditModeAction: PropTypes.func,
   toggleOpenAction: PropTypes.func,
   userObject: PropTypes.object
