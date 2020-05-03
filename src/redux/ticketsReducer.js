@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  loadedFromDB: false,
   tickets: []
 };
 
@@ -55,12 +54,6 @@ const ticketsSlice = createSlice({
           return tempId !== id;
         })
       };
-    },
-    toggleLoadedFromDB(state) {
-      return {
-        ...state,
-        loadedFromDB: !state.loadedFromDB
-      };
     }
   }
 });
@@ -70,8 +63,7 @@ export const {
   clearTickets,
   addTicket,
   changeTicketInPlace,
-  deleteTicketById,
-  toggleLoadedFromDB
+  deleteTicketById
 } = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

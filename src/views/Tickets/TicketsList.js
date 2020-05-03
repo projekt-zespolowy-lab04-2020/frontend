@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
@@ -9,11 +9,7 @@ import { withRouter } from 'react-router-dom';
 import { ADMIN } from '../../helpers/types';
 import { getTickets } from '../../actions/tickets/getTickets';
 import { getTicketByID } from '../../actions/tickets/getTicketByID';
-import {
-  addTicket,
-  clearTickets,
-  toggleLoadedFromDB
-} from '../../redux/ticketsReducer';
+import { addTicket, clearTickets } from '../../redux/ticketsReducer';
 import Spinner from '../../components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
@@ -43,8 +39,7 @@ const TicketsList = ({
   getTicketsAction,
   addTicketAction,
   getTicketByIDAction,
-  clearTicketsAction,
-  toggleLoadedFromDBAction
+  clearTicketsAction
 }) => {
   const classes = useStyles();
 
@@ -84,6 +79,7 @@ const TicketsList = ({
           )
           .then(tickets => {
             clearTicketsAction();
+
             tickets.forEach(ticketObject => {
               const { ticket } = ticketObject;
               const { content } = ticket;
@@ -118,22 +114,18 @@ const TicketsList = ({
   return (
     <div className={classes.root}>
       <TicketsToolbar />
-      <Spinner />
-      {
-        <div className={classes.content}>
-          <Grid className={classes.tickets} container spacing={3}>
-            {ticketsObject.tickets.map((data, index) => {
-              if (index === ticketsObject.tickets.length - 1)
-                toggleLoadedFromDBAction();
-              return (
-                <Grid item key={index} lg={12} md={12} xs={12}>
-                  <TicketsCard data={data} isTrip={false} />
-                </Grid>
-              );
-            })}
-          </Grid>
-        </div>
-      }
+      {!ticketsObject.tickets.length && <Spinner />}
+      <div className={classes.content}>
+        <Grid className={classes.tickets} container spacing={3}>
+          {ticketsObject.tickets.map((data, index) => {
+            return (
+              <Grid item key={index} lg={12} md={12} xs={12}>
+                <TicketsCard data={data} isTrip={false} />
+              </Grid>
+            );
+          })}
+        </Grid>
+      </div>
     </div>
   );
 };
@@ -161,6 +153,5 @@ export default connect(mapStateToProps, {
   getTicketsAction: getTickets,
   getTicketByIDAction: getTicketByID,
   addTicketAction: addTicket,
-  clearTicketsAction: clearTickets,
-  toggleLoadedFromDBAction: toggleLoadedFromDB
+  clearTicketsAction: clearTickets
 })(withRouter(TicketsList));
