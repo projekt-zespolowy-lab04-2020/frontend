@@ -30,11 +30,22 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsToolbar = props => {
-  const { className, ...rest } = props;
-
+const TicketsToolbar = ({ tickets, setSearchResults, className, ...rest }) => {
   const classes = useStyles();
 
+  const onSearchChange = event => {
+    const inputValue = event.target.value.toLowerCase();
+    const results = tickets.filter(obj => {
+      const {
+        ticket: {
+          content: { subject }
+        }
+      } = obj;
+      return subject.toLowerCase().includes(inputValue);
+    });
+
+    setSearchResults(results);
+  };
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
@@ -42,6 +53,7 @@ const TicketsToolbar = props => {
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
+          onChange={onSearchChange}
         />
       </div>
     </div>
@@ -49,7 +61,9 @@ const TicketsToolbar = props => {
 };
 
 TicketsToolbar.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  setSearchResults: PropTypes.func,
+  tickets: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default TicketsToolbar;

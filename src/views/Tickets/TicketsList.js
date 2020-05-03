@@ -42,6 +42,11 @@ const TicketsList = ({
   clearTicketsAction
 }) => {
   const classes = useStyles();
+  const [searchResults, setSearchResults] = useState([]);
+
+  useEffect(() => {
+    setSearchResults(ticketsObject.tickets);
+  }, [ticketsObject]);
 
   const getTicketAsync = async (ID, token) => {
     const response = await getTicketByIDAction(ID, token);
@@ -113,11 +118,14 @@ const TicketsList = ({
 
   return (
     <div className={classes.root}>
-      <TicketsToolbar />
-      {!ticketsObject.tickets.length && <Spinner />}
+      <TicketsToolbar
+        tickets={ticketsObject.tickets}
+        setSearchResults={setSearchResults}
+      />
+      {!searchResults.length && <Spinner />}
       <div className={classes.content}>
         <Grid className={classes.tickets} container spacing={3}>
-          {ticketsObject.tickets.map((data, index) => {
+          {searchResults.map((data, index) => {
             return (
               <Grid item key={index} lg={12} md={12} xs={12}>
                 <TicketsCard data={data} isTrip={false} />
