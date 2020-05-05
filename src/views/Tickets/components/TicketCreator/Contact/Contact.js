@@ -69,7 +69,7 @@ const Contact = ({ ticket, setTicket, open, isEditMode }) => {
       errorMessage: ''
     });
     setOption('Email');
-  }, [open]);
+  }, [open, isEditMode]);
 
   const validate = (value, option) => {
     return option === 'Email' ? isEmailValid(value) : isPhoneValid(value);

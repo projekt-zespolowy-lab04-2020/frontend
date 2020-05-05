@@ -245,7 +245,7 @@ const TicketCreator = ({
       );
       const { content } = await response.json();
 
-      const editedTempTicket = ticketsObj.find(obj => {
+      const editedTempTicket = ticketsObj.tickets.find(obj => {
         const { ticket } = obj;
         const { id } = ticket;
         return id === ticketCreatorObj.ticketIdToEdit ? obj : null;
