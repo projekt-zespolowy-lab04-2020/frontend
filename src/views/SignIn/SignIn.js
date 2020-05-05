@@ -112,7 +112,7 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(3)
   },
-  
+
   sugestion: {
     marginTop: theme.spacing(2)
   },
@@ -237,7 +237,7 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
                 <Typography className={classes.title} variant="h2">
                   Sign in
                 </Typography>
-               
+
                 <TextField
                   className={classes.textField}
                   error={hasError('email')}

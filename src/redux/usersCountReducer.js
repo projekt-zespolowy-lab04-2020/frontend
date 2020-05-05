@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = null;
 
@@ -10,7 +10,7 @@ const usersCountReducer = createSlice({
       return action.payload;
     }
   }
-})
+});
 
 export const { setUsersCount } = usersCountReducer.actions;
 

@@ -15,7 +15,6 @@ import {
 } from './components';
 import { setUsersCount } from '../../redux/usersCountReducer';
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(4)
@@ -40,7 +39,7 @@ const Dashboard = props => {
         throw new Error('Error during getting all users!');
       }
     }
-  }
+  };
 
   const getUserNumber = () => {
     if (!usersCount) {
@@ -83,8 +82,8 @@ TotalUsers.propTypes = {
 
 const mapStateToProps = state => {
   const { usersCount } = state;
-  return { usersCount }
-}
+  return { usersCount };
+};
 
 export default connect(mapStateToProps, {
   getUsersAction: getUsers,
