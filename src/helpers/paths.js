@@ -1,1 +1,1 @@
-export const baseURL = '/api-pre';
+export const baseURL = '/api';

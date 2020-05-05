@@ -15,7 +15,7 @@ import {
   Typography
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { registerUser } from '../../actions/sign-up';
+import { registerUser } from '../../actions/users/signUp';
 import { connect } from 'react-redux';
 import isEmpty from '../../helpers/isEmpty';
 
@@ -205,7 +205,6 @@ const SignUp = ({ history, registerUserAction }) => {
 
     const response = await registerUserAction(dataToSend);
     const user = await response.json();
-
     if (response.status === 400) {
       const errors = validate(formState.values, schema) || {};
       const { message } = user;
