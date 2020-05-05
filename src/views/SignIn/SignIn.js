@@ -14,7 +14,6 @@ import {
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
 import { connect } from 'react-redux';
 import { loginUser } from '../../actions/users/signIn';
 import { setCurrentUser } from '../../redux/authReducer';
@@ -113,12 +112,7 @@ const useStyles = makeStyles(theme => ({
   title: {
     marginTop: theme.spacing(3)
   },
-  socialButtons: {
-    marginTop: theme.spacing(3)
-  },
-  socialIcon: {
-    marginRight: theme.spacing(1)
-  },
+
   sugestion: {
     marginTop: theme.spacing(2)
   },
@@ -243,37 +237,7 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
                 <Typography className={classes.title} variant="h2">
                   Sign in
                 </Typography>
-                <Typography color="textSecondary" gutterBottom>
-                  Sign in with social media
-                </Typography>
-                <Grid className={classes.socialButtons} container spacing={2}>
-                  <Grid item>
-                    <Button
-                      color="primary"
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained">
-                      <FacebookIcon className={classes.socialIcon} />
-                      Login with Facebook
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained">
-                      <GoogleIcon className={classes.socialIcon} />
-                      Login with Google
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Typography
-                  align="center"
-                  className={classes.sugestion}
-                  color="textSecondary"
-                  variant="body1">
-                  or login with email address
-                </Typography>
+
                 <TextField
                   className={classes.textField}
                   error={hasError('email')}
