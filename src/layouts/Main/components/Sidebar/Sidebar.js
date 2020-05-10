@@ -11,6 +11,9 @@ import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import { Profile, SidebarNav } from './components';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { ADMIN } from 'helpers/types';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -35,36 +38,50 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Sidebar = props => {
-  const { open, variant, onClose, className, ...rest } = props;
-
+const Sidebar = ({
+  open,
+  variant,
+  onClose,
+  className,
+  userObject,
+  ...rest 
+}) => {
   const classes = useStyles();
+
+  const userRoles  = userObject.roles || [];
+
+  const isAdmin = roles => roles.includes(ADMIN);  
 
   const pages = [
     {
       title: 'Dashboard',
       href: '/dashboard',
-      icon: <DashboardIcon />
+      icon: <DashboardIcon />,
+      active: isAdmin(userRoles)
     },
     {
       title: 'Users',
       href: '/users',
-      icon: <PeopleIcon />
+      icon: <PeopleIcon />,
+      active: isAdmin(userRoles)
     },
     {
       title: 'Support',
       href: '/support',
-      icon: <ShoppingBasketIcon />
+      icon: <ShoppingBasketIcon />,
+      active: true
     },
     {
       title: 'Account',
       href: '/account',
-      icon: <AccountBoxIcon />
+      icon: <AccountBoxIcon />,
+      active: true
     },
     {
       title: 'Settings',
       href: '/settings',
-      icon: <SettingsIcon />
+      icon: <SettingsIcon />,
+      active: true
     }
   ];
 
@@ -88,7 +105,14 @@ Sidebar.propTypes = {
   className: PropTypes.string,
   onClose: PropTypes.func,
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.string.isRequired
+  variant: PropTypes.string.isRequired,
+  userObject: PropTypes.object
 };
 
-export default Sidebar;
+const mapStateToProps = state => {
+  const { user } = state;
+
+  return { userObject: user };
+}
+
+export default connect(mapStateToProps)(withRouter(Sidebar));
