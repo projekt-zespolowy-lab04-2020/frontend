@@ -7,7 +7,6 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button, colors } from '@material-ui/core';
-import { getCurrentUser } from '../../../../../../actions/get-user';
 import { setCurrentUser } from '../../../../../../redux/authReducer';
 import { connect } from 'react-redux';
 
@@ -60,8 +59,6 @@ const SidebarNav = props => {
   const classes = useStyles();
 
   const handleSignOut = event => {
-    console.log(localStorage.getItem('jwtToken'));
-
     logout().catch(e => console.error(e.message));
   };
 
@@ -75,8 +72,6 @@ const SidebarNav = props => {
     // history.push('/sign-in');
     setCurrentUserAction({});
     localStorage.removeItem('jwtToken');
-    console.log("jestem w wylogowaniu");
-    console.log(localStorage.getItem('jwtToken'));
     /*history.push('/sign-in');*/
   };
 
@@ -96,7 +91,7 @@ const SidebarNav = props => {
             className={classes.button}
             component={CustomRouterLink}
             to={page.href}
-            onClick={page.onClick == 'logout' ? handleSignOut : undefined}
+            onClick={page.onClick === 'logout' ? handleSignOut : undefined}
           >
             <div className={classes.icon}>{page.icon}</div>
             {page.title}
@@ -110,10 +105,10 @@ const SidebarNav = props => {
 
 SidebarNav.propTypes = {
   className: PropTypes.string,
-  pages: PropTypes.array.isRequired
+  pages: PropTypes.array.isRequired,
+  setCurrentUserAction: PropTypes.func.isRequired
 };
 
 export default connect(null, {
   setCurrentUserAction: setCurrentUser,
-  getCurrentUserAction: getCurrentUser
 })(withRouter(SidebarNav));

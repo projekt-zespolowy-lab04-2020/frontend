@@ -9,7 +9,6 @@ import PeopleIcon from '@material-ui/icons/People';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
-import { IconButton } from '@material-ui/core';
 import InputIcon from '@material-ui/icons/Input';
 
 import { Profile, SidebarNav } from './components';
