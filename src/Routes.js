@@ -1,8 +1,9 @@
 import React from 'react';
 import { Switch, Redirect } from 'react-router-dom';
 
-import { RouteWithLayout } from './components';
+import { RouteWithLayout, ProtectedRouteWithLayout } from './components/Route';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
+import { isUserAdmin } from 'helpers/isUserAdmin';
 
 import {
   Dashboard as DashboardView,
@@ -19,17 +20,21 @@ const Routes = () => {
   return (
     <Switch>
       <Redirect exact from="/" to="/sign-in" />
-      <RouteWithLayout
+      <ProtectedRouteWithLayout
         component={DashboardView}
         exact
         layout={MainLayout}
         path="/dashboard"
+        routeGuard={isUserAdmin}
+        redirectPath="/not-found"
       />
-      <RouteWithLayout
+      <ProtectedRouteWithLayout
         component={UserListView}
         exact
         layout={MainLayout}
         path="/users"
+        routeGuard={isUserAdmin}
+        redirectPath="/not-found"
       />
       <RouteWithLayout
         component={TicketsList}
