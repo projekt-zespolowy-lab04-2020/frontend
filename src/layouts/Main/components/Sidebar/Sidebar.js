@@ -38,19 +38,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Sidebar = ({
-  open,
-  variant,
-  onClose,
-  className,
-  userObject,
-  ...rest 
-}) => {
+const Sidebar = ({ open, variant, onClose, className, userObject }) => {
   const classes = useStyles();
-
-  const userRoles  = userObject.roles || [];
-
-  const isAdmin = roles => roles.includes(ADMIN);  
+  const userRoles = userObject.roles || [];
+  const isAdmin = roles => roles.includes(ADMIN);
 
   const pages = [
     {
@@ -92,7 +83,7 @@ const Sidebar = ({
       onClose={onClose}
       open={open}
       variant={variant}>
-      <div {...rest} className={clsx(classes.root, className)}>
+      <div className={clsx(classes.root, className)}>
         <Profile />
         <Divider className={classes.divider} />
         <SidebarNav className={classes.nav} pages={pages} />
@@ -105,14 +96,14 @@ Sidebar.propTypes = {
   className: PropTypes.string,
   onClose: PropTypes.func,
   open: PropTypes.bool.isRequired,
-  variant: PropTypes.string.isRequired,
-  userObject: PropTypes.object
+  userObject: PropTypes.object,
+  variant: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => {
   const { user } = state;
 
   return { userObject: user };
-}
+};
 
-export default connect(mapStateToProps)(withRouter(Sidebar));
+export default connect(mapStateToProps, null)(withRouter(Sidebar));

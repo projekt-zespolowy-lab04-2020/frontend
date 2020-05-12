@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
@@ -27,27 +27,31 @@ validate.validators = {
   ...validators
 };
 
-(async function keepUserLoggedIn() {
-  if (localStorage.jwtToken) {
-    const token = localStorage.jwtToken;
-    combineTokenAndUserData(token)
-      .then(obj => store.dispatch(setCurrentUser(obj)))
-      .catch(e =>
-        console.error('Error during combining token and user data ', e)
-      );
-  }
-})();
+const App = () => {
+  const keepUserLoggedIn = () => {
+    if (localStorage.jwtToken) {
+      const token = localStorage.jwtToken;
+      combineTokenAndUserData(token)
+        .then(obj => store.dispatch(setCurrentUser(obj)))
+        .catch(e =>
+          console.error('Error during combining token and user data ', e)
+        );
+    }
+  };
 
-export default class App extends Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <Router history={browserHistory}>
-            <Routes />
-          </Router>
-        </ThemeProvider>
-      </Provider>
-    );
-  }
-}
+  useEffect(() => {
+    keepUserLoggedIn();
+  }, []);
+
+  return (
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Router history={browserHistory}>
+          <Routes />
+        </Router>
+      </ThemeProvider>
+    </Provider>
+  );
+};
+
+export default App;

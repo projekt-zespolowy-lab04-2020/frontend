@@ -5,4 +5,4 @@ export const isUserAdmin = () => {
   const user = store.getState().user;
 
   return user.roles?.includes(ADMIN);
-}
+};

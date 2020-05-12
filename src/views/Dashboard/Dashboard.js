@@ -75,9 +75,10 @@ const Dashboard = props => {
   );
 };
 
-TotalUsers.propTypes = {
+Dashboard.propTypes = {
   getUsersAction: PropTypes.func,
-  setUsersCountAction: PropTypes.func
+  setUsersCountAction: PropTypes.func,
+  usersCount: PropTypes.number
 };
 
 const mapStateToProps = state => {

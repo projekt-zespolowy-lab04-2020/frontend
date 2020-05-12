@@ -1,9 +1,7 @@
-import React from 'react';
-import { Switch, Redirect } from 'react-router-dom';
-
+import React, { useEffect, useState } from 'react';
+import { Switch, Redirect, withRouter } from 'react-router-dom';
 import { RouteWithLayout, ProtectedRouteWithLayout } from './components/Route';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
-import { isUserAdmin } from 'helpers/isUserAdmin';
 
 import {
   Dashboard as DashboardView,
@@ -15,8 +13,23 @@ import {
   SignIn as SignInView,
   NotFound as NotFoundView
 } from './views';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { ADMIN } from './helpers/types';
 
-const Routes = () => {
+const Routes = ({ userObject }) => {
+  const [isUserAdmin, setAdmin] = useState(undefined);
+  const isAdmin = roles => roles.includes(ADMIN);
+
+  useEffect(() => {
+    const userRoles = userObject.roles;
+    if (userRoles !== undefined) {
+      setAdmin(isAdmin(userRoles));
+    } else {
+      setAdmin(undefined);
+    }
+  }, [userObject]);
+
   return (
     <Switch>
       <Redirect exact from="/" to="/sign-in" />
@@ -77,4 +90,14 @@ const Routes = () => {
   );
 };
 
-export default Routes;
+Routes.propTypes = {
+  userObject: PropTypes.object
+};
+
+const mapStateToProps = state => {
+  const { user } = state;
+
+  return { userObject: user };
+};
+
+export default connect(mapStateToProps, null)(withRouter(Routes));
