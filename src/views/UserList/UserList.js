@@ -19,26 +19,23 @@ const UserList = () => {
   const [users] = useState(mockData);
   const [searchResults, setSearchResults] = useState(mockData);
 
-  const onSearchChange = (event) => {
+  const onSearchChange = event => {
     const inputValue = event.target.value.toLowerCase();
-    let results = users.filter(user=> {
-      const fullName = user.firstName + " " + user.lastName;
-      return fullName.toLowerCase().includes(inputValue)
-    })
-  setSearchResults(results);
-  }
+    const results = users.filter(user => {
+      const fullName = user.firstName + ' ' + user.lastName;
+      return fullName.toLowerCase().includes(inputValue);
+    });
+    setSearchResults(results);
+  };
 
   return (
     <div className={classes.root}>
-      <UsersToolbar
-        onSearchChange={onSearchChange}
-      />
+      <UsersToolbar onSearchChange={onSearchChange} />
       <div className={classes.content}>
         <UsersTable users={searchResults} />
       </div>
     </div>
   );
 };
-
 
 export default UserList;

@@ -29,7 +29,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const UsersToolbar = props => {
-  const { className,onSearchChange, ...rest } = props;
+  const { className, onSearchChange, ...rest } = props;
 
   const classes = useStyles();
 
@@ -55,8 +55,8 @@ const UsersToolbar = props => {
 };
 
 UsersToolbar.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  onSearchChange: PropTypes.func
 };
-
 
 export default UsersToolbar;
