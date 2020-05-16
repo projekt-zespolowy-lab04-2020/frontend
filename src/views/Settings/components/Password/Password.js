@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ConfirmationDialog from '../../../../components/Dialogs/ConfirmationDialog';
 import isEmpty from '../../../../helpers/isEmpty';
-import { patch } from '../../../../actions/patch';
+import { patchUser } from '../../../../actions/users/patchUser';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -38,6 +38,9 @@ const schema = {
 
 const Password = props => {
   const { className, userObject, patchAction, ...rest } = props;
+
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
 
   const classes = useStyles();
 
@@ -215,5 +218,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  patchAction: patch
+  patchAction: patchUser
 })(withRouter(Password));

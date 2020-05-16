@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
-
+import PropTypes from 'prop-types';
+import { getUsers } from 'actions/getUsers';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import {
   Budget,
   TotalUsers,
@@ -10,6 +13,7 @@ import {
   LatestSales,
   LatestOrders
 } from './components';
+import { setUsersCount } from '../../redux/usersCountReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,8 +21,33 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Dashboard = () => {
+const Dashboard = props => {
   const classes = useStyles();
+  const { getUsersAction, setUsersCountAction, usersCount } = props;
+
+  const getUsers = async () => {
+    const token = localStorage.getItem('jwtToken');
+
+    if (token) {
+      const response = await getUsersAction(token);
+
+      // Need to be admin in order to get 200 from /users
+      if (response.status === 200) {
+        const totalUsersCount = await response.json();
+        setUsersCountAction(totalUsersCount.length);
+      } else {
+        throw new Error('Error during getting all users!');
+      }
+    }
+  };
+
+  const getUserNumber = () => {
+    if (!usersCount) {
+      getUsers().catch(err => console.log(err.message));
+    }
+  };
+
+  useEffect(getUserNumber, []);
 
   return (
     <div className={classes.root}>
@@ -27,7 +56,7 @@ const Dashboard = () => {
           <Budget />
         </Grid>
         <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TotalUsers />
+          <TotalUsers totalUsers={usersCount} />
         </Grid>
         <Grid item lg={3} sm={6} xl={3} xs={12}>
           <TasksProgress />
@@ -46,4 +75,18 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+Dashboard.propTypes = {
+  getUsersAction: PropTypes.func,
+  setUsersCountAction: PropTypes.func,
+  usersCount: PropTypes.number
+};
+
+const mapStateToProps = state => {
+  const { usersCount } = state;
+  return { usersCount };
+};
+
+export default connect(mapStateToProps, {
+  getUsersAction: getUsers,
+  setUsersCountAction: setUsersCount
+})(withRouter(Dashboard));

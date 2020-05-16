@@ -34,7 +34,7 @@ const Profile = props => {
   // noinspection JSUnresolvedVariable
   const user = {
     name: `${userObject.firstName} ${userObject.lastName}`,
-    bio: userObject.roles
+    bio: userObject.roles?.join(', ')
   };
 
   return (

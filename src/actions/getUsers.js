@@ -1,8 +1,8 @@
 import { baseURL } from '../helpers/paths';
 
-const path = baseURL + '/user';
+const path = baseURL + '/users';
 
-export const getCurrentUser = token => dispatch => {
+export const getUsers = token => dispatch => {
   return fetch(path, {
     method: 'GET',
     headers: {

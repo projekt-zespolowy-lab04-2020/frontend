@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode';
-import { getCurrentUser } from '../actions/get-user';
+import { getCurrentUser } from '../actions/users/getUser';
 import store from '../redux/reducers';
 
 export default async function(token) {

@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { baseURL } from '../helpers/paths';
+import { baseURL } from '../../helpers/paths';
 
-const path = baseURL + '/user';
+const path = baseURL + '/login';
 
-export const registerUser = userData => dispatch => {
+export const loginUser = userData => dispatch => {
   return fetch(path, {
     method: 'POST',
     headers: {

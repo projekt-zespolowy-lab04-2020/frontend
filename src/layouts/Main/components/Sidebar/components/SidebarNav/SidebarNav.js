@@ -44,10 +44,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const CustomRouterLink = forwardRef((props, ref) => (
-  <div
-    ref={ref}
-    style={{ flexGrow: 1 }}
-  >
+  <div ref={ref} style={{ flexGrow: 1 }}>
     <RouterLink {...props} />
   </div>
 ));
@@ -100,6 +97,7 @@ const SidebarNav = props => {
       ))
       }
     </List >
+
   );
 };
 
