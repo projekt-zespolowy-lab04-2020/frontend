@@ -2,7 +2,7 @@
 import { baseURL } from '../../helpers/paths';
 
 export const getTicketByID = (ticketID, token) => dispatch => {
-  const path = baseURL + `/ticket/${ticketID}`;
+  const path = baseURL + `/tickets/${ticketID}`;
 
   return fetch(path, {
     method: 'GET',

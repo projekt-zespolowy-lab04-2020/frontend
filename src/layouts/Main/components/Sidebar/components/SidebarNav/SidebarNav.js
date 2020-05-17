@@ -50,8 +50,13 @@ const CustomRouterLink = forwardRef((props, ref) => (
 ));
 
 const SidebarNav = props => {
-  const { pages, className, getCurrentUserAction,
-    setCurrentUserAction, ...rest } = props;
+  const {
+    pages,
+    className,
+    getCurrentUserAction,
+    setCurrentUserAction,
+    ...rest
+  } = props;
 
   const classes = useStyles();
 
@@ -73,31 +78,21 @@ const SidebarNav = props => {
   };
 
   return (
-    <List
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <List {...rest} className={clsx(classes.root, className)}>
       {pages.map(page => (
-        <ListItem
-          className={classes.item}
-          disableGutters
-          key={page.title}
-        >
+        <ListItem className={classes.item} disableGutters key={page.title}>
           <Button
             activeClassName={classes.active}
             className={classes.button}
             component={CustomRouterLink}
             to={page.href}
-            onClick={page.onClick === 'logout' ? handleSignOut : undefined}
-          >
+            onClick={page.onClick === 'logout' ? handleSignOut : undefined}>
             <div className={classes.icon}>{page.icon}</div>
             {page.title}
           </Button>
         </ListItem>
-      ))
-      }
-    </List >
-
+      ))}
+    </List>
   );
 };
 
@@ -108,5 +103,5 @@ SidebarNav.propTypes = {
 };
 
 export default connect(null, {
-  setCurrentUserAction: setCurrentUser,
+  setCurrentUserAction: setCurrentUser
 })(withRouter(SidebarNav));
