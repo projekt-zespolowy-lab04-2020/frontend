@@ -2,15 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
-import { TicketsToolbar, TicketsCard } from './components';
+import { TicketsToolbar, TicketsCard } from '../components';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { ADMIN } from '../../helpers/types';
-import { getTickets } from '../../actions/tickets/getTickets';
-import { getTicketByID } from '../../actions/tickets/getTicketByID';
-import { addTicket, clearTickets } from '../../redux/ticketsReducer';
-import Spinner from '../../components/Spinner/Spinner';
+import { ADMIN } from '../../../helpers/types';
+import { getTickets } from '../../../actions/tickets/getTickets';
+import { getTicketByID } from '../../../actions/tickets/getTicketByID';
+import { addTicket, clearTickets } from '../../../redux/ticketsReducer';
+import Spinner from '../../../components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -119,6 +119,7 @@ const TicketsList = ({
   return (
     <div className={classes.root}>
       <TicketsToolbar
+        isTrip={false}
         tickets={ticketsObject.tickets}
         setSearchResults={setSearchResults}
       />

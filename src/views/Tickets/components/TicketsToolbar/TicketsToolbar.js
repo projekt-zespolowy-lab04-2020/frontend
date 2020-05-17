@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { SearchInput } from 'components';
-import TicketCreator from '../TicketCreator';
+import TicketCreator from '../../../../components/TicketCreator';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -30,7 +30,13 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsToolbar = ({ tickets, setSearchResults, className, ...rest }) => {
+const TicketsToolbar = ({
+  tickets,
+  setSearchResults,
+  className,
+  isTrip,
+  ...rest
+}) => {
   const classes = useStyles();
 
   const onSearchChange = event => {
@@ -49,7 +55,7 @@ const TicketsToolbar = ({ tickets, setSearchResults, className, ...rest }) => {
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
-        <TicketCreator isTrip={false} />
+        <TicketCreator isTrip={isTrip} />
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
@@ -62,6 +68,7 @@ const TicketsToolbar = ({ tickets, setSearchResults, className, ...rest }) => {
 
 TicketsToolbar.propTypes = {
   className: PropTypes.string,
+  isTrip: PropTypes.bool,
   setSearchResults: PropTypes.func,
   tickets: PropTypes.arrayOf(PropTypes.object)
 };

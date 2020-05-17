@@ -20,17 +20,11 @@ import SliderWrapper from './SliderWrapper';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import {
-  addTicket,
-  changeTicketInPlace
-} from '../../../../redux/ticketsReducer';
-import { createTicket } from '../../../../actions/tickets/createTicket';
+import { addTicket, changeTicketInPlace } from '../../redux/ticketsReducer';
+import { createTicket } from '../../actions/tickets/createTicket';
 import Contact from './Contact';
-import {
-  toggleEditMode,
-  toggleOpen
-} from '../../../../redux/ticketCreatorReducer';
-import { patchTicket } from '../../../../actions/tickets/patchTicket';
+import { toggleEditMode, toggleOpen } from '../../redux/ticketCreatorReducer';
+import { patchTicket } from '../../actions/tickets/patchTicket';
 
 const useStyles = makeStyles({
   root: {},
@@ -295,7 +289,7 @@ const TicketCreator = ({
   return (
     <div>
       <Button variant="contained" color="primary" onClick={handleClickOpen}>
-        create new support ticket
+        {isTrip ? 'create new trip' : 'create new support ticket'}
       </Button>
       <Dialog
         className={classes.root}
