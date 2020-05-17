@@ -34,6 +34,7 @@ const TicketsToolbar = ({
   tickets,
   setSearchResults,
   className,
+  isGuide,
   isTrip,
   ...rest
 }) => {
@@ -55,7 +56,8 @@ const TicketsToolbar = ({
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
-        <TicketCreator isTrip={isTrip} />
+        {!isTrip && <TicketCreator isTrip={isTrip} />}
+        {isGuide && <TicketCreator isTrip={isTrip} />}
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
@@ -68,6 +70,7 @@ const TicketsToolbar = ({
 
 TicketsToolbar.propTypes = {
   className: PropTypes.string,
+  isGuide: PropTypes.bool,
   isTrip: PropTypes.bool,
   setSearchResults: PropTypes.func,
   tickets: PropTypes.arrayOf(PropTypes.object)

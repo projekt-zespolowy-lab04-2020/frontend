@@ -223,9 +223,26 @@ const TicketCreator = ({
       }
     }
   };
+  const createTrips = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      console.log(formState.values);
+      const cost = '';
+      const description = '';
+      const peopleLimit = '';
+      const dateTrip = '';
+      const route = {
+        name: ''
+      };
+    }
+  };
 
   const handleSend = () => {
-    createTicket().catch(e => console.error(e.message));
+    if (isTrip) {
+      createTrips().catch(e => console.error(e.message));
+    } else {
+      createTicket().catch(e => console.error(e.message));
+    }
     handleClose();
   };
 

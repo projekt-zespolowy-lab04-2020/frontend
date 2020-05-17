@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button, colors } from '@material-ui/core';
 import { setCurrentUser } from '../../../../../../redux/authReducer';
 import { connect } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -45,36 +46,24 @@ const useStyles = makeStyles(theme => ({
 
 const CustomRouterLink = forwardRef((props, ref) => (
   <div ref={ref} style={{ flexGrow: 1 }}>
-    <RouterLink {...props} />
+    <NavLink {...props} />
   </div>
 ));
 
 const SidebarNav = props => {
-  const {
-    pages,
-    className,
-    getCurrentUserAction,
-    setCurrentUserAction,
-    ...rest
-  } = props;
+  const { pages, className, setCurrentUserAction, ...rest } = props;
 
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
   const classes = useStyles();
 
-  const handleSignOut = event => {
+  const handleSignOut = () => {
     logout().catch(e => console.error(e.message));
   };
 
   const logout = async () => {
-    // getCurrentUserAction(localStorage.getItem('jwtToken'))
-    //   .then(obj => obj.json())
-    //   .then(setCurrentUserAction(null))
-    //   .catch(e => console.error('Error during logout ', e));
-    //
-    // localStorage.removeItem('jwtToken');
-    // history.push('/sign-in');
     setCurrentUserAction({});
     localStorage.removeItem('jwtToken');
-    /*history.push('/sign-in');*/
   };
 
   return (

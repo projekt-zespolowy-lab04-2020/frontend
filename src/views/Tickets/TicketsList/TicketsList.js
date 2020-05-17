@@ -11,6 +11,7 @@ import { getTickets } from '../../../actions/tickets/getTickets';
 import { getTicketByID } from '../../../actions/tickets/getTicketByID';
 import { addTicket, clearTickets } from '../../../redux/ticketsReducer';
 import Spinner from '../../../components/Spinner/Spinner';
+import TicketsHeader from '../components/TicketsHeader';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -118,6 +119,13 @@ const TicketsList = ({
 
   return (
     <div className={classes.root}>
+      <TicketsHeader
+        header={'Contact Tourtool'}
+        paragraph={
+          'We are here to help you and answer any questions you might have. ' +
+          'We look forward to hearing from you.'
+        }
+      />
       <TicketsToolbar
         isTrip={false}
         tickets={ticketsObject.tickets}
