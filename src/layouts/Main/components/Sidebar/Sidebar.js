@@ -1,5 +1,4 @@
 import React from 'react';
-// noinspection SpellCheckingInspection
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -15,7 +14,7 @@ import InputIcon from '@material-ui/icons/Input';
 import { Profile, SidebarNav } from './components';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ADMIN } from 'helpers/types';
+import { ADMIN } from '../../../../helpers/types';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -80,13 +79,15 @@ const Sidebar = ({ open, variant, onClose, className, userObject }) => {
     {
       title: 'Settings',
       href: '/settings',
-      icon: <SettingsIcon />
+      icon: <SettingsIcon />,
+      active: true
     },
     {
       title: 'LogOut',
-      href: '/sign-in',
+      href: '/#',
       icon: <InputIcon />,
-      onClick: 'logout'
+      name: 'logout',
+      active: true
     }
   ];
 
