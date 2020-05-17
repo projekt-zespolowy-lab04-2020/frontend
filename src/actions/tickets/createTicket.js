@@ -2,7 +2,7 @@
 import { baseURL } from '../../helpers/paths';
 
 export const createTicket = (data, token) => dispatch => {
-  const path = baseURL + '/ticket';
+  const path = baseURL + '/tickets';
 
   return fetch(path, {
     method: 'POST',

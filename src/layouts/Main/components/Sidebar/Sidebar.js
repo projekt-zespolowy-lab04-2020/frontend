@@ -10,6 +10,7 @@ import LiveHelpIcon from '@material-ui/icons/LiveHelp';
 import LoyaltyIcon from '@material-ui/icons/Loyalty';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
+import InputIcon from '@material-ui/icons/Input';
 
 import { Profile, SidebarNav } from './components';
 import { withRouter } from 'react-router-dom';
@@ -24,6 +25,7 @@ const useStyles = makeStyles(theme => ({
       height: 'calc(100% - 64px)'
     }
   },
+
   root: {
     backgroundColor: theme.palette.white,
     display: 'flex',
@@ -78,8 +80,13 @@ const Sidebar = ({ open, variant, onClose, className, userObject }) => {
     {
       title: 'Settings',
       href: '/settings',
-      icon: <SettingsIcon />,
-      active: true
+      icon: <SettingsIcon />
+    },
+    {
+      title: 'LogOut',
+      href: '/sign-in',
+      icon: <InputIcon />,
+      onClick: 'logout'
     }
   ];
 
