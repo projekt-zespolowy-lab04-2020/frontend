@@ -68,73 +68,77 @@ const TicketsCard = ({ data, isTrip }) => {
   };
 
   return (
-    <Card className={classes.root}>
-      <CardHeader
-        avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            {`${content.firstName[0]}${content.lastName[0]}`}
-          </Avatar>
-        }
-        action={<CloseEditButton id={id} />}
-        title={`${content.firstName} ${content.lastName}`}
-        subheader={new Date().toLocaleString()}
-      />
-
-      <CardContent>
-        <div className={classes.title}>
-          <Typography variant="h4" color="textSecondary" component="p">
-            {content.subject}
-          </Typography>
-        </div>
-        {isTrip && (
-          <>
-            <div className={classes.tripDetails}>
-              <PublicIcon className={classes.icons} color="primary" />
-              <Typography variant="h6" color="textSecondary" component="p">
-                Where: {data.destination}
-              </Typography>
-            </div>
-            <div className={classes.tripDetails}>
-              <TodayIcon className={classes.icons} color="primary" />
-              <Typography variant="h6" color="textSecondary" component="p">
-                When: {data.dateAndTime}
-              </Typography>
-            </div>
-
-            <div className={classes.tripDetails}>
-              <PeopleIcon className={classes.icons} color="primary" />
-              <Typography variant="h6" color="textSecondary" component="p">
-                Peoples: {data.numberOfPeople}
-              </Typography>
-            </div>
-          </>
-        )}
-        <Typography variant="body1" color="textSecondary" component="p">
-          {content.content}
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more">
-          <ExpandMoreIcon />
-        </IconButton>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <TicketsCardComments
-          id={ticket.id}
-          commentsObj={comments}
-          contact={contact}
+    <>
+    { content !== 'Close ticket' &&
+      <Card className={classes.root}>
+        <CardHeader
+          avatar={
+            <Avatar aria-label="recipe" className={classes.avatar}>
+              {`${content.firstName[0]}${content.lastName[0]}`}
+            </Avatar>
+          }
+          action={<CloseEditButton id={id} />}
+          title={`${content.firstName} ${content.lastName}`}
+          subheader={new Date().toLocaleString()}
         />
-      </Collapse>
-    </Card>
+
+        <CardContent>
+          <div className={classes.title}>
+            <Typography variant="h4" color="textSecondary" component="p">
+              {content.subject}
+            </Typography>
+          </div>
+          {isTrip && (
+            <>
+              <div className={classes.tripDetails}>
+                <PublicIcon className={classes.icons} color="primary" />
+                <Typography variant="h6" color="textSecondary" component="p">
+                  Where: {data.destination}
+                </Typography>
+              </div>
+              <div className={classes.tripDetails}>
+                <TodayIcon className={classes.icons} color="primary" />
+                <Typography variant="h6" color="textSecondary" component="p">
+                  When: {data.dateAndTime}
+                </Typography>
+              </div>
+
+              <div className={classes.tripDetails}>
+                <PeopleIcon className={classes.icons} color="primary" />
+                <Typography variant="h6" color="textSecondary" component="p">
+                  Peoples: {data.numberOfPeople}
+                </Typography>
+              </div>
+            </>
+          )}
+          <Typography variant="body1" color="textSecondary" component="p">
+            {content.content}
+          </Typography>
+        </CardContent>
+        <CardActions disableSpacing>
+          <IconButton aria-label="add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+          <IconButton
+            className={clsx(classes.expand, {
+              [classes.expandOpen]: expanded
+            })}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="show more">
+            <ExpandMoreIcon />
+          </IconButton>
+        </CardActions>
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          <TicketsCardComments
+            id={ticket.id}
+            commentsObj={comments}
+            contact={contact}
+          />
+        </Collapse>
+      </Card>
+    }
+    </>
   );
 };
 

@@ -26,6 +26,7 @@ import { getTickets } from 'actions/tickets/getTickets';
 import { getTicketByID } from 'actions/tickets/getTicketByID';
 import Spinner from 'components/Spinner/Spinner';
 import moment from 'moment';
+import { addTicket, clearTickets } from 'redux/ticketsReducer';
 
 
 const useStyles = makeStyles(theme => ({
@@ -55,6 +56,9 @@ const LatestSupportTickets = props => {
     userObject,
     getTicketsAction,
     getTicketByIDAction,
+    addTicketAction,
+    clearTicketsAction,
+    ticketsObject,
     ...rest
   } = props;
 
@@ -66,6 +70,11 @@ const LatestSupportTickets = props => {
   const [sortByOpenStatus, setSortByOpenStatus] = useState(true);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+
+  useEffect(() => {
+    setSearchResults([...ticketsObject.tickets]);
+    console.log(searchResults);
+  }, [ticketsObject]);
 
   const getTicketAsync = async (ID, token) => {
     const response = await getTicketByIDAction(ID, token);
@@ -98,9 +107,19 @@ const LatestSupportTickets = props => {
           )))
           .then(tickets => {
             if (!tickets.length) setHasTicketsFlag(true);
-            // store tickets list in local variable instead in redux store 
-            // -> there is error while navigating to /support after fetching tickets in this component
-            setSearchResults([...tickets]);
+            clearTicketsAction();
+            tickets.forEach(ticketObject => {
+              const { ticket } = ticketObject;
+              const { content } = ticket;
+              const ticketTempObject = {
+                ...ticketObject,
+                ticket: {
+                  ...ticketObject.ticket,
+                  content: JSON.parse(content)
+                }
+              };
+              addTicketAction(ticketTempObject);
+            });
           })
           .catch(e => console.error(e.message));
       } else {
@@ -151,7 +170,7 @@ const LatestSupportTickets = props => {
     setPage(0);
   };
 
-  const handlePageChange = (event, page) => {
+  const handlePageChange = (_event, page) => {
     setPage(page);
   };
 
@@ -241,18 +260,24 @@ LatestSupportTickets.propTypes = {
   className: PropTypes.string,
   getTicketByIDAction: PropTypes.func,
   getTicketsAction: PropTypes.func,
-  userObject: PropTypes.object
+  userObject: PropTypes.object,
+  addTicketAction: PropTypes.func,
+  clearTicketsAction: PropTypes.func,
+  ticketsObject: PropTypes.object,
 };
 
 const mapStateToProps = state => {
-  const { user } = state;
+  const { user, tickets } = state;
 
   return {
     userObject: user,
+    ticketsObject: tickets
   };
 };
 
 export default connect(mapStateToProps, {
   getTicketsAction: getTickets,
   getTicketByIDAction: getTicketByID,
+  addTicketAction: addTicket,
+  clearTicketsAction: clearTickets
 })(withRouter(LatestSupportTickets));
