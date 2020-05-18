@@ -69,7 +69,7 @@ const TicketsCard = ({ data, isTrip }) => {
 
   return (
     <>
-    { content !== 'Close ticket' &&
+    { !ticket.closed &&
       <Card className={classes.root}>
         <CardHeader
           avatar={
