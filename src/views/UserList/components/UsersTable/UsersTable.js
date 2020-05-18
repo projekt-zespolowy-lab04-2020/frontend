@@ -19,6 +19,7 @@ import {
   TablePagination
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
+import ManagementsButtons from './ManagementButtons/ManagementsButtons';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -39,6 +40,10 @@ const useStyles = makeStyles(theme => ({
     border: '1px solid #008160'
   },
   actions: {
+    justifyContent: 'flex-end'
+  },
+  management: {
+    display: 'flex',
     justifyContent: 'flex-end'
   }
 }));
@@ -115,48 +120,53 @@ const UsersTable = props => {
                   </TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Phone</TableCell>
+                  <TableCell>Roles</TableCell>
+                  <TableCell>ID</TableCell>
                   <TableCell>Registration date</TableCell>
+                  <TableCell className={classes.management}>
+                    Management
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.slice(0, rowsPerPage).map(user => (
-                  <TableRow
-                    className={classes.tableRow}
-                    hover
-                    key={user.id}
-                    selected={selectedUsers.indexOf(user.id) !== -1}>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedUsers.indexOf(user.id) !== -1}
-                        color="primary"
-                        onChange={event => handleSelectOne(event, user.id)}
-                        value="true"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className={classes.nameContainer}>
-                        <CustomAvatar
-                          to="#"
-                          firstName={user.firstName}
-                          lastName={user.lastName}
-                          className={classes.avatar}
+                {users
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map(user => (
+                    <TableRow
+                      className={classes.tableRow}
+                      hover
+                      key={user.id}
+                      selected={selectedUsers.indexOf(user.id) !== -1}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedUsers.indexOf(user.id) !== -1}
+                          color="primary"
+                          onChange={event => handleSelectOne(event, user.id)}
+                          value="true"
                         />
-                        <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      {user.address.city}, {user.address.state},{' '}
-                      {user.address.country}
-                    </TableCell>
-                    <TableCell>{user.phone}</TableCell>
-                    <TableCell>
-                      {moment(user.createdAt).format('DD/MM/YYYY')}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        <div className={classes.nameContainer}>
+                          <CustomAvatar
+                            to="#"
+                            firstName={user.firstName}
+                            lastName={user.lastName}
+                            className={classes.avatar}
+                          />
+                          <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>{user.roles.join(', ')}</TableCell>
+                      <TableCell>{user.id}</TableCell>
+                      <TableCell>
+                        {moment(user.createdAt).format('DD/MM/YYYY')}
+                      </TableCell>
+                      <TableCell className={classes.management}>
+                        <ManagementsButtons user={user} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>
