@@ -39,14 +39,12 @@ const TripsList = ({ userObject }) => {
   const [hasTickets, setHasTicketsFlag] = useState(false);
   const [isGuide, setGuide] = useState(false);
   const isUserGuide = roles => roles.includes(GUIDE);
-  console.log('asdsad');
 
   useEffect(() => {
     // noinspection JSUnresolvedVariable
     const { isAuthenticated } = userObject;
     if (isAuthenticated) {
       const roles = userObject.roles || [];
-      console.log(isUserGuide(roles));
       setGuide(isUserGuide(roles));
     }
   }, [userObject]);

@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { SearchInput } from 'components';
 import TicketCreator from '../../../../components/TicketCreator';
+import TripsCreator from '../../../../components/TripsCreator/TripsCreator';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -13,7 +14,7 @@ const useStyles = makeStyles(theme => ({
     height: '42px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginTop: theme.spacing(1)
   },
   spacer: {
@@ -26,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1)
   },
   searchInput: {
-    marginRight: theme.spacing(1)
+    marginRight: theme.spacing(1),
+    marginLeft: 20
   }
 }));
 
@@ -38,7 +40,7 @@ const TicketsToolbar = ({
   isTrip,
   ...rest
 }) => {
-  const classes = useStyles();
+  const classes = useStyles({ isTrip, isGuide });
 
   const onSearchChange = event => {
     const inputValue = event.target.value.toLowerCase();
@@ -56,8 +58,8 @@ const TicketsToolbar = ({
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
-        {!isTrip && <TicketCreator isTrip={isTrip} />}
-        {isGuide && <TicketCreator isTrip={isTrip} />}
+        {!isTrip && <TicketCreator />}
+        {isGuide && <TripsCreator />}
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"

@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { baseURL } from '../../helpers/paths';
 
-export const createTrips = (data, token) => dispatch => {
+export const createTrip = (data, token) => dispatch => {
   const path = baseURL + '/trips';
-
+  console.log(JSON.stringify(data));
+  console.log(token);
   return fetch(path, {
     method: 'POST',
     headers: {
