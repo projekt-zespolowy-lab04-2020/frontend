@@ -15,7 +15,8 @@ import {
   TableHead,
   TableRow,
   Tooltip,
-  TableSortLabel
+  TableSortLabel,
+  TablePagination
 } from '@material-ui/core';
 
 import { connect } from 'react-redux';
@@ -63,6 +64,8 @@ const LatestSupportTickets = props => {
   const [searchResults, setSearchResults] = useState([]);
   const [sortByDateDesc, setSortByDateDesc] = useState(true);
   const [sortByOpenStatus, setSortByOpenStatus] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const getTicketAsync = async (ID, token) => {
     const response = await getTicketByIDAction(ID, token);
@@ -134,6 +137,7 @@ const LatestSupportTickets = props => {
     }
 
     setSortByDateDesc(!sortByDateDesc);
+    setPage(0);
   };
 
   const handleSortTicketsByStatus = () => {
@@ -142,7 +146,18 @@ const LatestSupportTickets = props => {
     } else {
       setSearchResults([...searchResults.sort((t1, _) => t1.ticket.closed ? 1 : -1)]);
     }
+
     setSortByOpenStatus(!sortByOpenStatus);
+    setPage(0);
+  };
+
+  const handlePageChange = (event, page) => {
+    setPage(page);
+  };
+
+  const handleRowsPerPageChange = event => {
+    setPage(0);
+    setRowsPerPage(event.target.value);
   };
 
   return (
@@ -182,23 +197,25 @@ const LatestSupportTickets = props => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {searchResults.map((data, index) => {
-                    const { ticket } = data;
-                    return (
-                      <TableRow hover key={index}>
-                        <TableCell>{ticket.id}</TableCell>
-                        <TableCell>
-                          {ticket.author}
-                        </TableCell>
-                        <TableCell>
-                          {ticket.createDate}
-                        </TableCell>
-                        <TableCell>
-                          {ticket.closed ? 'Closed' : 'Open'}
-                        </TableCell>
-                      </TableRow>
-                    );             
-                  })}
+                  {searchResults
+                    .slice(page*rowsPerPage, (page+1)*rowsPerPage)
+                    .map((data, index) => {
+                      const { ticket } = data;
+                      return (
+                        <TableRow hover key={index}>
+                          <TableCell>{ticket.id}</TableCell>
+                          <TableCell>
+                            {ticket.author}
+                          </TableCell>
+                          <TableCell>
+                            {ticket.createDate}
+                          </TableCell>
+                          <TableCell>
+                            {ticket.closed ? 'Closed' : 'Open'}
+                          </TableCell>
+                        </TableRow>);
+                    })
+                  }
                 </TableBody>
             </Table>}
           </div>
@@ -206,7 +223,15 @@ const LatestSupportTickets = props => {
       </CardContent>
       <Divider />
       <CardActions className={classes.actions}>
-        TODO: pagination here
+        <TablePagination
+            component="div"
+            count={searchResults.length}
+            onChangePage={handlePageChange}
+            onChangeRowsPerPage={handleRowsPerPageChange}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={[5, 10, 15]}
+          />
       </CardActions>
     </Card>
   );
