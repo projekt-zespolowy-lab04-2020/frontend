@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { loginUser } from '../../actions/users/signIn';
 import { setCurrentUser } from '../../redux/authReducer';
 import combineTokenAndUserData from '../../helpers/combineTokenAndUserData';
+import { isUserAdmin } from 'helpers/isUserAdmin';
 
 const schema = {
   email: {
@@ -180,7 +181,7 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
           console.error('Error during combining token and user data ', e)
         );
 
-      history.push('/dashboard');
+      isUserAdmin() ? history.push('/dashboard') : history.push('/account');
     } else if (response.status === 400) {
       const errors = validate(formState.values, schema) || {};
       const { message } = res;

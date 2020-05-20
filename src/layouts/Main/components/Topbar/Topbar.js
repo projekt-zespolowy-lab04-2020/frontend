@@ -3,10 +3,9 @@ import { Link as RouterLink, withRouter } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { AppBar, Toolbar, Badge, Hidden, IconButton } from '@material-ui/core';
+import { AppBar, Toolbar, Hidden, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import InputIcon from '@material-ui/icons/Input';
-import { getCurrentUser } from '../../../../actions/users/getUser';
 import { setCurrentUser } from '../../../../redux/authReducer';
 import { connect } from 'react-redux';
 import { clearTickets } from '../../../../redux/ticketsReducer';
@@ -44,13 +43,6 @@ const Topbar = props => {
   };
 
   const logout = async () => {
-    // getCurrentUserAction(localStorage.getItem('jwtToken'))
-    //   .then(obj => obj.json())
-    //   .then(setCurrentUserAction(null))
-    //   .catch(e => console.error('Error during logout ', e));
-    //
-    // localStorage.removeItem('jwtToken');
-    // history.push('/sign-in');
     setCurrentUserAction({});
     clearTicketsAction();
     localStorage.removeItem('jwtToken');

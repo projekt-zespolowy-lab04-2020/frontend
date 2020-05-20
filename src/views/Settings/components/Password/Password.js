@@ -39,6 +39,9 @@ const schema = {
 const Password = props => {
   const { className, userObject, patchAction, ...rest } = props;
 
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
+
   const classes = useStyles();
 
   const [formState, setFormState] = useState({

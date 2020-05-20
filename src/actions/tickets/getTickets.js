@@ -4,7 +4,7 @@ import { baseURL } from '../../helpers/paths';
 export const getTickets = (option, token) => dispatch => {
   const path =
     baseURL +
-    '/ticket' +
+    '/tickets' +
     `/?${option ? new URLSearchParams({ all: true }) : ''}`;
 
   return fetch(path, {

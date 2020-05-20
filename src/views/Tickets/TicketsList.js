@@ -43,6 +43,7 @@ const TicketsList = ({
 }) => {
   const classes = useStyles();
   const [searchResults, setSearchResults] = useState([]);
+  const [hasTickets, setHasTicketsFlag] = useState(false);
 
   useEffect(() => {
     setSearchResults(ticketsObject.tickets);
@@ -72,7 +73,6 @@ const TicketsList = ({
     if (token) {
       const response = await getTicketsAction(isAdmin, token);
       const res = await response.json();
-
       if (response.status === 200) {
         getAllUserTickets(res, token)
           .then(tickets =>
@@ -83,8 +83,8 @@ const TicketsList = ({
             })
           )
           .then(tickets => {
+            if (!tickets.length) setHasTicketsFlag(true);
             clearTicketsAction();
-
             tickets.forEach(ticketObject => {
               const { ticket } = ticketObject;
               const { content } = ticket;
@@ -122,7 +122,7 @@ const TicketsList = ({
         tickets={ticketsObject.tickets}
         setSearchResults={setSearchResults}
       />
-      {!searchResults.length && <Spinner />}
+      {!searchResults.length && !hasTickets && <Spinner />}
       <div className={classes.content}>
         <Grid className={classes.tickets} container spacing={3}>
           {searchResults.map((data, index) => {

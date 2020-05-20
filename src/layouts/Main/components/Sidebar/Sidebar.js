@@ -1,5 +1,4 @@
 import React from 'react';
-// noinspection SpellCheckingInspection
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -9,8 +8,12 @@ import PeopleIcon from '@material-ui/icons/People';
 import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import SettingsIcon from '@material-ui/icons/Settings';
+import InputIcon from '@material-ui/icons/Input';
 
 import { Profile, SidebarNav } from './components';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { ADMIN } from '../../../../helpers/types';
 
 const useStyles = makeStyles(theme => ({
   drawer: {
@@ -20,6 +23,7 @@ const useStyles = makeStyles(theme => ({
       height: 'calc(100% - 64px)'
     }
   },
+
   root: {
     backgroundColor: theme.palette.white,
     display: 'flex',
@@ -35,36 +39,48 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Sidebar = props => {
-  const { open, variant, onClose, className, ...rest } = props;
-
+const Sidebar = ({ open, variant, onClose, className, userObject }) => {
   const classes = useStyles();
+  const userRoles = userObject.roles || [];
+  const isAdmin = roles => roles.includes(ADMIN);
 
   const pages = [
     {
       title: 'Dashboard',
       href: '/dashboard',
-      icon: <DashboardIcon />
+      icon: <DashboardIcon />,
+      active: isAdmin(userRoles)
     },
     {
       title: 'Users',
       href: '/users',
-      icon: <PeopleIcon />
+      icon: <PeopleIcon />,
+      active: isAdmin(userRoles)
     },
     {
       title: 'Support',
       href: '/support',
-      icon: <ShoppingBasketIcon />
+      icon: <ShoppingBasketIcon />,
+      active: true
     },
     {
       title: 'Account',
       href: '/account',
-      icon: <AccountBoxIcon />
+      icon: <AccountBoxIcon />,
+      active: true
     },
     {
       title: 'Settings',
       href: '/settings',
-      icon: <SettingsIcon />
+      icon: <SettingsIcon />,
+      active: true
+    },
+    {
+      title: 'LogOut',
+      href: '/#',
+      icon: <InputIcon />,
+      name: 'logout',
+      active: true
     }
   ];
 
@@ -75,7 +91,7 @@ const Sidebar = props => {
       onClose={onClose}
       open={open}
       variant={variant}>
-      <div {...rest} className={clsx(classes.root, className)}>
+      <div className={clsx(classes.root, className)}>
         <Profile />
         <Divider className={classes.divider} />
         <SidebarNav className={classes.nav} pages={pages} />
@@ -88,7 +104,14 @@ Sidebar.propTypes = {
   className: PropTypes.string,
   onClose: PropTypes.func,
   open: PropTypes.bool.isRequired,
+  userObject: PropTypes.object,
   variant: PropTypes.string.isRequired
 };
 
-export default Sidebar;
+const mapStateToProps = state => {
+  const { user } = state;
+
+  return { userObject: user };
+};
+
+export default connect(mapStateToProps, null)(withRouter(Sidebar));

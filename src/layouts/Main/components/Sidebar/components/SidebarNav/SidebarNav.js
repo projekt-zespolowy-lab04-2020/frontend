@@ -1,11 +1,12 @@
-/* eslint-disable react/no-multi-comp */
-/* eslint-disable react/display-name */
+import { NavLink, withRouter } from 'react-router-dom';
 import React, { forwardRef } from 'react';
-import { NavLink as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { List, ListItem, Button, colors } from '@material-ui/core';
+import { setCurrentUser } from '../../../../../../redux/authReducer';
+import { connect } from 'react-redux';
+import { clearTickets } from '../../../../../../redux/ticketsReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -42,36 +43,66 @@ const useStyles = makeStyles(theme => ({
 
 const CustomRouterLink = forwardRef((props, ref) => (
   <div ref={ref} style={{ flexGrow: 1 }}>
-    <RouterLink {...props} />
+    <NavLink {...props} />
   </div>
 ));
 
 const SidebarNav = props => {
-  const { pages, className, ...rest } = props;
+  const {
+    pages,
+    className,
+    history,
+    setCurrentUserAction,
+    clearTicketsAction,
+    ...rest
+  } = props;
 
   const classes = useStyles();
 
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
+
+  const handleSignOut = () => {
+    logout().catch(e => console.error(e.message));
+  };
+
+  const logout = async () => {
+    setCurrentUserAction({});
+    clearTicketsAction();
+    localStorage.removeItem('jwtToken');
+    history.push('/sign-in');
+  };
+
   return (
     <List {...rest} className={clsx(classes.root, className)}>
-      {pages.map(page => (
-        <ListItem className={classes.item} disableGutters key={page.title}>
-          <Button
-            activeClassName={classes.active}
-            className={classes.button}
-            component={CustomRouterLink}
-            to={page.href}>
-            <div className={classes.icon}>{page.icon}</div>
-            {page.title}
-          </Button>
-        </ListItem>
-      ))}
+      {pages
+        .filter(page => page.active)
+        .map(page => (
+          <ListItem className={classes.item} disableGutters key={page.title}>
+            <Button
+              activeClassName={page.name !== 'logout' ? classes.active : ''}
+              className={classes.button}
+              component={CustomRouterLink}
+              to={page.href}
+              onClick={page.name === 'logout' ? handleSignOut : null}>
+              <div className={classes.icon}>{page.icon}</div>
+              {page.title}
+            </Button>
+          </ListItem>
+        ))}
     </List>
   );
 };
 
 SidebarNav.propTypes = {
   className: PropTypes.string,
-  pages: PropTypes.array.isRequired
+  clearTicketsAction: PropTypes.func,
+  history: PropTypes.object,
+  pages: PropTypes.array.isRequired,
+  setCurrentUserAction: PropTypes.func.isRequired
 };
 
-export default SidebarNav;
+export default connect(null, {
+  setCurrentUserAction: setCurrentUser,
+  clearTicketsAction: clearTickets
+})(withRouter(SidebarNav));
