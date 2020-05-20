@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
-
 import { UsersToolbar, UsersTable } from './components';
-import mockData from './data';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setUsersCount } from '../../redux/usersCountReducer';
 import { withRouter } from 'react-router-dom';
 import { getUsers } from '../../actions/getUsers';
 
@@ -20,15 +17,6 @@ const useStyles = makeStyles(theme => ({
 
 const UserList = ({ getUsersAction }) => {
   const classes = useStyles();
-  const userSchema = {
-    id: '',
-    disabled: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    roles: [],
-    createDate: ''
-  };
   const [users, setUsers] = useState([]);
   const [searchResults, setSearchResults] = useState(users);
 
