@@ -18,6 +18,8 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { registerUser } from '../../actions/users/signUp';
 import { connect } from 'react-redux';
 import isEmpty from '../../helpers/isEmpty';
+import ConfirmationDialog from "../../components/Dialogs/ConfirmationDialog";
+
 
 const schema = {
   firstName: {
@@ -158,6 +160,8 @@ const SignUp = ({ history, registerUserAction }) => {
     errors: {}
   });
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   useEffect(() => {
     const errors = validate(formState.values, schema) || {};
 
@@ -231,7 +235,38 @@ const SignUp = ({ history, registerUserAction }) => {
   const hasError = field =>
     !!(formState.touched[field] && formState.errors[field]);
 
+  const handlePopUp = event => {
+    event.preventDefault();
+    setOpenDialog(!openDialog);
+  };
+
+  // const handleCloseAgree = () =>{
+  //   setOpenDialog(false);
+  //
+  // };
+  //
+  // const handleCloseDisagree = () =>{
+  //   setOpenDialog(false);
+  // };
+
   return (
+    <>
+      {openDialog && (
+        <ConfirmationDialog
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          title={'Terms and conditions'}
+
+          content={
+            '            By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of\n' +
+            '            majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.\n' +
+            '            You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but' +
+            '            not limited to copyright laws).' +
+            '            You must not transmit any worms or viruses or any code of a destructive nature.' +
+            '            A breach or violation of any of the Terms will result in an immediate termination of your Services.'
+          }
+        />
+      )}
     <div className={classes.root}>
       <Grid className={classes.grid} container>
         <Grid className={classes.quoteContainer} item lg={5}>
@@ -355,7 +390,7 @@ const SignUp = ({ history, registerUserAction }) => {
                     <Link
                       color="primary"
                       component={RouterLink}
-                      to="#"
+                      onClick={handlePopUp}
                       underline="always"
                       variant="h6">
                       Terms and Conditions
@@ -389,6 +424,7 @@ const SignUp = ({ history, registerUserAction }) => {
         </Grid>
       </Grid>
     </div>
+      </>
   );
 };
 
