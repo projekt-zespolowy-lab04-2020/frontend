@@ -163,7 +163,11 @@ const UsersTable = props => {
                         </div>
                       </TableCell>
                       <TableCell>{user.email}</TableCell>
-                      <TableCell>{user.roles.join(', ')}</TableCell>
+                      <TableCell>
+                        {!user.roles.length
+                          ? '----------'
+                          : user.roles.join(', ')}
+                      </TableCell>
                       <TableCell>{user.id}</TableCell>
                       <TableCell>{user.createDate}</TableCell>
                       <TableCell>

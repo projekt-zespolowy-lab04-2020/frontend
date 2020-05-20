@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
   row: {
     display: 'flex',
     marginLeft: 85,
-    width: '70%',
+    width: '69%',
     justifyContent: 'space-around',
     alignItems: 'baseline',
     marginBottom: 30
@@ -71,7 +71,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   margin: {
-    width: 160
+    width: 100
   }
 }));
 
@@ -80,26 +80,33 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
   const classes = useStyles();
-  const [role, setRole] = useState('Guide');
-  const [deleted, setDeleted] = useState('No');
-  const [edited, setEdited] = useState(false);
-  const userSchema = {
-    disabled: '',
-    firstName: '',
-    lastName: '',
-    email: '',
-    roles: []
-  };
+  const [showEditedText, setShowEditedText] = useState(false);
+  const [selectOption, setSelectOption] = useState({
+    newRole: 'None',
+    deleteRole: 'None',
+    deleteUser: 'No'
+  });
 
   const [formState, setFormState] = useState({
     isValid: false,
-    values: userSchema,
+    values: {
+      disabled: '',
+      firstName: '',
+      lastName: '',
+      email: '',
+      roles: []
+    },
     touched: {},
     errors: {}
   });
 
   useEffect(() => {
     setOpenEdit(openEdit);
+    setSelectOption({
+      ...selectOption,
+      deleteUser: user.disabled ? 'Yes' : 'No'
+    });
+
     setFormState({
       ...formState,
       values: {
@@ -125,7 +132,7 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
       isValid: false
     });
     setOpenEdit(false);
-    setEdited(false);
+    setShowEditedText(false);
   };
 
   //TODO Add debounce effect
@@ -147,12 +154,12 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
     }));
   };
 
-  const handleRoleChange = event => {
-    setRole(event.target.value);
-  };
-
-  const handleDeleteChange = event => {
-    setDeleted(event.target.value);
+  const handleSelectOptionChange = event => {
+    console.log(event.target.name, ': ', event.target.value);
+    setSelectOption({
+      ...selectOption,
+      [event.target.name]: event.target.value
+    });
   };
 
   const hasError = field =>
@@ -190,13 +197,21 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
     const token = localStorage.getItem('jwtToken');
     const email = formState.values.email;
     const data = formState.values;
-    if (!data.roles.includes(role)) data.roles.push(role);
-    data.disabled = deleted !== 'No';
 
+    // Add new role
+    if (data.roles !== 'None' && !data.roles.includes(selectOption.newRole))
+      data.roles.push(selectOption.newRole);
+
+    //Delete roles
+    if (data.roles !== 'None' && data.roles.includes(selectOption.newRole))
+      data.roles = data.roles.filter(item => item !== selectOption.deleteRole);
+
+    data.disabled = selectOption.deleteUser !== 'No';
+    console.log(data);
     if (token) {
       const response = await patchAction(email, data, token);
       if (response.status === 204) {
-        setEdited(true);
+        setShowEditedText(true);
         setTimeout(() => {
           handleClose();
           window.location.reload();
@@ -279,9 +294,29 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
                 <Select
                   labelId="demo-customized-select-label"
                   id="demo-customized-select"
-                  value={role}
-                  onChange={handleRoleChange}
+                  value={selectOption.newRole}
+                  name={'newRole'}
+                  onChange={handleSelectOptionChange}
                   input={<BootstrapInput />}>
+                  <MenuItem value={'None'}>None</MenuItem>
+                  <MenuItem value={'User'}>User</MenuItem>
+                  <MenuItem value={'Guide'}>Guide</MenuItem>
+                  <MenuItem value={'Admin'}>Admin</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.margin}>
+                <InputLabel id="demo-customized-select-label">
+                  Delete role
+                </InputLabel>
+                <Select
+                  labelId="demo-customized-select-label"
+                  id="demo-customized-select"
+                  value={selectOption.deleteRole}
+                  name={'deleteRole'}
+                  onChange={handleSelectOptionChange}
+                  input={<BootstrapInput />}>
+                  <MenuItem value={'None'}>None</MenuItem>
+                  <MenuItem value={'User'}>User</MenuItem>
                   <MenuItem value={'Guide'}>Guide</MenuItem>
                   <MenuItem value={'Admin'}>Admin</MenuItem>
                 </Select>
@@ -293,8 +328,9 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
                 <Select
                   labelId="demo-customized-select-label"
                   id="demo-customized-select"
-                  value={deleted}
-                  onChange={handleDeleteChange}
+                  value={selectOption.deleteUser}
+                  name={'deleteUser'}
+                  onChange={handleSelectOptionChange}
                   input={<BootstrapInput />}>
                   <MenuItem value={'No'}>No</MenuItem>
                   <MenuItem value={'Yes'}>Yes</MenuItem>
@@ -303,7 +339,7 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
             </div>
           </DialogContent>
         </Grid>
-        {edited && (
+        {showEditedText && (
           <div className={classes.edited}>
             <Typography color="primary" variant="h5">
               User edited successfully. Wait for data update.
