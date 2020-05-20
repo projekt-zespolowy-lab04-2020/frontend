@@ -43,7 +43,12 @@ const ManagementsButtons = ({ user }) => {
         TransitionComponent={Fade}>
         <MenuItem onClick={handleEdit}>Edit</MenuItem>
       </Menu>
-      <EditUser openEdit={openEdit} setOpenEdit={setOpenEdit} user={user} />
+      <EditUser
+        openEdit={openEdit}
+        setOpenEdit={setOpenEdit}
+        user={user}
+        setAnchorEl={setAnchorEl}
+      />
     </div>
   );
 };

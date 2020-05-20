@@ -78,7 +78,13 @@ const useStyles = makeStyles(theme => ({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
+const EditUser = ({
+  openEdit,
+  setOpenEdit,
+  user,
+  patchAction,
+  setAnchorEl
+}) => {
   const classes = useStyles();
   const [showEditedText, setShowEditedText] = useState(false);
   const [selectOption, setSelectOption] = useState({
@@ -133,6 +139,7 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
     });
     setOpenEdit(false);
     setShowEditedText(false);
+    setAnchorEl(null);
   };
 
   //TODO Add debounce effect
@@ -366,6 +373,7 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
 EditUser.propTypes = {
   openEdit: PropTypes.bool,
   patchAction: PropTypes.func,
+  setAnchorEl: PropTypes.func,
   setOpenEdit: PropTypes.func,
   user: PropTypes.object
 };
