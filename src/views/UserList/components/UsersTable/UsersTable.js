@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
 import CustomAvatar from '../../../../layouts/Main/components/Sidebar/components/Profile/Avatar/';
@@ -19,6 +18,8 @@ import {
   TablePagination
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
+import ManagementsButtons from './ManagementButtons/ManagementsButtons';
+import StatusBullet from '../../../../components/StatusBullet';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -40,14 +41,23 @@ const useStyles = makeStyles(theme => ({
   },
   actions: {
     justifyContent: 'flex-end'
+  },
+  management: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
+  statusContainer: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  status: {
+    marginRight: theme.spacing(1)
   }
 }));
 
 const UsersTable = props => {
   const { className, users, ...rest } = props;
-
   const classes = useStyles();
-
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
@@ -115,48 +125,66 @@ const UsersTable = props => {
                   </TableCell>
                   <TableCell>Name</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Phone</TableCell>
+                  <TableCell>Roles</TableCell>
+                  <TableCell>ID</TableCell>
                   <TableCell>Registration date</TableCell>
+                  <TableCell>Status</TableCell>
+                  <TableCell className={classes.management}>
+                    Management
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {users.slice(0, rowsPerPage).map(user => (
-                  <TableRow
-                    className={classes.tableRow}
-                    hover
-                    key={user.id}
-                    selected={selectedUsers.indexOf(user.id) !== -1}>
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={selectedUsers.indexOf(user.id) !== -1}
-                        color="primary"
-                        onChange={event => handleSelectOne(event, user.id)}
-                        value="true"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className={classes.nameContainer}>
-                        <CustomAvatar
-                          to="#"
-                          firstName={user.firstName}
-                          lastName={user.lastName}
-                          className={classes.avatar}
+                {users
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map(user => (
+                    <TableRow
+                      className={classes.tableRow}
+                      hover
+                      key={user.id}
+                      selected={selectedUsers.indexOf(user.id) !== -1}>
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={selectedUsers.indexOf(user.id) !== -1}
+                          color="primary"
+                          onChange={event => handleSelectOne(event, user.id)}
+                          value="true"
                         />
-                        <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
-                      </div>
-                    </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      {user.address.city}, {user.address.state},{' '}
-                      {user.address.country}
-                    </TableCell>
-                    <TableCell>{user.phone}</TableCell>
-                    <TableCell>
-                      {moment(user.createdAt).format('DD/MM/YYYY')}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        <div className={classes.nameContainer}>
+                          <CustomAvatar
+                            to="#"
+                            firstName={user.firstName}
+                            lastName={user.lastName}
+                            className={classes.avatar}
+                          />
+                          <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
+                        </div>
+                      </TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        {!user.roles.length
+                          ? '----------'
+                          : user.roles.join(', ')}
+                      </TableCell>
+                      <TableCell>{user.id}</TableCell>
+                      <TableCell>{user.createDate}</TableCell>
+                      <TableCell>
+                        <div className={classes.statusContainer}>
+                          <StatusBullet
+                            className={classes.status}
+                            color={user.disabled ? 'danger' : 'success'}
+                            size="sm"
+                          />
+                          {user.disabled ? 'Disabled' : 'Active'}
+                        </div>
+                      </TableCell>
+                      <TableCell className={classes.management}>
+                        <ManagementsButtons user={user} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>
