@@ -18,8 +18,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { registerUser } from '../../actions/users/signUp';
 import { connect } from 'react-redux';
 import isEmpty from '../../helpers/isEmpty';
-import ConfirmationDialog from "../../components/Dialogs/ConfirmationDialog";
-
+import ConfirmationDialog from '../../components/Dialogs/ConfirmationDialog';
 
 const schema = {
   firstName: {
@@ -106,7 +105,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     paddingTop: theme.spacing(5),
-    paddingBototm: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2)
   },
@@ -169,7 +168,6 @@ const SignUp = ({ history, registerUserAction }) => {
     if (formState.values.password !== formState.values.confirmPassword) {
       errors.confirmPassword = ['Confirm password must match'];
     }
-
     setFormState(formState => ({
       ...formState,
       isValid: isEmpty(errors),
@@ -240,14 +238,15 @@ const SignUp = ({ history, registerUserAction }) => {
     setOpenDialog(!openDialog);
   };
 
-  // const handleCloseAgree = () =>{
-  //   setOpenDialog(false);
-  //
-  // };
-  //
-  // const handleCloseDisagree = () =>{
-  //   setOpenDialog(false);
-  // };
+  const handleCheckCheckbox = value => {
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        policy: value
+      }
+    });
+  };
 
   return (
     <>
@@ -255,8 +254,8 @@ const SignUp = ({ history, registerUserAction }) => {
         <ConfirmationDialog
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
+          setUpdateData={handleCheckCheckbox}
           title={'Terms and conditions'}
-
           content={
             '            By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of\n' +
             '            majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.\n' +
@@ -267,164 +266,166 @@ const SignUp = ({ history, registerUserAction }) => {
           }
         />
       )}
-    <div className={classes.root}>
-      <Grid className={classes.grid} container>
-        <Grid className={classes.quoteContainer} item lg={5}>
-          <div className={classes.quote}>
-            <div className={classes.quoteInner}>
-              <Typography className={classes.quoteText} variant="h1">
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
-              </Typography>
-              <div className={classes.person}>
-                <Typography className={classes.name} variant="body1">
-                  Takamaru Ayako
+      <div className={classes.root}>
+        <Grid className={classes.grid} container>
+          <Grid className={classes.quoteContainer} item lg={5}>
+            <div className={classes.quote}>
+              <div className={classes.quoteInner}>
+                <Typography className={classes.quoteText} variant="h1">
+                  Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
+                  they sold out High Life.
                 </Typography>
-                <Typography className={classes.bio} variant="body2">
-                  Manager at inVision
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </Grid>
-        <Grid className={classes.content} item lg={7} xs={12}>
-          <div className={classes.content}>
-            <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
-            </div>
-            <div className={classes.contentBody}>
-              <form className={classes.form} onSubmit={handleSignUp}>
-                <Typography className={classes.title} variant="h2">
-                  Create new account
-                </Typography>
-                <Typography color="textSecondary" gutterBottom>
-                  Use your email to create new account
-                </Typography>
-                <TextField
-                  className={classes.textField}
-                  error={hasError('firstName')}
-                  fullWidth
-                  helperText={
-                    hasError('firstName') ? formState.errors.firstName[0] : null
-                  }
-                  label="First name"
-                  name="firstName"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.firstName || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('lastName')}
-                  fullWidth
-                  helperText={
-                    hasError('lastName') ? formState.errors.lastName[0] : null
-                  }
-                  label="Last name"
-                  name="lastName"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.lastName || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('email')}
-                  fullWidth
-                  helperText={
-                    hasError('email') ? formState.errors.email[0] : null
-                  }
-                  label="Email address"
-                  name="email"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.email || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('password')}
-                  fullWidth
-                  helperText={
-                    hasError('password') ? formState.errors.password[0] : null
-                  }
-                  label="Password"
-                  name="password"
-                  onChange={handleChange}
-                  type="password"
-                  value={formState.values.password || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('confirmPassword')}
-                  fullWidth
-                  helperText={
-                    hasError('confirmPassword')
-                      ? formState.errors.confirmPassword[0]
-                      : null
-                  }
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  onChange={handleChange}
-                  type="password"
-                  value={formState.values.confirmPassword || ''}
-                  variant="outlined"
-                />
-                <div className={classes.policy}>
-                  <Checkbox
-                    checked={formState.values.policy || false}
-                    className={classes.policyCheckbox}
-                    color="primary"
-                    name="policy"
-                    onChange={handleChange}
-                  />
-                  <Typography
-                    className={classes.policyText}
-                    color="textSecondary"
-                    variant="body1">
-                    I have read the{' '}
-                    <Link
-                      color="primary"
-                      component={RouterLink}
-                      onClick={handlePopUp}
-                      underline="always"
-                      variant="h6">
-                      Terms and Conditions
-                    </Link>
+                <div className={classes.person}>
+                  <Typography className={classes.name} variant="body1">
+                    Takamaru Ayako
+                  </Typography>
+                  <Typography className={classes.bio} variant="body2">
+                    Manager at inVision
                   </Typography>
                 </div>
-                {hasError('policy') && (
-                  <FormHelperText error>
-                    {formState.errors.policy[0]}
-                  </FormHelperText>
-                )}
-                <Button
-                  className={classes.signUpButton}
-                  color="primary"
-                  disabled={!formState.isValid}
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained">
-                  Sign up now
-                </Button>
-                <Typography color="textSecondary" variant="body1">
-                  Have an account?{' '}
-                  <Link component={RouterLink} to="/sign-in" variant="h6">
-                    Sign in
-                  </Link>
-                </Typography>
-              </form>
+              </div>
             </div>
-          </div>
+          </Grid>
+          <Grid className={classes.content} item lg={7} xs={12}>
+            <div className={classes.content}>
+              <div className={classes.contentHeader}>
+                <IconButton onClick={handleBack}>
+                  <ArrowBackIcon />
+                </IconButton>
+              </div>
+              <div className={classes.contentBody}>
+                <form className={classes.form} onSubmit={handleSignUp}>
+                  <Typography className={classes.title} variant="h2">
+                    Create new account
+                  </Typography>
+                  <Typography color="textSecondary" gutterBottom>
+                    Use your email to create new account
+                  </Typography>
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('firstName')}
+                    fullWidth
+                    helperText={
+                      hasError('firstName')
+                        ? formState.errors.firstName[0]
+                        : null
+                    }
+                    label="First name"
+                    name="firstName"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.firstName || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('lastName')}
+                    fullWidth
+                    helperText={
+                      hasError('lastName') ? formState.errors.lastName[0] : null
+                    }
+                    label="Last name"
+                    name="lastName"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.lastName || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('email')}
+                    fullWidth
+                    helperText={
+                      hasError('email') ? formState.errors.email[0] : null
+                    }
+                    label="Email address"
+                    name="email"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.email || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('password')}
+                    fullWidth
+                    helperText={
+                      hasError('password') ? formState.errors.password[0] : null
+                    }
+                    label="Password"
+                    name="password"
+                    onChange={handleChange}
+                    type="password"
+                    value={formState.values.password || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('confirmPassword')}
+                    fullWidth
+                    helperText={
+                      hasError('confirmPassword')
+                        ? formState.errors.confirmPassword[0]
+                        : null
+                    }
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    onChange={handleChange}
+                    type="password"
+                    value={formState.values.confirmPassword || ''}
+                    variant="outlined"
+                  />
+                  <div className={classes.policy}>
+                    <Checkbox
+                      checked={formState.values.policy || false}
+                      className={classes.policyCheckbox}
+                      color="primary"
+                      name="policy"
+                      onChange={handleChange}
+                    />
+                    <Typography
+                      className={classes.policyText}
+                      color="textSecondary"
+                      variant="body1">
+                      I have read the{' '}
+                      <Link
+                        color="primary"
+                        component={RouterLink}
+                        onClick={handlePopUp}
+                        underline="always"
+                        variant="h6">
+                        Terms and Conditions
+                      </Link>
+                    </Typography>
+                  </div>
+                  {hasError('policy') && (
+                    <FormHelperText error>
+                      {formState.errors.policy[0]}
+                    </FormHelperText>
+                  )}
+                  <Button
+                    className={classes.signUpButton}
+                    color="primary"
+                    disabled={!formState.isValid}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained">
+                    Sign up now
+                  </Button>
+                  <Typography color="textSecondary" variant="body1">
+                    Have an account?{' '}
+                    <Link component={RouterLink} to="/sign-in" variant="h6">
+                      Sign in
+                    </Link>
+                  </Typography>
+                </form>
+              </div>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
-      </>
+      </div>
+    </>
   );
 };
 

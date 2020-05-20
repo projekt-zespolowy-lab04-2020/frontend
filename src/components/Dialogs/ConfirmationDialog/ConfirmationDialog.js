@@ -30,7 +30,6 @@ const ConfirmationDialog = ({
 
   return (
     <div>
-      Typo
       <Dialog
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
