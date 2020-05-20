@@ -321,7 +321,6 @@ const EditUser = ({
                   onChange={handleSelectOptionChange}
                   input={<BootstrapInput />}>
                   <MenuItem value={'None'}>None</MenuItem>
-                  <MenuItem value={'User'}>User</MenuItem>
                   <MenuItem value={'Guide'}>Guide</MenuItem>
                   <MenuItem value={'Admin'}>Admin</MenuItem>
                 </Select>
