@@ -20,6 +20,7 @@ import {
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
 import ManagementsButtons from './ManagementButtons/ManagementsButtons';
+import StatusBullet from '../../../../components/StatusBullet';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -45,6 +46,13 @@ const useStyles = makeStyles(theme => ({
   management: {
     display: 'flex',
     justifyContent: 'flex-end'
+  },
+  statusContainer: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  status: {
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -123,6 +131,7 @@ const UsersTable = props => {
                   <TableCell>Roles</TableCell>
                   <TableCell>ID</TableCell>
                   <TableCell>Registration date</TableCell>
+                  <TableCell>Status</TableCell>
                   <TableCell className={classes.management}>
                     Management
                   </TableCell>
@@ -159,8 +168,16 @@ const UsersTable = props => {
                       <TableCell>{user.email}</TableCell>
                       <TableCell>{user.roles.join(', ')}</TableCell>
                       <TableCell>{user.id}</TableCell>
+                      <TableCell>{user.createDate}</TableCell>
                       <TableCell>
-                        {moment(user.createdAt).format('DD/MM/YYYY')}
+                        <div className={classes.statusContainer}>
+                          <StatusBullet
+                            className={classes.status}
+                            color={user.disabled ? 'danger' : 'success'}
+                            size="sm"
+                          />
+                          {user.disabled ? 'Disabled' : 'Active'}
+                        </div>
                       </TableCell>
                       <TableCell className={classes.management}>
                         <ManagementsButtons user={user} />

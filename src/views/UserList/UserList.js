@@ -27,7 +27,7 @@ const UserList = ({ getUsersAction }) => {
     lastName: '',
     email: '',
     roles: [],
-    createdAt: 1555016400000
+    createDate: ''
   };
   const [users, setUsers] = useState([]);
   const [searchResults, setSearchResults] = useState(users);
@@ -49,7 +49,6 @@ const UserList = ({ getUsersAction }) => {
 
       if (response.status === 200) {
         const downloadedUsers = await response.json();
-        console.log(downloadedUsers);
         setUsers(downloadedUsers);
         setSearchResults(downloadedUsers);
       } else {

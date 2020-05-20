@@ -18,23 +18,24 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
 import { BootstrapInput } from '../../../../Tickets/components/TicketCreator/Contact/Contact';
-import validate from 'validate.js';
 import isEmpty from '../../../../../helpers/isEmpty';
+import { patchUser } from '../../../../../actions/users/patchUser';
 
 const useStyles = makeStyles(theme => ({
   root: {},
   textField: {
-    // width: '100%',
     marginTop: theme.spacing(2)
   },
-  dialog: {},
+  edited: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
   title: {
     display: 'flex',
     justifyContent: 'center',
     fontWeight: 500,
+    fontSize: '100px',
     width: 600
   },
   closeIcon: {
@@ -50,7 +51,8 @@ const useStyles = makeStyles(theme => ({
   },
   row: {
     display: 'flex',
-    width: '50%',
+    marginLeft: 85,
+    width: '70%',
     justifyContent: 'space-around',
     alignItems: 'baseline',
     marginBottom: 30
@@ -61,30 +63,32 @@ const useStyles = makeStyles(theme => ({
   form: {
     paddingLeft: 100,
     paddingRight: 100,
-    paddingBottom: 125,
+    paddingBottom: 15,
     flexBasis: 700,
     [theme.breakpoints.down('sm')]: {
       paddingLeft: theme.spacing(2),
       paddingRight: theme.spacing(2)
     }
+  },
+  margin: {
+    width: 160
   }
 }));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-const EditUser = ({ openEdit, setOpenEdit, user }) => {
+const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
   const classes = useStyles();
-  const [role, setRole] = useState('User');
-
+  const [role, setRole] = useState('Guide');
+  const [deleted, setDeleted] = useState('No');
+  const [edited, setEdited] = useState(false);
   const userSchema = {
-    id: '',
     disabled: '',
     firstName: '',
     lastName: '',
     email: '',
-    roles: [],
-    createdAt: 1555016400000
+    roles: []
   };
 
   const [formState, setFormState] = useState({
@@ -99,13 +103,11 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
     setFormState({
       ...formState,
       values: {
-        id: user.id,
         disabled: user.disabled,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        roles: user.roles,
-        createdAt: 1555016400000
+        roles: user.roles
       }
     });
   }, [openEdit]);
@@ -114,27 +116,21 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
     setFormState({
       ...formState,
       values: {
-        id: user.id,
         disabled: user.disabled,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        roles: user.roles,
-        createdAt: 1555016400000
+        roles: user.roles
       },
       isValid: false
     });
     setOpenEdit(false);
+    setEdited(false);
   };
 
-  const handleEditAndSend = () => {
-    handleClose();
-  };
-
+  //TODO Add debounce effect
   const handleChange = event => {
     event.persist();
-
-    console.log(formState);
     setFormState(formState => ({
       ...formState,
       values: {
@@ -155,6 +151,10 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
     setRole(event.target.value);
   };
 
+  const handleDeleteChange = event => {
+    setDeleted(event.target.value);
+  };
+
   const hasError = field =>
     !!(formState.touched[field] && formState.errors[field]);
 
@@ -162,15 +162,21 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
     const errors = {};
     const emailReg = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
 
-    if (emailReg.test(formState.values.email)) {
+    if (!emailReg.test(formState.values.email)) {
       errors.email = ['Email is invalid'];
     }
 
-    if (formState.values.firstName.length > 32) {
-      errors.firstName = ['First name is to long'];
+    if (
+      !formState.values.firstName.length ||
+      formState.values.firstName.length > 32
+    ) {
+      errors.firstName = ['First name is to short or to long'];
     }
-    if (formState.values.lastName.length > 32) {
-      errors.lastName = ['Last name is to long'];
+    if (
+      !formState.values.lastName.length ||
+      formState.values.lastName.length > 32
+    ) {
+      errors.lastName = ['Last name is to short or to long'];
     }
 
     setFormState(formState => ({
@@ -179,6 +185,31 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
       errors: errors || {}
     }));
   }, [formState.values]);
+
+  const patch = async () => {
+    const token = localStorage.getItem('jwtToken');
+    const email = formState.values.email;
+    const data = formState.values;
+    if (!data.roles.includes(role)) data.roles.push(role);
+    data.disabled = deleted !== 'No';
+
+    if (token) {
+      const response = await patchAction(email, data, token);
+      if (response.status === 204) {
+        setEdited(true);
+        setTimeout(() => {
+          handleClose();
+          window.location.reload();
+        }, 2000);
+      }
+    } else {
+      throw new Error('Error during patching. There is no token available');
+    }
+  };
+
+  const handleEditAndSend = () => {
+    patch().catch(e => console.error(e.message));
+  };
 
   return (
     <div>
@@ -190,15 +221,12 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
         onClose={handleClose}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description">
-        <div className={classes.row}>
-          <DialogTitle className={classes.title} id="alert-dialog-slide-title">
-            Edit User
-            <CloseIcon className={classes.closeIcon} onClick={handleClose} />
-          </DialogTitle>
-        </div>
+        <DialogTitle className={classes.title} id="alert-dialog-slide-title">
+          Edit User
+          <CloseIcon className={classes.closeIcon} onClick={handleClose} />
+        </DialogTitle>
         <Grid container>
           <DialogContent>
-            {/*<div className={classes.row}>*/}
             <form className={classes.form} onSubmit={() => {}}>
               <TextField
                 className={classes.textField}
@@ -243,27 +271,45 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
                 variant="outlined"
               />
             </form>
-            {/*</div>*/}
             <div className={classes.row}>
-              <Typography color="textPrimary" component="p">
-                Add new role
-              </Typography>
               <FormControl className={classes.margin}>
-                <InputLabel id="demo-customized-select-label">Role</InputLabel>
+                <InputLabel id="demo-customized-select-label">
+                  Add New Role
+                </InputLabel>
                 <Select
                   labelId="demo-customized-select-label"
                   id="demo-customized-select"
                   value={role}
                   onChange={handleRoleChange}
                   input={<BootstrapInput />}>
-                  <MenuItem value={'User'}>User</MenuItem>
                   <MenuItem value={'Guide'}>Guide</MenuItem>
                   <MenuItem value={'Admin'}>Admin</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl className={classes.margin}>
+                <InputLabel id="demo-customized-select-label">
+                  Delete user
+                </InputLabel>
+                <Select
+                  labelId="demo-customized-select-label"
+                  id="demo-customized-select"
+                  value={deleted}
+                  onChange={handleDeleteChange}
+                  input={<BootstrapInput />}>
+                  <MenuItem value={'No'}>No</MenuItem>
+                  <MenuItem value={'Yes'}>Yes</MenuItem>
                 </Select>
               </FormControl>
             </div>
           </DialogContent>
         </Grid>
+        {edited && (
+          <div className={classes.edited}>
+            <Typography color="primary" variant="h5">
+              User edited successfully. Wait for data update.
+            </Typography>
+          </div>
+        )}
         <div className={classes.buttons}>
           <DialogActions>
             <Button color="primary" onClick={handleClose}>
@@ -285,8 +331,9 @@ const EditUser = ({ openEdit, setOpenEdit, user }) => {
 
 EditUser.propTypes = {
   openEdit: PropTypes.bool,
+  patchAction: PropTypes.func,
   setOpenEdit: PropTypes.func,
   user: PropTypes.object
 };
 
-export default connect(null, {})(withRouter(EditUser));
+export default connect(null, { patchAction: patchUser })(withRouter(EditUser));
