@@ -155,7 +155,6 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
   };
 
   const handleSelectOptionChange = event => {
-    console.log(event.target.name, ': ', event.target.value);
     setSelectOption({
       ...selectOption,
       [event.target.name]: event.target.value
@@ -207,7 +206,6 @@ const EditUser = ({ openEdit, setOpenEdit, user, patchAction }) => {
       data.roles = data.roles.filter(item => item !== selectOption.deleteRole);
 
     data.disabled = selectOption.deleteUser !== 'No';
-    console.log(data);
     if (token) {
       const response = await patchAction(email, data, token);
       if (response.status === 204) {
