@@ -2,7 +2,7 @@
 import { baseURL } from '../../helpers/paths';
 
 export const createComments = (content, ticketID, token) => dispatch => {
-  const path = baseURL + `/tickets/${ticketID}/comment`;
+  const path = baseURL + `/tickets/${ticketID}/comments`;
 
   return fetch(path, {
     method: 'POST',
