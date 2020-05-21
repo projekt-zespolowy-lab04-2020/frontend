@@ -28,7 +28,6 @@ import Spinner from 'components/Spinner/Spinner';
 import moment from 'moment';
 import { addTicket, clearTickets } from 'redux/ticketsReducer';
 
-
 const useStyles = makeStyles(theme => ({
   root: {},
   content: {
@@ -49,9 +48,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-
 const LatestSupportTickets = props => {
-  const { 
+  const {
     className,
     userObject,
     getTicketsAction,
@@ -61,6 +59,9 @@ const LatestSupportTickets = props => {
     ticketsObject,
     ...rest
   } = props;
+
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
 
   const classes = useStyles();
 
@@ -73,7 +74,6 @@ const LatestSupportTickets = props => {
 
   useEffect(() => {
     setSearchResults([...ticketsObject.tickets]);
-    console.log(searchResults);
   }, [ticketsObject]);
 
   const getTicketAsync = async (ID, token) => {
@@ -102,9 +102,13 @@ const LatestSupportTickets = props => {
       const res = await response.json();
       if (response.status === 200) {
         getAllUserTickets(res, token)
-          .then(tickets => tickets.sort((t1, t2) => (
-            moment(t2.ticket.createDate, 'DD-MM-YYYY') - moment(t1.ticket.createDate, 'DD-MM-YYYY')
-          )))
+          .then(tickets =>
+            tickets.sort(
+              (t1, t2) =>
+                moment(t2.ticket.createDate, 'DD-MM-YYYY') -
+                moment(t1.ticket.createDate, 'DD-MM-YYYY')
+            )
+          )
           .then(tickets => {
             if (!tickets.length) setHasTicketsFlag(true);
             clearTicketsAction();
@@ -143,16 +147,20 @@ const LatestSupportTickets = props => {
     const dateFormat = 'DD-MM-YYYY';
     if (sortByDateDesc) {
       setSearchResults([
-        ...searchResults.sort((t1, t2) => (
-          moment(t1.ticket.createDate, dateFormat) - moment(t2.ticket.createDate, dateFormat)
-        ))
+        ...searchResults.sort(
+          (t1, t2) =>
+            moment(t1.ticket.createDate, dateFormat) -
+            moment(t2.ticket.createDate, dateFormat)
+        )
       ]);
     } else {
       setSearchResults([
-        ...searchResults.sort((t1, t2) => (
-          moment(t2.ticket.createDate, dateFormat) - moment(t1.ticket.createDate, dateFormat)
-        ))
-      ]);      
+        ...searchResults.sort(
+          (t1, t2) =>
+            moment(t2.ticket.createDate, dateFormat) -
+            moment(t1.ticket.createDate, dateFormat)
+        )
+      ]);
     }
 
     setSortByDateDesc(!sortByDateDesc);
@@ -161,9 +169,13 @@ const LatestSupportTickets = props => {
 
   const handleSortTicketsByStatus = () => {
     if (sortByOpenStatus) {
-      setSearchResults([...searchResults.sort((t1, _) => t1.ticket.closed ? -1 : 1)]);
+      setSearchResults([
+        ...searchResults.sort((t1, _) => (t1.ticket.closed ? -1 : 1))
+      ]);
     } else {
-      setSearchResults([...searchResults.sort((t1, _) => t1.ticket.closed ? 1 : -1)]);
+      setSearchResults([
+        ...searchResults.sort((t1, _) => (t1.ticket.closed ? 1 : -1))
+      ]);
     }
 
     setSortByOpenStatus(!sortByOpenStatus);
@@ -186,8 +198,9 @@ const LatestSupportTickets = props => {
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
-            {(!searchResults.length && !hasTickets) ?
-              <Spinner /> :
+            {!searchResults.length && !hasTickets ? (
+              <Spinner />
+            ) : (
               <Table>
                 <TableHead>
                   <TableRow>
@@ -199,7 +212,7 @@ const LatestSupportTickets = props => {
                           active
                           direction={sortByDateDesc ? 'desc' : 'asc'}
                           onClick={handleSortTicketsByDate}>
-                            Date
+                          Date
                         </TableSortLabel>
                       </Tooltip>
                     </TableCell>
@@ -209,7 +222,7 @@ const LatestSupportTickets = props => {
                           active
                           direction={sortByOpenStatus ? 'desc' : 'asc'}
                           onClick={handleSortTicketsByStatus}>
-                            Status
+                          Status
                         </TableSortLabel>
                       </Tooltip>
                     </TableCell>
@@ -217,40 +230,37 @@ const LatestSupportTickets = props => {
                 </TableHead>
                 <TableBody>
                   {searchResults
-                    .slice(page*rowsPerPage, (page+1)*rowsPerPage)
+                    .slice(page * rowsPerPage, (page + 1) * rowsPerPage)
                     .map((data, index) => {
                       const { ticket } = data;
                       return (
                         <TableRow hover key={index}>
                           <TableCell>{ticket.id}</TableCell>
-                          <TableCell>
-                            {ticket.author}
-                          </TableCell>
-                          <TableCell>
-                            {ticket.createDate}
-                          </TableCell>
+                          <TableCell>{ticket.author}</TableCell>
+                          <TableCell>{ticket.createDate}</TableCell>
                           <TableCell>
                             {ticket.closed ? 'Closed' : 'Open'}
                           </TableCell>
-                        </TableRow>);
-                    })
-                  }
+                        </TableRow>
+                      );
+                    })}
                 </TableBody>
-            </Table>}
+              </Table>
+            )}
           </div>
         </PerfectScrollbar>
       </CardContent>
       <Divider />
       <CardActions className={classes.actions}>
         <TablePagination
-            component="div"
-            count={searchResults.length}
-            onChangePage={handlePageChange}
-            onChangeRowsPerPage={handleRowsPerPageChange}
-            page={page}
-            rowsPerPage={rowsPerPage}
-            rowsPerPageOptions={[5, 10, 15]}
-          />
+          component="div"
+          count={searchResults.length}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handleRowsPerPageChange}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[5, 10, 15]}
+        />
       </CardActions>
     </Card>
   );
@@ -263,7 +273,7 @@ LatestSupportTickets.propTypes = {
   userObject: PropTypes.object,
   addTicketAction: PropTypes.func,
   clearTicketsAction: PropTypes.func,
-  ticketsObject: PropTypes.object,
+  ticketsObject: PropTypes.object
 };
 
 const mapStateToProps = state => {
