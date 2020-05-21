@@ -203,7 +203,7 @@ const LatestSupportTickets = props => {
                         </TableSortLabel>
                       </Tooltip>
                     </TableCell>
-                    <TableCell sortDirection="desc">
+                    <TableCell padding={'checkbox'} sortDirection="desc">
                       <Tooltip enterDelay={300} title="Sort">
                         <TableSortLabel
                           active
