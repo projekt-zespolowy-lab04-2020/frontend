@@ -257,12 +257,12 @@ const SignUp = ({ history, registerUserAction }) => {
           setUpdateData={handleCheckCheckbox}
           title={'Terms and conditions'}
           content={
-            '            By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, or that you are the age of\n' +
-            '            majority in your state or province of residence and you have given us your consent to allow any of your minor dependents to use this site.\n' +
-            '            You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but' +
-            '            not limited to copyright laws).' +
-            '            You must not transmit any worms or viruses or any code of a destructive nature.' +
-            '            A breach or violation of any of the Terms will result in an immediate termination of your Services.'
+
+            '            1.By agreeing to these Terms of Service, you represent that you are at least the age of 18.' +
+            '            2.A breach or violation of any of the Terms will result in an termination of your Services.' +
+            '            3.You must not transmit any worms or viruses or any code of a bad, destructive nature.' +
+            '            4.You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but' +
+            '            not limited to copyright laws).'
           }
         />
       )}
