@@ -18,6 +18,7 @@ import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { registerUser } from '../../actions/users/signUp';
 import { connect } from 'react-redux';
 import isEmpty from '../../helpers/isEmpty';
+import ConfirmationDialog from '../../components/Dialogs/ConfirmationDialog';
 
 const schema = {
   firstName: {
@@ -104,7 +105,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     alignItems: 'center',
     paddingTop: theme.spacing(5),
-    paddingBototm: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
     paddingLeft: theme.spacing(2),
     paddingRight: theme.spacing(2)
   },
@@ -158,6 +159,8 @@ const SignUp = ({ history, registerUserAction }) => {
     errors: {}
   });
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   useEffect(() => {
     const errors = validate(formState.values, schema) || {};
 
@@ -165,7 +168,6 @@ const SignUp = ({ history, registerUserAction }) => {
     if (formState.values.password !== formState.values.confirmPassword) {
       errors.confirmPassword = ['Confirm password must match'];
     }
-
     setFormState(formState => ({
       ...formState,
       isValid: isEmpty(errors),
@@ -231,7 +233,41 @@ const SignUp = ({ history, registerUserAction }) => {
   const hasError = field =>
     !!(formState.touched[field] && formState.errors[field]);
 
+  const handlePopUp = event => {
+    event.preventDefault();
+    setOpenDialog(!openDialog);
+  };
+
+  const handleCheckCheckbox = value => {
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        policy: value
+      }
+    });
+  };
+
   return (
+
+    <>
+      {openDialog && (
+        <ConfirmationDialog
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          setUpdateData={handleCheckCheckbox}
+          title={'Terms and conditions'}
+          content={
+
+            '            1.By agreeing to these Terms of Service, you represent that you are at least the age of 18.' +
+            '            2.A breach or violation of any of the Terms will result in an termination of your Services.' +
+            '            3.You must not transmit any worms or viruses or any code of a bad, destructive nature.' +
+            '            4.You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but' +
+            '            not limited to copyright laws).'
+          }
+        />
+      )}
+
     <div className={classes.root}>
       <Grid className={classes.grid} container>
         <Grid className={classes.quoteContainer} item lg={5}>
@@ -249,148 +285,151 @@ const SignUp = ({ history, registerUserAction }) => {
                 </Typography>
                 <Typography className={classes.bio} variant="body2">
                   Manager at inVision
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </Grid>
-        <Grid className={classes.content} item lg={7} xs={12}>
-          <div className={classes.content}>
-            <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
-            </div>
-            <div className={classes.contentBody}>
-              <form className={classes.form} onSubmit={handleSignUp}>
-                <Typography className={classes.title} variant="h2">
-                  Create new account
-                </Typography>
-                <Typography color="textSecondary" gutterBottom>
-                  Use your email to create new account
-                </Typography>
-                <TextField
-                  className={classes.textField}
-                  error={hasError('firstName')}
-                  fullWidth
-                  helperText={
-                    hasError('firstName') ? formState.errors.firstName[0] : null
-                  }
-                  label="First name"
-                  name="firstName"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.firstName || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('lastName')}
-                  fullWidth
-                  helperText={
-                    hasError('lastName') ? formState.errors.lastName[0] : null
-                  }
-                  label="Last name"
-                  name="lastName"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.lastName || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('email')}
-                  fullWidth
-                  helperText={
-                    hasError('email') ? formState.errors.email[0] : null
-                  }
-                  label="Email address"
-                  name="email"
-                  onChange={handleChange}
-                  type="text"
-                  value={formState.values.email || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('password')}
-                  fullWidth
-                  helperText={
-                    hasError('password') ? formState.errors.password[0] : null
-                  }
-                  label="Password"
-                  name="password"
-                  onChange={handleChange}
-                  type="password"
-                  value={formState.values.password || ''}
-                  variant="outlined"
-                />
-                <TextField
-                  className={classes.textField}
-                  error={hasError('confirmPassword')}
-                  fullWidth
-                  helperText={
-                    hasError('confirmPassword')
-                      ? formState.errors.confirmPassword[0]
-                      : null
-                  }
-                  label="Confirm Password"
-                  name="confirmPassword"
-                  onChange={handleChange}
-                  type="password"
-                  value={formState.values.confirmPassword || ''}
-                  variant="outlined"
-                />
-                <div className={classes.policy}>
-                  <Checkbox
-                    checked={formState.values.policy || false}
-                    className={classes.policyCheckbox}
-                    color="primary"
-                    name="policy"
-                    onChange={handleChange}
-                  />
-                  <Typography
-                    className={classes.policyText}
-                    color="textSecondary"
-                    variant="body1">
-                    I have read the{' '}
-                    <Link
-                      color="primary"
-                      component={RouterLink}
-                      to="#"
-                      underline="always"
-                      variant="h6">
-                      Terms and Conditions
-                    </Link>
                   </Typography>
                 </div>
-                {hasError('policy') && (
-                  <FormHelperText error>
-                    {formState.errors.policy[0]}
-                  </FormHelperText>
-                )}
-                <Button
-                  className={classes.signUpButton}
-                  color="primary"
-                  disabled={!formState.isValid}
-                  fullWidth
-                  size="large"
-                  type="submit"
-                  variant="contained">
-                  Sign up now
-                </Button>
-                <Typography color="textSecondary" variant="body1">
-                  Have an account?{' '}
-                  <Link component={RouterLink} to="/sign-in" variant="h6">
-                    Sign in
-                  </Link>
-                </Typography>
-              </form>
+              </div>
             </div>
-          </div>
+          </Grid>
+          <Grid className={classes.content} item lg={7} xs={12}>
+            <div className={classes.content}>
+              <div className={classes.contentHeader}>
+                <IconButton onClick={handleBack}>
+                  <ArrowBackIcon />
+                </IconButton>
+              </div>
+              <div className={classes.contentBody}>
+                <form className={classes.form} onSubmit={handleSignUp}>
+                  <Typography className={classes.title} variant="h2">
+                    Create new account
+                  </Typography>
+                  <Typography color="textSecondary" gutterBottom>
+                    Use your email to create new account
+                  </Typography>
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('firstName')}
+                    fullWidth
+                    helperText={
+                      hasError('firstName')
+                        ? formState.errors.firstName[0]
+                        : null
+                    }
+                    label="First name"
+                    name="firstName"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.firstName || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('lastName')}
+                    fullWidth
+                    helperText={
+                      hasError('lastName') ? formState.errors.lastName[0] : null
+                    }
+                    label="Last name"
+                    name="lastName"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.lastName || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('email')}
+                    fullWidth
+                    helperText={
+                      hasError('email') ? formState.errors.email[0] : null
+                    }
+                    label="Email address"
+                    name="email"
+                    onChange={handleChange}
+                    type="text"
+                    value={formState.values.email || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('password')}
+                    fullWidth
+                    helperText={
+                      hasError('password') ? formState.errors.password[0] : null
+                    }
+                    label="Password"
+                    name="password"
+                    onChange={handleChange}
+                    type="password"
+                    value={formState.values.password || ''}
+                    variant="outlined"
+                  />
+                  <TextField
+                    className={classes.textField}
+                    error={hasError('confirmPassword')}
+                    fullWidth
+                    helperText={
+                      hasError('confirmPassword')
+                        ? formState.errors.confirmPassword[0]
+                        : null
+                    }
+                    label="Confirm Password"
+                    name="confirmPassword"
+                    onChange={handleChange}
+                    type="password"
+                    value={formState.values.confirmPassword || ''}
+                    variant="outlined"
+                  />
+                  <div className={classes.policy}>
+                    <Checkbox
+                      checked={formState.values.policy || false}
+                      className={classes.policyCheckbox}
+                      color="primary"
+                      name="policy"
+                      onChange={handleChange}
+                    />
+                    <Typography
+                      className={classes.policyText}
+                      color="textSecondary"
+                      variant="body1">
+                      I have read the{' '}
+                      <Link
+                        color="primary"
+                        component={RouterLink}
+                        onClick={handlePopUp}
+                        underline="always"
+                        variant="h6">
+                        Terms and Conditions
+                      </Link>
+                    </Typography>
+                  </div>
+                  {hasError('policy') && (
+                    <FormHelperText error>
+                      {formState.errors.policy[0]}
+                    </FormHelperText>
+                  )}
+                  <Button
+                    className={classes.signUpButton}
+                    color="primary"
+                    disabled={!formState.isValid}
+                    fullWidth
+                    size="large"
+                    type="submit"
+                    variant="contained">
+                    Sign up now
+                  </Button>
+                  <Typography color="textSecondary" variant="body1">
+                    Have an account?{' '}
+                    <Link component={RouterLink} to="/sign-in" variant="h6">
+                      Sign in
+                    </Link>
+                  </Typography>
+                </form>
+              </div>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
-    </div>
+      </div>
+    </>
   );
 };
 
