@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { getUsers } from '../../actions/getUsers';
-import Spinner from 'components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -56,7 +55,7 @@ const UserList = ({ getUsersAction }) => {
     <div className={classes.root}>
       <UsersToolbar onSearchChange={onSearchChange} />
       <div className={classes.content}>
-        {!searchResults.length ? <Spinner /> : <UsersTable users={searchResults} />}
+        <UsersTable users={searchResults} />
       </div>
     </div>
   );

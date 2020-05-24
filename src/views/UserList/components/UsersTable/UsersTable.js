@@ -20,6 +20,7 @@ import {
 import { green } from '../../../../theme/palette';
 import ManagementsButtons from './ManagementButtons/ManagementsButtons';
 import StatusBullet from '../../../../components/StatusBullet';
+import Spinner from 'components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -109,84 +110,88 @@ const UsersTable = props => {
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedUsers.length === users.length}
-                      color="primary"
-                      indeterminate={
-                        selectedUsers.length > 0 &&
-                        selectedUsers.length < users.length
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Roles</TableCell>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Registration date</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell className={classes.management}>
-                    Management
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map(user => (
-                    <TableRow
-                      className={classes.tableRow}
-                      hover
-                      key={user.id}
-                      selected={selectedUsers.indexOf(user.id) !== -1}>
+            {users.length === 0 ? (
+              <Spinner />
+            ) : (
+                <Table>
+                  <TableHead>
+                    <TableRow>
                       <TableCell padding="checkbox">
                         <Checkbox
-                          checked={selectedUsers.indexOf(user.id) !== -1}
+                          checked={selectedUsers.length === users.length}
                           color="primary"
-                          onChange={event => handleSelectOne(event, user.id)}
-                          value="true"
+                          indeterminate={
+                            selectedUsers.length > 0 &&
+                            selectedUsers.length < users.length
+                          }
+                          onChange={handleSelectAll}
                         />
                       </TableCell>
-                      <TableCell>
-                        <div className={classes.nameContainer}>
-                          <CustomAvatar
-                            to="#"
-                            firstName={user.firstName}
-                            lastName={user.lastName}
-                            className={classes.avatar}
-                          />
-                          <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
-                        </div>
-                      </TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        {!user.roles.length
-                          ? '----------'
-                          : user.roles.join(', ')}
-                      </TableCell>
-                      <TableCell>{user.id}</TableCell>
-                      <TableCell>{user.createDate}</TableCell>
-                      <TableCell>
-                        <div className={classes.statusContainer}>
-                          <StatusBullet
-                            className={classes.status}
-                            color={user.disabled ? 'danger' : 'success'}
-                            size="sm"
-                          />
-                          {user.disabled ? 'Disabled' : 'Active'}
-                        </div>
-                      </TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Email</TableCell>
+                      <TableCell>Roles</TableCell>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Registration date</TableCell>
+                      <TableCell>Status</TableCell>
                       <TableCell className={classes.management}>
-                        <ManagementsButtons user={user} />
-                      </TableCell>
+                        Management
+                  </TableCell>
                     </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
+                  </TableHead>
+                  <TableBody>
+                    {users
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map(user => (
+                        <TableRow
+                          className={classes.tableRow}
+                          hover
+                          key={user.id}
+                          selected={selectedUsers.indexOf(user.id) !== -1}>
+                          <TableCell padding="checkbox">
+                            <Checkbox
+                              checked={selectedUsers.indexOf(user.id) !== -1}
+                              color="primary"
+                              onChange={event => handleSelectOne(event, user.id)}
+                              value="true"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className={classes.nameContainer}>
+                              <CustomAvatar
+                                to="#"
+                                firstName={user.firstName}
+                                lastName={user.lastName}
+                                className={classes.avatar}
+                              />
+                              <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
+                            </div>
+                          </TableCell>
+                          <TableCell>{user.email}</TableCell>
+                          <TableCell>
+                            {!user.roles.length
+                              ? '----------'
+                              : user.roles.join(', ')}
+                          </TableCell>
+                          <TableCell>{user.id}</TableCell>
+                          <TableCell>{user.createDate}</TableCell>
+                          <TableCell>
+                            <div className={classes.statusContainer}>
+                              <StatusBullet
+                                className={classes.status}
+                                color={user.disabled ? 'danger' : 'success'}
+                                size="sm"
+                              />
+                              {user.disabled ? 'Disabled' : 'Active'}
+                            </div>
+                          </TableCell>
+                          <TableCell className={classes.management}>
+                            <ManagementsButtons user={user} />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              )}
           </div>
         </PerfectScrollbar>
       </CardContent>
