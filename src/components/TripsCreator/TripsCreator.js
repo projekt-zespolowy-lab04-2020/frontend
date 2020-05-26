@@ -21,6 +21,8 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import SliderWrapper from '../TicketCreator/SliderWrapper';
 import { createTrip } from '../../actions/trips/createTrip';
+import MapWrapper from './MapWrapper/MapWrapper';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   root: {},
@@ -32,7 +34,7 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     fontWeight: 500,
-    width: 600
+    width: 500
   },
   closeIcon: {
     position: 'absolute',
@@ -93,6 +95,7 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
 
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [openMapDialog, setOpenMapDialog] = useState(false);
 
   const handleDateChange = date => {
     setSelectedDate(date);
@@ -212,15 +215,6 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
             </div>
             <div className={classes.row}>
               <TextField
-                label="Destination"
-                name="destination"
-                value={formState.values.destination}
-                className={classes.destination}
-                onChange={handleChanged}
-              />
-            </div>
-            <div className={classes.row}>
-              <TextField
                 label="Estimated cost"
                 name="cost"
                 value={formState.values.cost}
@@ -271,6 +265,19 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
             </div>
             <div className={classes.row}>
               <SliderWrapper ticket={formState} setTicket={setFormState} />
+            </div>
+            <div className={classes.row}>
+              <Typography
+                variant="h6"
+                color="textSecondary"
+                component="p"
+                style={{ textAlign: 'center' }}>
+                Select start point and end point of created trip
+              </Typography>
+              <MapWrapper
+                openMapDialog={openMapDialog}
+                setOpenMapDialog={setOpenMapDialog}
+              />
             </div>
           </DialogContent>
         </Grid>
