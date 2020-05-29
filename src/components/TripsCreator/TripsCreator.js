@@ -12,9 +12,9 @@ import 'date-fns';
 import Grid from '@material-ui/core/Grid';
 import DateFnsUtils from '@date-io/date-fns';
 import {
-  MuiPickersUtilsProvider,
   KeyboardDatePicker,
-  KeyboardTimePicker
+  KeyboardTimePicker,
+  MuiPickersUtilsProvider
 } from '@material-ui/pickers';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -23,6 +23,7 @@ import SliderWrapper from '../TicketCreator/SliderWrapper';
 import { createTrip } from '../../actions/trips/createTrip';
 import MapWrapper from './MapWrapper/MapWrapper';
 import Typography from '@material-ui/core/Typography';
+import moment from 'moment';
 
 const useStyles = makeStyles({
   root: {},
@@ -73,51 +74,55 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 const TripsCreator = ({ userObject, createNewTripAction }) => {
   const classes = useStyles();
   const tripValues = {
-    guide: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      roles: ''
-    },
     description: '',
-    numberOfPeople: 10,
-    destination: '',
-    dateAndTime: new Date().toLocaleString(),
-    cost: ''
+    peopleLimit: 10,
+    dateAndTime: new Date(),
+    cost: '',
+    name: '',
+    route: {
+      points: [
+        {
+          order: 0,
+          position: {
+            lat: 50.07324792988664,
+            lng: 19.955507812500002
+          }
+        },
+        {
+          order: 1,
+          position: {
+            lat: 52.241025473355585,
+            lng: 21.01210937500002
+          }
+        }
+      ]
+    }
   };
 
   const [formState, setFormState] = useState({
     isValid: false,
-    contactValid: false,
+    isDateSelected: false,
     values: tripValues,
     touched: {}
   });
 
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(moment().format());
   const [openMapDialog, setOpenMapDialog] = useState(false);
 
   const handleDateChange = date => {
-    setSelectedDate(date);
+    setSelectedDate(moment(date).format());
     setFormState({
       ...formState,
-      values: { ...formState.values, dateAndTime: date.toLocaleString() }
+      values: { ...formState.values, dateAndTime: date },
+      isDateSelected: true,
+      isValid: Object.keys(formState.touched).length === 3 && true
     });
   };
 
   useEffect(() => {
-    // console.log(userObject);
     setFormState({
-      ...formState,
-      values: {
-        ...formState.values,
-        guide: {
-          firstName: userObject.firstName,
-          lastName: userObject.lastName,
-          email: userObject.email,
-          roles: userObject.roles
-        }
-      }
+      ...formState
     });
   }, [userObject]);
 
@@ -128,10 +133,17 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
   const createTrips = async () => {
     const token = localStorage.getItem('jwtToken');
     if (token) {
-      // console.log(formState.values);
       const newTrip = {
-        ...formState.values
+        cost: parseInt(formState.values.cost),
+        description: formState.values.description,
+        peopleLimit: formState.values.peopleLimit,
+        dateTrip: formState.values.dateAndTime,
+        route: {
+          name: formState.values.name,
+          points: formState.values.route.points
+        }
       };
+      console.log(newTrip);
       const response = await createNewTripAction(newTrip, token);
       console.log(response);
       const res = await response.json();
@@ -167,7 +179,6 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
   // };
 
   const handleChanged = event => {
-    console.log(Object.keys(formState.touched).length);
     setFormState({
       ...formState,
       values: {
@@ -178,8 +189,8 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
         ...formState.touched,
         [event.target.name]: true
       },
-      //TODO Validate cost
-      isValid: Object.keys(formState.touched).length === 3
+      isValid:
+        Object.keys(formState.touched).length === 3 && formState.isDateSelected
     });
   };
 
@@ -206,9 +217,18 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
           <DialogContent>
             <div className={classes.row}>
               <TextField
+                label="Name"
+                name="name"
+                value={formState.values.name}
+                className={classes.textField}
+                onChange={handleChanged}
+              />
+            </div>
+            <div className={classes.row}>
+              <TextField
                 label="Description"
                 name="description"
-                value={formState.values.subject}
+                value={formState.values.description}
                 className={classes.textField}
                 onChange={handleChanged}
               />
@@ -217,6 +237,7 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
               <TextField
                 label="Estimated cost"
                 name="cost"
+                type="number"
                 value={formState.values.cost}
                 className={classes.destination}
                 onChange={handleChanged}
@@ -268,15 +289,24 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
             </div>
             <div className={classes.row}>
               <Typography
-                variant="h6"
+                variant="h5"
                 color="textSecondary"
                 component="p"
                 style={{ textAlign: 'center' }}>
                 Select start point and end point of created trip
               </Typography>
+              <Typography
+                variant="h6"
+                color="textSecondary"
+                component="p"
+                style={{ textAlign: 'center', padding: 5 }}>
+                Drag to the desired place
+              </Typography>
               <MapWrapper
                 openMapDialog={openMapDialog}
                 setOpenMapDialog={setOpenMapDialog}
+                formState={formState}
+                setFormState={setFormState}
               />
             </div>
           </DialogContent>

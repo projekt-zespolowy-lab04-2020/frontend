@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Map, GoogleApiWrapper, Marker, Polyline } from 'google-maps-react';
 import { makeStyles } from '@material-ui/styles';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   root: {
@@ -9,35 +10,37 @@ const useStyles = makeStyles({
   }
 });
 
-const MapWrapper = ({ google }) => {
+const MapWrapper = ({ google, formState, setFormState }) => {
   const classes = useStyles();
-  const [markers, setMarkers] = useState([
-    {
-      name: 'Start',
-      position: {
-        lat: 52.241025473355585,
-        lng: 21.01210937500002
-      }
-    },
-    {
-      name: 'End',
-      position: {
-        lat: 50.07324792988664,
-        lng: 19.955507812500002
-      }
-    }
-  ]);
 
   const onMarkerDragEnd = (coord, index) => {
     const { latLng } = coord;
     const lat = latLng.lat();
     const lng = latLng.lng();
-    console.log(lat, ', ', lng);
-    setMarkers(() => {
-      const tempMarkers = [...markers];
-      tempMarkers[index] = { ...tempMarkers[index], position: { lat, lng } };
-      return tempMarkers;
+
+    const tempMarkers = [...formState.values.route.points];
+    tempMarkers[index] = {
+      ...tempMarkers[index],
+      order: index,
+      position: { lat, lng }
+    };
+
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        route: {
+          ...formState.values.route,
+          points: tempMarkers
+        }
+      }
     });
+  };
+  const getMarkerName = (index, length) => {
+    // The start and the last point should have
+    // label Start and End on the map
+    if (index === 0) return 'Start';
+    if (index === length - 1) return 'End';
   };
 
   return (
@@ -52,15 +55,18 @@ const MapWrapper = ({ google }) => {
           border: '3px solid #00c179'
         }}
         initialCenter={{ lat: 50.07324792988664, lng: 19.955507812500002 }}>
-        {markers.map((marker, index) => (
+        {formState.values.route.points.map((marker, index) => (
           <Marker
             key={index}
             position={marker.position}
             draggable
             onDragend={(t, map, coord) => onMarkerDragEnd(coord, index)}
-            name={marker.name}
+            name={getMarkerName(
+              marker.order,
+              formState.values.route.points.length
+            )}
             label={{
-              text: marker.name,
+              text: getMarkerName(index, formState.values.route.points.length),
               fontSize: '18px',
               fontWeight: '600',
               color: '#000'
@@ -68,7 +74,9 @@ const MapWrapper = ({ google }) => {
           />
         ))}
         <Polyline
-          path={[...markers.map(marker => marker.position)]}
+          path={[
+            ...formState.values.route.points.map(marker => marker.position)
+          ]}
           geodesic={false}
           options={{
             strokeColor: '#38B44F',
@@ -79,6 +87,12 @@ const MapWrapper = ({ google }) => {
       </Map>
     </div>
   );
+};
+
+MapWrapper.propTypes = {
+  formState: PropTypes.object,
+  google: PropTypes.object,
+  setFormState: PropTypes.func
 };
 
 export default GoogleApiWrapper({
