@@ -23,7 +23,7 @@ const Topbar = props => {
       color="primary"
       position="fixed">
       <Toolbar>
-        <RouterLink to="/">
+        <RouterLink to="/dashboard">
           <img alt="Logo" src="/images/logos/logo--white.svg" />
         </RouterLink>
       </Toolbar>

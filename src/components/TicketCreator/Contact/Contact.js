@@ -8,7 +8,7 @@ import InputBase from '@material-ui/core/InputBase';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 
-const BootstrapInput = withStyles(theme => ({
+export const BootstrapInput = withStyles(theme => ({
   root: {
     'label + &': {
       marginTop: theme.spacing(3)
