@@ -10,7 +10,14 @@ const useStyles = makeStyles({
   }
 });
 
-const MapWrapper = ({ google, formState, setFormState }) => {
+const MapWrapper = ({
+  google,
+  formState,
+  setFormState,
+  width,
+  height,
+  isStaticMap
+}) => {
   const classes = useStyles();
 
   const onMarkerDragEnd = (coord, index) => {
@@ -49,8 +56,8 @@ const MapWrapper = ({ google, formState, setFormState }) => {
         google={google}
         zoom={6}
         style={{
-          width: 400,
-          height: 400,
+          width: width,
+          height: height,
           margin: '0 auto',
           border: '3px solid #00c179'
         }}
@@ -59,7 +66,7 @@ const MapWrapper = ({ google, formState, setFormState }) => {
           <Marker
             key={index}
             position={marker.position}
-            draggable
+            draggable={isStaticMap}
             onDragend={(t, map, coord) => onMarkerDragEnd(coord, index)}
             name={getMarkerName(
               marker.order,
@@ -92,7 +99,10 @@ const MapWrapper = ({ google, formState, setFormState }) => {
 MapWrapper.propTypes = {
   formState: PropTypes.object,
   google: PropTypes.object,
-  setFormState: PropTypes.func
+  height: PropTypes.number,
+  isStaticMap: PropTypes.bool,
+  setFormState: PropTypes.func,
+  width: PropTypes.number
 };
 
 export default GoogleApiWrapper({

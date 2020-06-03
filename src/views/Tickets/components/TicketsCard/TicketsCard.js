@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import Card from '@material-ui/core/Card';
@@ -18,6 +18,7 @@ import PublicIcon from '@material-ui/icons/Public';
 import TodayIcon from '@material-ui/icons/Today';
 import PeopleIcon from '@material-ui/icons/People';
 import CloseEditButton from './CloseEditButton';
+import MapWrapper from '../../../../components/TripsCreator/MapWrapper/MapWrapper';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -59,9 +60,30 @@ const useStyles = makeStyles(theme => ({
 const TicketsCard = ({ data, isTrip }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
-  const { comments, ticket } = data;
-  const { content, id } = ticket;
-  const { contact } = content;
+  console.log(data);
+  const [cardValues, setCardValues] = useState({
+    comments: '',
+    ticket: '',
+    id: -1,
+    content: {
+      firstName: '',
+      lastName: ''
+    },
+    contact: ''
+  });
+
+  useEffect(() => {
+    if (!isTrip) {
+      setCardValues({
+        comments: data.comments,
+        ticket: data.ticket,
+        id: data.ticket.id,
+        content: data.ticket.content,
+        contact: data.ticket.content.contact
+      });
+    } else {
+    }
+  }, [data]);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -72,18 +94,18 @@ const TicketsCard = ({ data, isTrip }) => {
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" className={classes.avatar}>
-            {`${content.firstName[0]}${content.lastName[0]}`}
+            {`${cardValues.content.firstName[0]}${cardValues.content.lastName[0]}`}
           </Avatar>
         }
-        action={<CloseEditButton id={id} />}
-        title={`${content.firstName} ${content.lastName}`}
+        action={<CloseEditButton id={cardValues.id} />}
+        title={`${cardValues.content.firstName} ${cardValues.content.lastName}`}
         subheader={new Date().toLocaleString()}
       />
 
       <CardContent>
         <div className={classes.title}>
           <Typography variant="h4" color="textSecondary" component="p">
-            {content.subject}
+            {cardValues.content.subject}
           </Typography>
         </div>
         {isTrip && (
@@ -93,24 +115,26 @@ const TicketsCard = ({ data, isTrip }) => {
               <Typography variant="h6" color="textSecondary" component="p">
                 Where: {data.destination}
               </Typography>
+              {/*<MapWrapper width={500} height={100} isStaticMap={false} />*/}
             </div>
             <div className={classes.tripDetails}>
               <TodayIcon className={classes.icons} color="primary" />
               <Typography variant="h6" color="textSecondary" component="p">
-                When: {data.dateAndTime}
+                {/*When: {data.dateTrip}*/}
+                When:
               </Typography>
             </div>
 
             <div className={classes.tripDetails}>
               <PeopleIcon className={classes.icons} color="primary" />
               <Typography variant="h6" color="textSecondary" component="p">
-                Peoples: {data.numberOfPeople}
+                Peoples: {data.peopleLimit}
               </Typography>
             </div>
           </>
         )}
         <Typography variant="body1" color="textSecondary" component="p">
-          {content.content}
+          {cardValues.content.content}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -129,9 +153,9 @@ const TicketsCard = ({ data, isTrip }) => {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <TicketsCardComments
-          id={ticket.id}
-          commentsObj={comments}
-          contact={contact}
+          id={cardValues.ticket.id}
+          commentsObj={cardValues.comments}
+          contact={cardValues.contact}
         />
       </Collapse>
     </Card>

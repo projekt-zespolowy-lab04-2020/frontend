@@ -24,6 +24,7 @@ import { createTrip } from '../../actions/trips/createTrip';
 import MapWrapper from './MapWrapper/MapWrapper';
 import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
+import { addTrip } from '../../redux/tripReducer';
 
 const useStyles = makeStyles({
   root: {},
@@ -71,7 +72,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const TripsCreator = ({ userObject, createNewTripAction }) => {
+const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
   const classes = useStyles();
   const tripValues = {
     description: '',
@@ -128,6 +129,12 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
 
   const handleClose = () => {
     setOpen(!open);
+    setFormState({
+      isValid: false,
+      isDateSelected: false,
+      values: tripValues,
+      touched: {}
+    });
   };
 
   const createTrips = async () => {
@@ -151,6 +158,7 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
 
       if (response.status === 200) {
         console.log('success');
+        addTripAction(newTrip);
       } else {
         throw new Error('Error during creating ticket.');
       }
@@ -159,24 +167,8 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
 
   const handleSend = () => {
     createTrips().catch(e => console.error(e.message));
-    // handleClose();
+    handleClose();
   };
-
-  // const editAndSend = async () => {
-  //   const token = localStorage.getItem('jwtToken');
-  //   if (token) {
-  //     // if (response.status === 200) {
-  //     //
-  //     // } else {
-  //     //   throw new Error('Error during editing ticket.');
-  //     // }
-  //   }
-  // };
-
-  // const handleEditAndSend = () => {
-  //   editAndSend().catch(e => console.error(e.message));
-  //   handleClose();
-  // };
 
   const handleChanged = event => {
     setFormState({
@@ -307,6 +299,9 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
                 setOpenMapDialog={setOpenMapDialog}
                 formState={formState}
                 setFormState={setFormState}
+                width={400}
+                height={400}
+                isStaticMap={false}
               />
             </div>
           </DialogContent>
@@ -331,6 +326,7 @@ const TripsCreator = ({ userObject, createNewTripAction }) => {
 };
 
 TripsCreator.propTypes = {
+  addTripAction: PropTypes.func,
   createNewTripAction: PropTypes.func,
   userObject: PropTypes.object
 };
@@ -344,5 +340,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  createNewTripAction: createTrip
+  createNewTripAction: createTrip,
+  addTripAction: addTrip
 })(withRouter(TripsCreator));
