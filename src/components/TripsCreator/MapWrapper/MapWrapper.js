@@ -5,44 +5,21 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   root: {
-    height: 406, // 300 +  6 padding
+    height: height => height + 6, // h +  6 padding
     position: 'relative'
   }
 });
 
 const MapWrapper = ({
   google,
-  formState,
-  setFormState,
   width,
   height,
-  isStaticMap
+  isEditable,
+  points,
+  onMarkerDragEnd
 }) => {
-  const classes = useStyles();
+  const classes = useStyles(height);
 
-  const onMarkerDragEnd = (coord, index) => {
-    const { latLng } = coord;
-    const lat = latLng.lat();
-    const lng = latLng.lng();
-
-    const tempMarkers = [...formState.values.route.points];
-    tempMarkers[index] = {
-      ...tempMarkers[index],
-      order: index,
-      position: { lat, lng }
-    };
-
-    setFormState({
-      ...formState,
-      values: {
-        ...formState.values,
-        route: {
-          ...formState.values.route,
-          points: tempMarkers
-        }
-      }
-    });
-  };
   const getMarkerName = (index, length) => {
     // The start and the last point should have
     // label Start and End on the map
@@ -59,21 +36,19 @@ const MapWrapper = ({
           width: width,
           height: height,
           margin: '0 auto',
+          padding: 5,
           border: '3px solid #00c179'
         }}
         initialCenter={{ lat: 50.07324792988664, lng: 19.955507812500002 }}>
-        {formState.values.route.points.map((marker, index) => (
+        {points.map((marker, index) => (
           <Marker
             key={index}
             position={marker.position}
-            draggable={isStaticMap}
+            draggable={isEditable}
             onDragend={(t, map, coord) => onMarkerDragEnd(coord, index)}
-            name={getMarkerName(
-              marker.order,
-              formState.values.route.points.length
-            )}
+            name={getMarkerName(marker.order, points.length)}
             label={{
-              text: getMarkerName(index, formState.values.route.points.length),
+              text: getMarkerName(index, points.length),
               fontSize: '18px',
               fontWeight: '600',
               color: '#000'
@@ -81,9 +56,7 @@ const MapWrapper = ({
           />
         ))}
         <Polyline
-          path={[
-            ...formState.values.route.points.map(marker => marker.position)
-          ]}
+          path={[...points.map(marker => marker.position)]}
           geodesic={false}
           options={{
             strokeColor: '#38B44F',
@@ -97,11 +70,11 @@ const MapWrapper = ({
 };
 
 MapWrapper.propTypes = {
-  formState: PropTypes.object,
   google: PropTypes.object,
   height: PropTypes.number,
-  isStaticMap: PropTypes.bool,
-  setFormState: PropTypes.func,
+  isEditable: PropTypes.bool,
+  onMarkerDragEnd: PropTypes.func,
+  points: PropTypes.array,
   width: PropTypes.number
 };
 

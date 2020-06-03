@@ -14,7 +14,10 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import TicketsCardComments from './TicketsCardComments';
 import PropTypes from 'prop-types';
-import PublicIcon from '@material-ui/icons/Public';
+import EuroIcon from '@material-ui/icons/Euro';
+import DescriptionIcon from '@material-ui/icons/Description';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import DnsIcon from '@material-ui/icons/Dns';
 import TodayIcon from '@material-ui/icons/Today';
 import PeopleIcon from '@material-ui/icons/People';
 import CloseEditButton from './CloseEditButton';
@@ -44,9 +47,7 @@ const useStyles = makeStyles(theme => ({
   tripDetails: {
     display: 'flex',
     alignItems: 'center',
-    '&:last-of-type': {
-      marginBottom: 20
-    }
+    marginLeft: 70
   },
   icons: {
     marginRight: 10
@@ -60,9 +61,8 @@ const useStyles = makeStyles(theme => ({
 const TicketsCard = ({ data, isTrip }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
-  console.log(data);
   const [cardValues, setCardValues] = useState({
-    comments: '',
+    comments: [],
     ticket: '',
     id: -1,
     content: {
@@ -82,6 +82,14 @@ const TicketsCard = ({ data, isTrip }) => {
         contact: data.ticket.content.contact
       });
     } else {
+      setCardValues({
+        ...cardValues,
+        contact: data.guide.email,
+        content: {
+          firstName: data.guide.firstName,
+          lastName: data.guide.lastName
+        }
+      });
     }
   }, [data]);
 
@@ -110,25 +118,40 @@ const TicketsCard = ({ data, isTrip }) => {
         </div>
         {isTrip && (
           <>
+            <MapWrapper
+              width={600}
+              height={250}
+              points={data.route.points}
+              isEditable={false}
+            />
             <div className={classes.tripDetails}>
-              <PublicIcon className={classes.icons} color="primary" />
+              <DnsIcon className={classes.icons} color="error" />
               <Typography variant="h6" color="textSecondary" component="p">
-                Where: {data.destination}
-              </Typography>
-              {/*<MapWrapper width={500} height={100} isStaticMap={false} />*/}
-            </div>
-            <div className={classes.tripDetails}>
-              <TodayIcon className={classes.icons} color="primary" />
-              <Typography variant="h6" color="textSecondary" component="p">
-                {/*When: {data.dateTrip}*/}
-                When:
+                Name: {data.name}
               </Typography>
             </div>
-
             <div className={classes.tripDetails}>
-              <PeopleIcon className={classes.icons} color="primary" />
+              <DescriptionIcon className={classes.icons} color="error" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                Description: {data.description}
+              </Typography>
+            </div>
+            <div className={classes.tripDetails}>
+              <MonetizationOnIcon className={classes.icons} color="error" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                Cost: {data.cost} PLN
+              </Typography>
+            </div>
+            <div className={classes.tripDetails}>
+              <PeopleIcon className={classes.icons} color="error" />
               <Typography variant="h6" color="textSecondary" component="p">
                 Peoples: {data.peopleLimit}
+              </Typography>
+            </div>
+            <div className={classes.tripDetails}>
+              <TodayIcon className={classes.icons} color="error" />
+              <Typography variant="h6" color="textSecondary" component="p">
+                When: {data.dateTrip.toLocaleString()}
               </Typography>
             </div>
           </>

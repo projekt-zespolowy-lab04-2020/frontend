@@ -5,13 +5,11 @@ import { TicketsToolbar, TicketsCard } from '../components';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { getTickets } from '../../../actions/tickets/getTickets';
-import { getTicketByID } from '../../../actions/tickets/getTicketByID';
-import { addTicket, clearTickets } from '../../../redux/ticketsReducer';
 import Spinner from '../../../components/Spinner/Spinner';
 import TicketsHeader from '../components/TicketsHeader';
-import { ADMIN, GUIDE } from '../../../helpers/types';
+import { GUIDE } from '../../../helpers/types';
 import { getTrips } from '../../../actions/trips/getTrips';
+import { addTrip } from '../../../redux/tripReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +32,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TripsList = ({ userObject, tripsObject, getTripsAction }) => {
+const TripsList = ({
+  userObject,
+  tripsObject,
+  getTripsAction,
+  addTripAction
+}) => {
   const classes = useStyles();
   const [searchResults, setSearchResults] = useState([]);
   const [hasTickets, setHasTicketsFlag] = useState(false);
@@ -45,77 +48,38 @@ const TripsList = ({ userObject, tripsObject, getTripsAction }) => {
     setSearchResults(tripsObject.trips);
   }, [tripsObject]);
 
-  // const getTripAsync = async (ID, token) => {
-  //   const response = await getTicketByIDAction(ID, token);
-  //   if (response.status === 200) {
-  //     return await response.json();
-  //   } else {
-  //     throw new Error('Error retrieving single ticket.');
-  //   }
-  // };
-  //
-  // const getAllUserTrip = async (ticketsList, token) => {
-  //   return Promise.all(
-  //     ticketsList.map(obj => {
-  //       const { id } = obj;
-  //
-  //       return getTripAsync(id, token);
-  //     })
-  //   );
-  // };
-
   const getTripsList = async () => {
     const token = localStorage.getItem('jwtToken');
     if (token) {
       const response = await getTripsAction(token);
       const res = await response.json();
-      console.log('elo');
 
-      console.log(response);
-      console.log(res);
-      // if (response.status === 200) {
-      //   getAllCurrentGuideTrips(res, token)
-      //     .then(tickets =>
-      //       tickets.filter(obj => {
-      //         console.log(tickets);
-      //         const { ticket } = obj;
-      //         const { closed } = ticket;
-      //         return !closed;
-      //       })
-      //     )
-      //     .then(tickets => {
-      //       if (!tickets.length) setHasTicketsFlag(true);
-      //       clearTicketsAction();
-      //       tickets.forEach(ticketObject => {
-      //         const { ticket } = ticketObject;
-      //         const { content } = ticket;
-      //         const ticketTempObject = {
-      //           ...ticketObject,
-      //           ticket: {
-      //             ...ticketObject.ticket,
-      //             content: JSON.parse(content)
-      //           }
-      //         };
-      //         addTicketAction(ticketTempObject);
-      //       });
-      //     })
-      //     .catch(e => console.error(e.message));
-      // } else {
-      //   throw new Error('Error retrieving tickets.');
-      // }
+      res.forEach(response => {
+        addTripAction({
+          ...response,
+          dateAndTime: response.dateTrip,
+          name: response.route.name,
+          route: {
+            points: response.route.points.map(point => {
+              return {
+                order: point.order,
+                position: JSON.parse(point['coordinates'])
+              };
+            })
+          }
+        });
+      });
     }
   };
 
   useEffect(() => {
     // noinspection JSUnresolvedVariable
-    console.log('esddsd');
     const { isAuthenticated } = userObject;
     if (isAuthenticated) {
       const roles = userObject.roles || [];
       setGuide(isUserGuide(roles));
 
       if (isUserGuide(roles)) {
-        console.log(1);
         getTripsList().catch(e => console.error(e.message));
       } else {
         // get user
@@ -154,6 +118,7 @@ const TripsList = ({ userObject, tripsObject, getTripsAction }) => {
 };
 
 TripsList.propTypes = {
+  addTripAction: PropTypes.func,
   getTripsAction: PropTypes.func,
   tripsObject: PropTypes.object,
   userObject: PropTypes.object
@@ -169,5 +134,6 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, {
-  getTripsAction: getTrips
+  getTripsAction: getTrips,
+  addTripAction: addTrip
 })(withRouter(TripsList));

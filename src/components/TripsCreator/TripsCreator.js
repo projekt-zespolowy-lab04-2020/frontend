@@ -139,6 +139,13 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
 
   const createTrips = async () => {
     const token = localStorage.getItem('jwtToken');
+    const newStringifiedPoints = formState.values.route.points.map(point => {
+      return {
+        order: point.order,
+        coordinates: JSON.stringify(point['position'])
+      };
+    });
+
     if (token) {
       const newTrip = {
         cost: parseInt(formState.values.cost),
@@ -147,18 +154,15 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
         dateTrip: formState.values.dateAndTime,
         route: {
           name: formState.values.name,
-          points: formState.values.route.points
+          points: newStringifiedPoints
         }
       };
-      console.log(newTrip);
+
       const response = await createNewTripAction(newTrip, token);
-      console.log(response);
       const res = await response.json();
-      console.log(res);
 
       if (response.status === 200) {
-        console.log('success');
-        addTripAction(newTrip);
+        // addTripAction(newTrip);
       } else {
         throw new Error('Error during creating ticket.');
       }
@@ -183,6 +187,30 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
       },
       isValid:
         Object.keys(formState.touched).length === 3 && formState.isDateSelected
+    });
+  };
+
+  const onMarkerDragEnd = (coord, index) => {
+    const { latLng } = coord;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+
+    const tempMarkers = [...formState.values.route.points];
+    tempMarkers[index] = {
+      ...tempMarkers[index],
+      order: index,
+      position: { lat, lng }
+    };
+
+    setFormState({
+      ...formState,
+      values: {
+        ...formState.values,
+        route: {
+          ...formState.values.route,
+          points: tempMarkers
+        }
+      }
     });
   };
 
@@ -227,7 +255,7 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
             </div>
             <div className={classes.row}>
               <TextField
-                label="Estimated cost"
+                label="Estimated cost in PLN"
                 name="cost"
                 type="number"
                 value={formState.values.cost}
@@ -295,13 +323,15 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
                 Drag to the desired place
               </Typography>
               <MapWrapper
+                isEditable
                 openMapDialog={openMapDialog}
                 setOpenMapDialog={setOpenMapDialog}
                 formState={formState}
                 setFormState={setFormState}
                 width={400}
                 height={400}
-                isStaticMap={false}
+                points={formState.values.route.points}
+                onMarkerDragEnd={onMarkerDragEnd}
               />
             </div>
           </DialogContent>

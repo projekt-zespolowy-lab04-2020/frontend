@@ -18,9 +18,9 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { BootstrapInput } from '../../../../Tickets/components/TicketCreator/Contact/Contact';
 import isEmpty from '../../../../../helpers/isEmpty';
 import { patchUser } from '../../../../../actions/users/patchUser';
+import { BootstrapInput } from '../../../../../components/TicketCreator/Contact/Contact';
 
 const useStyles = makeStyles(theme => ({
   root: {},

@@ -78,7 +78,6 @@ const TicketsList = ({
         getAllUserTickets(res, token)
           .then(tickets =>
             tickets.filter(obj => {
-              console.log(tickets);
               const { ticket } = obj;
               const { closed } = ticket;
               return !closed;
