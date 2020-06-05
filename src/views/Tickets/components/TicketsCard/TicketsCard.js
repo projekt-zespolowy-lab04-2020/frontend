@@ -63,7 +63,6 @@ const TicketsCard = ({ data, isTrip }) => {
   const [expanded, setExpanded] = useState(false);
   const [cardValues, setCardValues] = useState({
     comments: [],
-    ticket: '',
     id: -1,
     content: {
       firstName: '',
@@ -84,6 +83,7 @@ const TicketsCard = ({ data, isTrip }) => {
     } else {
       setCardValues({
         ...cardValues,
+        id: data.id,
         contact: data.guide.email,
         content: {
           firstName: data.guide.firstName,
@@ -176,7 +176,8 @@ const TicketsCard = ({ data, isTrip }) => {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <TicketsCardComments
-          id={cardValues.ticket.id}
+          isTrip
+          id={cardValues.id}
           commentsObj={cardValues.comments}
           contact={cardValues.contact}
         />

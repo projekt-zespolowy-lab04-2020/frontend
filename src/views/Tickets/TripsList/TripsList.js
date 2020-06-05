@@ -10,6 +10,7 @@ import TicketsHeader from '../components/TicketsHeader';
 import { GUIDE } from '../../../helpers/types';
 import { getTrips } from '../../../actions/trips/getTrips';
 import { addTrip } from '../../../redux/tripReducer';
+import { getUserTrips } from '../../../actions/users/getUserTrips';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -36,7 +37,8 @@ const TripsList = ({
   userObject,
   tripsObject,
   getTripsAction,
-  addTripAction
+  addTripAction,
+  getUserTripsAction
 }) => {
   const classes = useStyles();
   const [searchResults, setSearchResults] = useState([]);
@@ -48,27 +50,45 @@ const TripsList = ({
     setSearchResults(tripsObject.trips);
   }, [tripsObject]);
 
-  const getTripsList = async () => {
+  const getCurrentGuideTripsList = async () => {
     const token = localStorage.getItem('jwtToken');
     if (token) {
       const response = await getTripsAction(token);
       const res = await response.json();
-
-      res.forEach(response => {
-        addTripAction({
-          ...response,
-          dateAndTime: response.dateTrip,
-          name: response.route.name,
-          route: {
-            points: response.route.points.map(point => {
-              return {
-                order: point.order,
-                position: JSON.parse(point['coordinates'])
-              };
-            })
-          }
+      if (response.status === 200) {
+        res.forEach(response => {
+          addTripAction({
+            ...response,
+            dateAndTime: response.dateTrip,
+            name: response.route.name,
+            route: {
+              points: response.route.points.map(point => {
+                return {
+                  order: point.order,
+                  position: JSON.parse(point['coordinates'])
+                };
+              })
+            }
+          });
         });
-      });
+      } else {
+        throw new Error('Error during getting current guide trips.');
+      }
+    }
+  };
+
+  const getUserTripsList = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const response = await getUserTripsAction(token);
+      const res = await response.json();
+      console.log(response);
+      console.log(res);
+      if (response.status === 200) {
+        console.log('success');
+      } else {
+        throw new Error('Error during getting user trips.');
+      }
     }
   };
 
@@ -80,9 +100,9 @@ const TripsList = ({
       setGuide(isUserGuide(roles));
 
       if (isUserGuide(roles)) {
-        getTripsList().catch(e => console.error(e.message));
+        getCurrentGuideTripsList().catch(e => console.error(e.message));
       } else {
-        // get user
+        getUserTripsList().catch(e => console.error(e.message));
       }
     }
   }, [userObject]);
@@ -120,6 +140,7 @@ const TripsList = ({
 TripsList.propTypes = {
   addTripAction: PropTypes.func,
   getTripsAction: PropTypes.func,
+  getUserTripsAction: PropTypes.func,
   tripsObject: PropTypes.object,
   userObject: PropTypes.object
 };
@@ -135,5 +156,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   getTripsAction: getTrips,
+  getUserTripsAction: getUserTrips,
   addTripAction: addTrip
 })(withRouter(TripsList));

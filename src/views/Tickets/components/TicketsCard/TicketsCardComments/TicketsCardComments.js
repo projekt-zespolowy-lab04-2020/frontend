@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { createComments } from '../../../../../actions/tickets/createComments';
+import { createTripComments } from '../../../../../actions/trips/createComments';
 
 const useStyles = makeStyles({
   root: {
@@ -53,13 +54,15 @@ const useStyles = makeStyles({
 const TicketsCardComments = ({
   commentsObj,
   createCommentsAction,
+  createTripCommentsAction,
   id,
-  contact
+  contact,
+  isTrip
 }) => {
   const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
   const classes = useStyles();
-
+  console.log(id);
   const handleChange = event => {
     setFormValue(event.target.value);
   };
@@ -74,9 +77,15 @@ const TicketsCardComments = ({
       const content = {
         content: formValue
       };
+      console.log(content);
 
-      const response = await createCommentsAction(content, id, token);
+      const response = isTrip
+        ? await createTripCommentsAction(content, id, token)
+        : await createCommentsAction(content, id, token);
+      //TODO should be ok if the backend fix responses
+      console.log(response);
       const res = await response.json();
+      console.log(res);
       const { author } = res;
 
       setComments([
@@ -87,7 +96,7 @@ const TicketsCardComments = ({
         }
       ]);
 
-      if (response.status !== 200) {
+      if (response.status !== 200 || response.status !== 204) {
         throw new Error('Error during creating comments tickets.');
       }
     }
@@ -148,9 +157,12 @@ TicketsCardComments.propTypes = {
   commentsObj: PropTypes.arrayOf(PropTypes.object),
   contact: PropTypes.string,
   createCommentsAction: PropTypes.func,
-  id: PropTypes.number
+  createTripCommentsAction: PropTypes.func,
+  id: PropTypes.number,
+  isTrip: PropTypes.bool
 };
 
 export default connect(null, {
-  createCommentsAction: createComments
+  createCommentsAction: createComments,
+  createTripCommentsAction: createTripComments
 })(withRouter(TicketsCardComments));
