@@ -152,6 +152,7 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
         description: formState.values.description,
         peopleLimit: formState.values.peopleLimit,
         dateTrip: formState.values.dateAndTime,
+        active: true,
         route: {
           name: formState.values.name,
           points: newStringifiedPoints
@@ -162,7 +163,7 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
       const res = await response.json();
 
       if (response.status === 200) {
-        // addTripAction(newTrip);
+        addTripAction(newTrip);
       } else {
         throw new Error('Error during creating ticket.');
       }

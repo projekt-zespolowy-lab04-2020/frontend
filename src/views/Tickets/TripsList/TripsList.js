@@ -50,27 +50,31 @@ const TripsList = ({
     setSearchResults(tripsObject.trips);
   }, [tripsObject]);
 
+  const normalizeAndAddTrip = data => {
+    data.forEach(response => {
+      addTripAction({
+        ...response,
+        dateAndTime: response.dateTrip,
+        name: response.route.name,
+        route: {
+          points: response.route.points.map(point => {
+            return {
+              order: point.order,
+              position: JSON.parse(point['coordinates'])
+            };
+          })
+        }
+      });
+    });
+  };
+
   const getCurrentGuideTripsList = async () => {
     const token = localStorage.getItem('jwtToken');
     if (token) {
       const response = await getTripsAction(token);
       const res = await response.json();
       if (response.status === 200) {
-        res.forEach(response => {
-          addTripAction({
-            ...response,
-            dateAndTime: response.dateTrip,
-            name: response.route.name,
-            route: {
-              points: response.route.points.map(point => {
-                return {
-                  order: point.order,
-                  position: JSON.parse(point['coordinates'])
-                };
-              })
-            }
-          });
-        });
+        normalizeAndAddTrip(res);
       } else {
         throw new Error('Error during getting current guide trips.');
       }
@@ -82,10 +86,8 @@ const TripsList = ({
     if (token) {
       const response = await getUserTripsAction(token);
       const res = await response.json();
-      console.log(response);
-      console.log(res);
       if (response.status === 200) {
-        console.log('success');
+        normalizeAndAddTrip(res);
       } else {
         throw new Error('Error during getting user trips.');
       }
