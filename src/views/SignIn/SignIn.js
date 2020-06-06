@@ -137,6 +137,8 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
 
   useEffect(() => {
     const errors = validate(formState.values, schema);
+    var token = localStorage.getItem('jwtToken', token);
+    if(token!==null) localStorage.removeItem('jwtToken');
 
     setFormState(formState => ({
       ...formState,
