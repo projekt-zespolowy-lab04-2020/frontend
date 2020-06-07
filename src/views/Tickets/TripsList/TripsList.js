@@ -11,6 +11,7 @@ import { GUIDE } from '../../../helpers/types';
 import { getTrips } from '../../../actions/trips/getTrips';
 import { addTrip } from '../../../redux/tripReducer';
 import { getUserTrips } from '../../../actions/users/getUserTrips';
+import { getTripCommentsByID } from '../../../actions/trips/getTripCommentsByID';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -38,7 +39,8 @@ const TripsList = ({
   tripsObject,
   getTripsAction,
   addTripAction,
-  getUserTripsAction
+  getUserTripsAction,
+  getTripCommentsByIDAction
 }) => {
   const classes = useStyles();
   const [searchResults, setSearchResults] = useState([]);
@@ -50,10 +52,30 @@ const TripsList = ({
     setSearchResults(tripsObject.trips);
   }, [tripsObject]);
 
-  const normalizeAndAddTrip = data => {
-    data.forEach(response => {
+  const getTripCommentsAsync = async (ID, token) => {
+    const response = await getTripCommentsByIDAction(ID, token);
+    if (response.status === 200) {
+      return await response.json();
+    } else {
+      throw new Error('Error retrieving trip comments.');
+    }
+  };
+
+  const getAllTripComments = async (data, token) => {
+    return Promise.all(
+      data.map(obj => {
+        const { id } = obj;
+
+        return getTripCommentsAsync(id, token);
+      })
+    );
+  };
+
+  const normalizeAndAddTrip = (data, comments) => {
+    data.forEach((response, index) => {
       addTripAction({
         ...response,
+        comments: comments[index],
         dateAndTime: response.dateTrip,
         name: response.route.name,
         route: {
@@ -74,7 +96,11 @@ const TripsList = ({
       const response = await getTripsAction(token);
       const res = await response.json();
       if (response.status === 200) {
-        normalizeAndAddTrip(res);
+        getAllTripComments(res, token)
+          .then(commentsList => {
+            normalizeAndAddTrip(res, commentsList);
+          })
+          .catch(e => console.error(e.message));
       } else {
         throw new Error('Error during getting current guide trips.');
       }
@@ -141,6 +167,7 @@ const TripsList = ({
 
 TripsList.propTypes = {
   addTripAction: PropTypes.func,
+  getTripCommentsByIDAction: PropTypes.func,
   getTripsAction: PropTypes.func,
   getUserTripsAction: PropTypes.func,
   tripsObject: PropTypes.object,
@@ -159,5 +186,6 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getTripsAction: getTrips,
   getUserTripsAction: getUserTrips,
-  addTripAction: addTrip
+  addTripAction: addTrip,
+  getTripCommentsByIDAction: getTripCommentsByID
 })(withRouter(TripsList));

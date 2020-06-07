@@ -62,7 +62,6 @@ const TicketsCardComments = ({
   const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
   const classes = useStyles();
-  console.log(id);
   const handleChange = event => {
     setFormValue(event.target.value);
   };
@@ -77,15 +76,11 @@ const TicketsCardComments = ({
       const content = {
         content: formValue
       };
-      console.log(content);
 
       const response = isTrip
         ? await createTripCommentsAction(content, id, token)
         : await createCommentsAction(content, id, token);
-      //TODO should be ok if the backend fix responses
-      console.log(response);
       const res = await response.json();
-      console.log(res);
       const { author } = res;
 
       setComments([
@@ -96,7 +91,7 @@ const TicketsCardComments = ({
         }
       ]);
 
-      if (response.status !== 200 || response.status !== 204) {
+      if (response.status !== 200) {
         throw new Error('Error during creating comments tickets.');
       }
     }

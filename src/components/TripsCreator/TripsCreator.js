@@ -159,11 +159,27 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
         }
       };
 
+      const normalizeAndAddTrip = data => {
+        addTripAction({
+          ...data,
+          comments: [],
+          dateAndTime: data.dateTrip,
+          name: data.route.name,
+          route: {
+            points: data.route.points.map(point => {
+              return {
+                order: point.order,
+                position: JSON.parse(point['coordinates'])
+              };
+            })
+          }
+        });
+      };
+
       const response = await createNewTripAction(newTrip, token);
       const res = await response.json();
-
       if (response.status === 200) {
-        addTripAction(newTrip);
+        normalizeAndAddTrip(res);
       } else {
         throw new Error('Error during creating ticket.');
       }

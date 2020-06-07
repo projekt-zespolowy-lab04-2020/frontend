@@ -83,6 +83,7 @@ const TicketsCard = ({ data, isTrip }) => {
     } else {
       setCardValues({
         ...cardValues,
+        comments: data.comments,
         id: data.id,
         contact: data.guide.email,
         content: {
