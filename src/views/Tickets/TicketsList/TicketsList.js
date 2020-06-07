@@ -128,7 +128,8 @@ const TicketsList = ({
       />
       <TicketsToolbar
         isTrip={false}
-        tickets={ticketsObject.tickets}
+        data={ticketsObject.tickets}
+        setHasTicketsFlag={setHasTicketsFlag}
         setSearchResults={setSearchResults}
       />
       {!searchResults.length && !hasTickets && <Spinner />}

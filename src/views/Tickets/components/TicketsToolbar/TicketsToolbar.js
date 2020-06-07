@@ -33,24 +33,28 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TicketsToolbar = ({
-  tickets,
+  data,
   setSearchResults,
   className,
   isGuide,
   isTrip,
+  setHasTicketsFlag,
   ...rest
 }) => {
   const classes = useStyles({ isTrip, isGuide });
 
   const onSearchChange = event => {
+    setHasTicketsFlag(true);
     const inputValue = event.target.value.toLowerCase();
-    const results = tickets.filter(obj => {
-      const {
-        ticket: {
-          content: { subject }
-        }
-      } = obj;
-      return subject.toLowerCase().includes(inputValue);
+    const results = data.filter(obj => {
+      let toSearch;
+      if (!isTrip) {
+        toSearch = obj.ticket.content.subject;
+      } else {
+        toSearch = obj.name;
+      }
+
+      return toSearch.toLowerCase().includes(inputValue);
     });
 
     setSearchResults(results);
@@ -72,10 +76,11 @@ const TicketsToolbar = ({
 
 TicketsToolbar.propTypes = {
   className: PropTypes.string,
+  data: PropTypes.arrayOf(PropTypes.object),
   isGuide: PropTypes.bool,
   isTrip: PropTypes.bool,
-  setSearchResults: PropTypes.func,
-  tickets: PropTypes.arrayOf(PropTypes.object)
+  setHasTicketsFlag: PropTypes.func,
+  setSearchResults: PropTypes.func
 };
 
 export default TicketsToolbar;

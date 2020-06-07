@@ -75,7 +75,7 @@ const TripsList = ({
     data.forEach((response, index) => {
       addTripAction({
         ...response,
-        comments: comments[index],
+        comments: !comments.length ? [] : comments[index],
         dateAndTime: response.dateTrip,
         name: response.route.name,
         route: {
@@ -88,6 +88,7 @@ const TripsList = ({
         }
       });
     });
+    if (!data.length) setHasTicketsFlag(true);
   };
 
   const getCurrentGuideTripsList = async () => {
@@ -113,7 +114,11 @@ const TripsList = ({
       const response = await getUserTripsAction(token);
       const res = await response.json();
       if (response.status === 200) {
-        normalizeAndAddTrip(res);
+        getAllTripComments(res, token)
+          .then(commentsList => {
+            normalizeAndAddTrip(res, commentsList);
+          })
+          .catch(e => console.error(e.message));
       } else {
         throw new Error('Error during getting user trips.');
       }
@@ -146,7 +151,9 @@ const TripsList = ({
       />
       <TicketsToolbar
         isTrip
+        data={tripsObject.trips}
         setSearchResults={setSearchResults}
+        setHasTicketsFlag={setHasTicketsFlag}
         isGuide={isGuide}
       />
       {!searchResults.length && !hasTickets && <Spinner />}
