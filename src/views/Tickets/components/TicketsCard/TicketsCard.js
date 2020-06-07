@@ -14,7 +14,6 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import TicketsCardComments from './TicketsCardComments';
 import PropTypes from 'prop-types';
-import EuroIcon from '@material-ui/icons/Euro';
 import DescriptionIcon from '@material-ui/icons/Description';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import DnsIcon from '@material-ui/icons/Dns';
@@ -22,6 +21,10 @@ import TodayIcon from '@material-ui/icons/Today';
 import PeopleIcon from '@material-ui/icons/People';
 import CloseEditButton from './CloseEditButton';
 import MapWrapper from '../../../../components/TripsCreator/MapWrapper/MapWrapper';
+import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { joinTrip } from '../../../../actions/users/joinTrip';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -58,7 +61,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const TicketsCard = ({ data, isTrip }) => {
+const TicketsCard = ({ data, isTrip, joinTripAction }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
   const [cardValues, setCardValues] = useState({
@@ -96,6 +99,19 @@ const TicketsCard = ({ data, isTrip }) => {
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
+  };
+
+  const handleJoin = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const response = await joinTripAction(cardValues.id, token);
+
+      if (response.status === 204) {
+        console.log('Joined successfully');
+      } else {
+        throw new Error('Error retrieving tickets.');
+      }
+    }
   };
 
   return (
@@ -155,6 +171,23 @@ const TicketsCard = ({ data, isTrip }) => {
                 When: {data.dateTrip.toLocaleString()}
               </Typography>
             </div>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%',
+                padding: 10
+              }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleJoin}
+                style={{
+                  width: 80
+                }}>
+                join
+              </Button>
+            </div>
           </>
         )}
         <Typography variant="body1" color="textSecondary" component="p">
@@ -189,7 +222,10 @@ const TicketsCard = ({ data, isTrip }) => {
 
 TicketsCard.propTypes = {
   data: PropTypes.object,
-  isTrip: PropTypes.bool
+  isTrip: PropTypes.bool,
+  joinTripAction: PropTypes.func
 };
 
-export default TicketsCard;
+export default connect(null, {
+  joinTripAction: joinTrip
+})(withRouter(TicketsCard));

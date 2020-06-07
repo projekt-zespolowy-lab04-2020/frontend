@@ -117,7 +117,7 @@ const TripsCreator = ({ userObject, createNewTripAction, addTripAction }) => {
       ...formState,
       values: { ...formState.values, dateAndTime: date },
       isDateSelected: true,
-      isValid: Object.keys(formState.touched).length === 3 && true
+      isValid: Object.keys(formState.touched).length === 3 && date >= moment()
     });
   };
 

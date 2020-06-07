@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import { SearchInput } from 'components';
 import TicketCreator from '../../../../components/TicketCreator';
 import TripsCreator from '../../../../components/TripsCreator/TripsCreator';
+import Button from '@material-ui/core/Button';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -64,11 +65,15 @@ const TicketsToolbar = ({
       <div className={classes.row}>
         {!isTrip && <TicketCreator />}
         {isGuide && <TripsCreator />}
+
         <SearchInput
           className={classes.searchInput}
           placeholder="Search product"
           onChange={onSearchChange}
         />
+        <Button variant="contained" color="primary" onClick={null}>
+          show joined trips
+        </Button>
       </div>
     </div>
   );
