@@ -47,7 +47,7 @@ const useStyles = makeStyles({
 
 const SliderWrapper = ({ ticket, setTicket }) => {
   const [valueFromSlider, setValueFromSlider] = useState(
-    ticket.values.numberOfPeople
+    ticket.values.peopleLimit
   );
   const handler = useCallback(debounce(setTicket, 100), []);
   const classes = useStyles();
@@ -58,7 +58,7 @@ const SliderWrapper = ({ ticket, setTicket }) => {
       ...ticket,
       values: {
         ...ticket.values,
-        numberOfPeople: value
+        peopleLimit: value
       }
     });
   };

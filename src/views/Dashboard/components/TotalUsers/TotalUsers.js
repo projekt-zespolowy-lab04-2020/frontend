@@ -53,8 +53,8 @@ const TotalUsers = props => {
             {!totalUsers ? (
               <CircularProgress />
             ) : (
-                <Typography variant="h3">{totalUsers}</Typography>
-              )}
+              <Typography variant="h3">{totalUsers}</Typography>
+            )}
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>

@@ -10,34 +10,20 @@ import { makeStyles } from '@material-ui/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import 'date-fns';
 import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-  KeyboardTimePicker
-} from '@material-ui/pickers';
-import SliderWrapper from './SliderWrapper';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import {
-  addTicket,
-  changeTicketInPlace
-} from '../../../../redux/ticketsReducer';
-import { createTicket } from '../../../../actions/tickets/createTicket';
+import { addTicket, changeTicketInPlace } from '../../redux/ticketsReducer';
+import { createTicket } from '../../actions/tickets/createTicket';
 import Contact from './Contact';
-import {
-  toggleEditMode,
-  toggleOpen
-} from '../../../../redux/ticketCreatorReducer';
-import { patchTicket } from '../../../../actions/tickets/patchTicket';
+import { toggleEditMode, toggleOpen } from '../../redux/ticketCreatorReducer';
+import { patchTicket } from '../../actions/tickets/patchTicket';
 
 const useStyles = makeStyles({
   root: {},
   textField: {
     width: '100%'
   },
-  dialog: {},
   title: {
     display: 'flex',
     justifyContent: 'center',
@@ -77,12 +63,11 @@ const useStyles = makeStyles({
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
-//TODO (react/no-multi-comp disable
+
 const TicketCreator = ({
   userObject,
   addTicketAction,
   createTicketAction,
-  isTrip,
   ticketsObj,
   ticketCreatorObj,
   toggleOpenAction,
@@ -91,16 +76,6 @@ const TicketCreator = ({
   changeTicketInPlaceAction
 }) => {
   const classes = useStyles();
-  const tripValues = {
-    firstName: userObject.firstName,
-    lastName: userObject.lastName,
-    contact: '',
-    subject: '',
-    numberOfPeople: 10,
-    destination: '',
-    dateAndTime: new Date().toLocaleString(),
-    content: ''
-  };
   const ticketValues = {
     firstName: userObject.firstName,
     lastName: userObject.lastName,
@@ -113,12 +88,11 @@ const TicketCreator = ({
   const [formState, setFormState] = useState({
     isValid: false,
     contactValid: false,
-    values: isTrip ? tripValues : ticketValues,
+    values: ticketValues,
     touched: {}
   });
 
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     setOpen(ticketCreatorObj.isOpen);
@@ -128,24 +102,6 @@ const TicketCreator = ({
       const { id } = ticket;
       return id === ticketIdToEdit ? obj : null;
     });
-    const tripValuesTemp = {
-      firstName: userObject.firstName,
-      lastName: userObject.lastName,
-      contact: ticketCreatorObj.isEditMode
-        ? editedTempTicket.ticket.content.contact
-        : '',
-      subject: ticketCreatorObj.isEditMode
-        ? editedTempTicket.ticket.content.subject
-        : '',
-      numberOfPeople: 10,
-      destination: ticketCreatorObj.isEditMode
-        ? editedTempTicket.ticket.content.destination
-        : '',
-      dateAndTime: new Date().toLocaleString(),
-      content: ticketCreatorObj.isEditMode
-        ? editedTempTicket.ticket.content.content
-        : ''
-    };
 
     const ticketValuesTemp = {
       firstName: userObject.firstName,
@@ -164,17 +120,9 @@ const TicketCreator = ({
 
     setFormState({
       ...formState,
-      values: isTrip ? tripValuesTemp : ticketValuesTemp
+      values: ticketValuesTemp
     });
   }, [ticketCreatorObj]);
-
-  const handleDateChange = date => {
-    setSelectedDate(date);
-    setFormState({
-      ...formState,
-      values: { ...formState.values, dateAndTime: date.toLocaleString() }
-    });
-  };
 
   useEffect(() => {
     setFormState({
@@ -196,7 +144,7 @@ const TicketCreator = ({
     toggleEditModeAction(false);
     setFormState({
       ...formState,
-      values: isTrip ? tripValues : ticketValues,
+      values: ticketValues,
       isValid: false,
       contactValid: false
     });
@@ -286,9 +234,8 @@ const TicketCreator = ({
         ...formState.touched,
         [event.target.name]: true
       },
-      // When the prop isTrip is available we should
-      // check if 3 inputs are no empty 2 otherwise
-      isValid: Object.keys(formState.touched).length === (isTrip ? 3 : 2)
+
+      isValid: Object.keys(formState.touched).length === 2
     });
   };
 
@@ -330,63 +277,6 @@ const TicketCreator = ({
                 isEditMode={ticketCreatorObj.isEditMode}
               />
             </div>
-            {isTrip && (
-              <>
-                <div className={classes.row}>
-                  <TextField
-                    label="Destination"
-                    name="destination"
-                    value={formState.values.destination}
-                    className={classes.destination}
-                    onChange={handleChanged}
-                  />
-                </div>
-                <div className={classes.row}>
-                  <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={12}
-                        lg={6}
-                        container
-                        className={'MuiGrid-justify-xs-center'}>
-                        <KeyboardDatePicker
-                          margin="normal"
-                          id="date-picker-dialog"
-                          label="Date picker dialog"
-                          format="MM/dd/yyyy"
-                          value={selectedDate}
-                          onChange={handleDateChange}
-                          KeyboardButtonProps={{
-                            'aria-label': 'change date'
-                          }}
-                        />
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        lg={6}
-                        container
-                        className={'MuiGrid-justify-xs-center'}>
-                        <KeyboardTimePicker
-                          margin="normal"
-                          id="time-picker"
-                          label="Time picker"
-                          value={selectedDate}
-                          onChange={handleDateChange}
-                          KeyboardButtonProps={{
-                            'aria-label': 'change time'
-                          }}
-                        />
-                      </Grid>
-                    </Grid>
-                  </MuiPickersUtilsProvider>
-                </div>
-                <div className={classes.row}>
-                  <SliderWrapper ticket={formState} setTicket={setFormState} />
-                </div>
-              </>
-            )}
             <div className={classes.row}>
               <TextField
                 className={classes.additionalQuestions}
@@ -426,7 +316,6 @@ TicketCreator.propTypes = {
   addTicketAction: PropTypes.func,
   changeTicketInPlaceAction: PropTypes.func,
   createTicketAction: PropTypes.func,
-  isTrip: PropTypes.bool,
   patchTicketAction: PropTypes.func,
   ticketCreatorObj: PropTypes.object,
   ticketsObj: PropTypes.object,

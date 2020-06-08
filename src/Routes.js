@@ -5,7 +5,8 @@ import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
   Dashboard as DashboardView,
-  TicketsList,
+  TicketsList as TicketsView,
+  TripsList as TripsView,
   UserList as UserListView,
   Account as AccountView,
   Settings as SettingsView,
@@ -50,10 +51,16 @@ const Routes = ({ userObject }) => {
         redirectPath="/not-found"
       />
       <RouteWithLayout
-        component={TicketsList}
+        component={TicketsView}
         exact
         layout={MainLayout}
         path="/support"
+      />
+      <RouteWithLayout
+        component={TripsView}
+        exact
+        layout={MainLayout}
+        path="/trips"
       />
       <RouteWithLayout
         component={AccountView}
