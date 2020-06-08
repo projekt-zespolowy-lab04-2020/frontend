@@ -131,7 +131,7 @@ const TicketsCard = ({ data, isTrip, joinTripAction }) => {
             {`${cardValues.content.firstName[0]}${cardValues.content.lastName[0]}`}
           </Avatar>
         }
-        action={<CloseEditButton id={cardValues.id} />}
+        action={!isTrip && <CloseEditButton id={cardValues.id} />}
         title={`${cardValues.content.firstName} ${cardValues.content.lastName}`}
         subheader={new Date().toLocaleString()}
       />
@@ -226,7 +226,7 @@ const TicketsCard = ({ data, isTrip, joinTripAction }) => {
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
         <TicketsCardComments
-          isTrip
+          isTrip={isTrip}
           id={cardValues.id}
           commentsObj={cardValues.comments}
           contact={cardValues.contact}

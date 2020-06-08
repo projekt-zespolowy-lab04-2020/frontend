@@ -65,6 +65,7 @@ const tripsSlice = createSlice({
     },
     setJoinedTrips(state, action) {
       const res = action.payload;
+      if (!res.length) return { ...state };
       let newStateTrips;
       res.forEach(resTrip => {
         const resId = resTrip.id;

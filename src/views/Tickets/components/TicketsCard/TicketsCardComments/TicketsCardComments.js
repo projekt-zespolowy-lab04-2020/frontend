@@ -82,7 +82,6 @@ const TicketsCardComments = ({
         : await createCommentsAction(content, id, token);
       const res = await response.json();
       const { author } = res;
-
       setComments([
         ...comments,
         {

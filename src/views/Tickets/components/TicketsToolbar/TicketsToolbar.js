@@ -103,12 +103,16 @@ const TicketsToolbar = ({
           placeholder="Search product"
           onChange={onSearchChange}
         />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleShowJoinedTrips}>
-          {tripsObject.showJoinedTrips ? 'show all trips' : 'show joined trips'}
-        </Button>
+        {isTrip && (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleShowJoinedTrips}>
+            {tripsObject.showJoinedTrips
+              ? 'show all trips'
+              : 'show joined trips'}
+          </Button>
+        )}
       </div>
     </div>
   );
