@@ -159,7 +159,10 @@ const TripsList = ({
       {!searchResults.length && !hasTickets && <Spinner />}
       <div className={classes.content}>
         <Grid className={classes.tickets} container spacing={3}>
-          {searchResults.map((data, index) => {
+          {(tripsObject.showJoinedTrips
+            ? searchResults.filter(obj => obj.joined)
+            : searchResults
+          ).map((data, index) => {
             return (
               <Grid item key={index} lg={12} md={12} xs={12}>
                 <TicketsCard data={data} isTrip />

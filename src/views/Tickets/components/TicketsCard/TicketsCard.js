@@ -25,6 +25,7 @@ import Button from '@material-ui/core/Button';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import { joinTrip } from '../../../../actions/users/joinTrip';
+import Dialog from '@material-ui/core/Dialog';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,6 +34,10 @@ const useStyles = makeStyles(theme => ({
   media: {
     height: 0,
     paddingTop: '56.25%' // 16:9
+  },
+  edited: {
+    display: 'flex',
+    justifyContent: 'center'
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -64,6 +69,7 @@ const useStyles = makeStyles(theme => ({
 const TicketsCard = ({ data, isTrip, joinTripAction }) => {
   const classes = useStyles();
   const [expanded, setExpanded] = useState(false);
+  const [showEditedText, setShowEditedText] = useState(false);
   const [cardValues, setCardValues] = useState({
     comments: [],
     id: -1,
@@ -107,7 +113,10 @@ const TicketsCard = ({ data, isTrip, joinTripAction }) => {
       const response = await joinTripAction(cardValues.id, token);
 
       if (response.status === 204) {
-        console.log('Joined successfully');
+        setShowEditedText(true);
+        setTimeout(function() {
+          setShowEditedText(false);
+        }, 3000);
       } else {
         throw new Error('Error retrieving tickets.');
       }
@@ -188,6 +197,13 @@ const TicketsCard = ({ data, isTrip, joinTripAction }) => {
                 join
               </Button>
             </div>
+            {showEditedText && (
+              <div className={classes.edited}>
+                <Typography color="primary" variant="h5">
+                  Joined successfully.
+                </Typography>
+              </div>
+            )}
           </>
         )}
         <Typography variant="body1" color="textSecondary" component="p">

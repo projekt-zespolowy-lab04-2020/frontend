@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  trips: []
+  trips: [],
+  showJoinedTrips: false
 };
 
 const tripsSlice = createSlice({
@@ -17,9 +18,16 @@ const tripsSlice = createSlice({
         trips: []
       };
     },
+    setShowJoinedTrips(state, action) {
+      return {
+        ...state,
+        showJoinedTrips: action.payload
+      };
+    },
     addTrip(state, action) {
       const tempTrips = [...state.trips];
-      tempTrips.push(action.payload);
+      const tempObj = Object.assign(action.payload, { joined: false });
+      tempTrips.push(tempObj);
 
       return {
         ...state,
@@ -54,6 +62,27 @@ const tripsSlice = createSlice({
           return tempId !== id;
         })
       };
+    },
+    setJoinedTrips(state, action) {
+      const res = action.payload;
+      let newStateTrips;
+      res.forEach(resTrip => {
+        const resId = resTrip.id;
+        newStateTrips = state.trips.map(trip => {
+          if (resId === trip.id) {
+            return {
+              ...trip,
+              joined: true
+            };
+          } else {
+            return trip;
+          }
+        });
+      });
+      return {
+        ...state,
+        trips: newStateTrips
+      };
     }
   }
 });
@@ -63,7 +92,9 @@ export const {
   clearTrips,
   addTrip,
   changeTripInPlace,
-  deleteTripById
+  deleteTripById,
+  setJoinedTrips,
+  setShowJoinedTrips
 } = tripsSlice.actions;
 
 export default tripsSlice.reducer;

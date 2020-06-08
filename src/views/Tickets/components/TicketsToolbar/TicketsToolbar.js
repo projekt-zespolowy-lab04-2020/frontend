@@ -6,6 +6,13 @@ import { SearchInput } from 'components';
 import TicketCreator from '../../../../components/TicketCreator';
 import TripsCreator from '../../../../components/TripsCreator/TripsCreator';
 import Button from '@material-ui/core/Button';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
+import { getJoinedTrips } from '../../../../actions/users/getJoinedTrips';
+import {
+  setJoinedTrips,
+  setShowJoinedTrips
+} from '../../../../redux/tripReducer';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,8 +35,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1)
   },
   searchInput: {
-    marginRight: theme.spacing(1),
-    marginLeft: 20
+    marginLeft: 14,
+    marginRight: 14
   }
 }));
 
@@ -39,10 +46,16 @@ const TicketsToolbar = ({
   className,
   isGuide,
   isTrip,
+  tripsObject,
   setHasTicketsFlag,
+  getJoinedTripsAction,
+  setJoinedTripsAction,
+  setShowJoinedTripsAction,
   ...rest
 }) => {
   const classes = useStyles({ isTrip, isGuide });
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
 
   const onSearchChange = event => {
     setHasTicketsFlag(true);
@@ -60,6 +73,25 @@ const TicketsToolbar = ({
 
     setSearchResults(results);
   };
+
+  const handleShowJoinedTrips = async () => {
+    if (!tripsObject.showJoinedTrips) {
+      const token = localStorage.getItem('jwtToken');
+      if (token) {
+        const response = await getJoinedTripsAction(token);
+        const res = await response.json();
+        if (response.status === 200) {
+          setJoinedTripsAction(res);
+          setShowJoinedTripsAction(true);
+        } else {
+          throw new Error('Error retrieving tickets.');
+        }
+      }
+    } else {
+      setShowJoinedTripsAction(false);
+    }
+  };
+
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
@@ -71,8 +103,11 @@ const TicketsToolbar = ({
           placeholder="Search product"
           onChange={onSearchChange}
         />
-        <Button variant="contained" color="primary" onClick={null}>
-          show joined trips
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleShowJoinedTrips}>
+          {tripsObject.showJoinedTrips ? 'show all trips' : 'show joined trips'}
         </Button>
       </div>
     </div>
@@ -82,10 +117,25 @@ const TicketsToolbar = ({
 TicketsToolbar.propTypes = {
   className: PropTypes.string,
   data: PropTypes.arrayOf(PropTypes.object),
+  getJoinedTripsAction: PropTypes.func,
   isGuide: PropTypes.bool,
   isTrip: PropTypes.bool,
   setHasTicketsFlag: PropTypes.func,
-  setSearchResults: PropTypes.func
+  setJoinedTripsAction: PropTypes.func,
+  setSearchResults: PropTypes.func,
+  setShowJoinedTripsAction: PropTypes.func,
+  tripsObject: PropTypes.object
 };
 
-export default TicketsToolbar;
+const mapStateToProps = state => {
+  const { trips } = state;
+
+  return {
+    tripsObject: trips
+  };
+};
+export default connect(mapStateToProps, {
+  getJoinedTripsAction: getJoinedTrips,
+  setJoinedTripsAction: setJoinedTrips,
+  setShowJoinedTripsAction: setShowJoinedTrips
+})(withRouter(TicketsToolbar));
