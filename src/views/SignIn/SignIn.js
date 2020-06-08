@@ -137,6 +137,8 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
 
   useEffect(() => {
     const errors = validate(formState.values, schema);
+    const token = localStorage.getItem('jwtToken');
+    if(token!==null) localStorage.removeItem('jwtToken');
 
     setFormState(formState => ({
       ...formState,
@@ -212,15 +214,22 @@ const SignIn = ({ history, loginUserAction, setCurrentUserAction }) => {
           <div className={classes.quote}>
             <div className={classes.quoteInner}>
               <Typography className={classes.quoteText} variant="h1">
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
+                Active sightseeing or city nightlife? Taste cultural wealth with
+                the help of experienced guides.
               </Typography>
               <div className={classes.person}>
                 <Typography className={classes.name} variant="body1">
-                  Takamaru Ayako
+                  &copy;{' '}
+                  <Link
+                    component="a"
+                    href="https://www.pk.edu.pl/index.php?lang=pl"
+                    target="_blank">
+                    Projekt Zespołowy Studentów Politechniki Krakowskiej
+                  </Link>
+                  . 2020
                 </Typography>
                 <Typography className={classes.bio} variant="body2">
-                  Manager at inVision
+                  Created with love for the guides.
                 </Typography>
               </div>
             </div>

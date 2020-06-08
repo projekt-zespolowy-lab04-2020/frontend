@@ -171,6 +171,7 @@ const UsersTable = props => {
                         </TableSortLabel>
                       </Tooltip>
                     </TableCell>
+
                     <TableCell>Registration date</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell className={classes.management}>

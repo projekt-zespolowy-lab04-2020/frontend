@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { createComments } from '../../../../../actions/tickets/createComments';
+import { createTripComments } from '../../../../../actions/trips/createComments';
 
 const useStyles = makeStyles({
   root: {
@@ -53,13 +54,14 @@ const useStyles = makeStyles({
 const TicketsCardComments = ({
   commentsObj,
   createCommentsAction,
+  createTripCommentsAction,
   id,
-  contact
+  contact,
+  isTrip
 }) => {
   const [comments, setComments] = useState([]);
   const [formValue, setFormValue] = useState('');
   const classes = useStyles();
-
   const handleChange = event => {
     setFormValue(event.target.value);
   };
@@ -75,10 +77,11 @@ const TicketsCardComments = ({
         content: formValue
       };
 
-      const response = await createCommentsAction(content, id, token);
+      const response = isTrip
+        ? await createTripCommentsAction(content, id, token)
+        : await createCommentsAction(content, id, token);
       const res = await response.json();
       const { author } = res;
-
       setComments([
         ...comments,
         {
@@ -148,9 +151,12 @@ TicketsCardComments.propTypes = {
   commentsObj: PropTypes.arrayOf(PropTypes.object),
   contact: PropTypes.string,
   createCommentsAction: PropTypes.func,
-  id: PropTypes.number
+  createTripCommentsAction: PropTypes.func,
+  id: PropTypes.number,
+  isTrip: PropTypes.bool
 };
 
 export default connect(null, {
-  createCommentsAction: createComments
+  createCommentsAction: createComments,
+  createTripCommentsAction: createTripComments
 })(withRouter(TicketsCardComments));

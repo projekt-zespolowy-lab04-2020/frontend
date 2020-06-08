@@ -249,7 +249,6 @@ const SignUp = ({ history, registerUserAction }) => {
   };
 
   return (
-
     <>
       {openDialog && (
         <ConfirmationDialog
@@ -258,7 +257,6 @@ const SignUp = ({ history, registerUserAction }) => {
           setUpdateData={handleCheckCheckbox}
           title={'Terms and conditions'}
           content={
-
             '            1.By agreeing to these Terms of Service, you represent that you are at least the age of 18.' +
             '            2.A breach or violation of any of the Terms will result in an termination of your Services.' +
             '            3.You must not transmit any worms or viruses or any code of a bad, destructive nature.' +
@@ -268,23 +266,30 @@ const SignUp = ({ history, registerUserAction }) => {
         />
       )}
 
-    <div className={classes.root}>
-      <Grid className={classes.grid} container>
-        <Grid className={classes.quoteContainer} item lg={5}>
-          <div className={classes.quote}>
-            <div className={classes.quoteInner}>
-              ``{' '}
-              <Typography className={classes.quoteText} variant="h1">
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
-              </Typography>
-              ``
-              <div className={classes.person}>
-                <Typography className={classes.name} variant="body1">
-                  Takamaru Ayako
+      <div className={classes.root}>
+        <Grid className={classes.grid} container>
+          <Grid className={classes.quoteContainer} item lg={5}>
+            <div className={classes.quote}>
+              <div className={classes.quoteInner}>
+                ``{' '}
+                <Typography className={classes.quoteText} variant="h1">
+                  Active sightseeing or city nightlife? Taste cultural wealth
+                  with the help of experienced guides.
                 </Typography>
-                <Typography className={classes.bio} variant="body2">
-                  Manager at inVision
+                ``
+                <div className={classes.person}>
+                  <Typography className={classes.name} variant="body1">
+                    &copy;{' '}
+                    <Link
+                      component="a"
+                      href="https://www.pk.edu.pl/index.php?lang=pl"
+                      target="_blank">
+                      Projekt Zespołowy Studentów Politechniki Krakowskiej
+                    </Link>
+                    . 2020
+                  </Typography>
+                  <Typography className={classes.bio} variant="body2">
+                    Created with love for the guides.
                   </Typography>
                 </div>
               </div>
