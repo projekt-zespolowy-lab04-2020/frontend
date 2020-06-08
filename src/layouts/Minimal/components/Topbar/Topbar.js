@@ -29,7 +29,7 @@ const Topbar = props => {
       default:
         return '/';
     }
-  }
+  };
 
   return (
     <AppBar

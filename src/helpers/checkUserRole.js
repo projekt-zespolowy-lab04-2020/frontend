@@ -8,7 +8,7 @@ export const checkUserRole = () => {
     return null;
   } else if (user.roles.includes(ADMIN)) {
     return ADMIN;
-  } else if(user.roles.includes(USER)) {
+  } else if (user.roles.includes(USER)) {
     return USER;
   }
 };

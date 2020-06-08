@@ -17,7 +17,7 @@ import {
   Typography,
   TablePagination,
   Tooltip,
-  TableSortLabel,
+  TableSortLabel
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
 import ManagementsButtons from './ManagementButtons/ManagementsButtons';
@@ -58,15 +58,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UsersTable = props => {  
-  const { className, users, setUsers, ...rest } = props;  
+const UsersTable = props => {
+  const { className, users, setUsers, ...rest } = props;
   const classes = useStyles();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
-  const [sortByIdDesc, setSortByIdDesc] = useState(true)
-  const [sortByNameDesc, setSortByNameDesc] = useState(true)
-  
+  const [sortByIdDesc, setSortByIdDesc] = useState(true);
+  const [sortByNameDesc, setSortByNameDesc] = useState(true);
 
   const handleSelectAll = event => {
     const { users } = props;
@@ -111,21 +110,27 @@ const UsersTable = props => {
   };
 
   const handleSortById = () => {
-    const sortedById = [...users.sort((u1, u2) => sortByIdDesc ? u1.id - u2.id : u2.id - u1.id)];
-    setUsers(sortedById)
-    setSortByIdDesc(!sortByIdDesc)
-  }
-  
-  const handleSortByName = () => {    
-    const sortedById = [...users.sort((u1, u2) => {
-      const firstFullName = u1.firstName + u1.lastName;
-      const secondFullName = u2.firstName + u2.lastName;
+    const sortedById = [
+      ...users.sort((u1, u2) => (sortByIdDesc ? u1.id - u2.id : u2.id - u1.id))
+    ];
+    setUsers(sortedById);
+    setSortByIdDesc(!sortByIdDesc);
+  };
 
-      return sortByNameDesc ? firstFullName.localeCompare(secondFullName) : secondFullName.localeCompare(firstFullName);
-    })];
-    setUsers(sortedById)
-    setSortByNameDesc(!sortByNameDesc)
-  }
+  const handleSortByName = () => {
+    const sortedById = [
+      ...users.sort((u1, u2) => {
+        const firstFullName = u1.firstName + u1.lastName;
+        const secondFullName = u2.firstName + u2.lastName;
+
+        return sortByNameDesc
+          ? firstFullName.localeCompare(secondFullName)
+          : secondFullName.localeCompare(firstFullName);
+      })
+    ];
+    setUsers(sortedById);
+    setSortByNameDesc(!sortByNameDesc);
+  };
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -254,7 +259,7 @@ const UsersTable = props => {
 UsersTable.propTypes = {
   className: PropTypes.string,
   setUsers: PropTypes.func.isRequired,
-  users: PropTypes.array.isRequired,
+  users: PropTypes.array.isRequired
 };
 
 export default UsersTable;

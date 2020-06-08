@@ -61,7 +61,7 @@ const Topbar = props => {
       default:
         return '/';
     }
-  }
+  };
 
   return (
     <AppBar {...rest} className={clsx(classes.root, className)}>

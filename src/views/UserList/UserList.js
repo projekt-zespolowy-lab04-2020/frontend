@@ -50,8 +50,8 @@ const UserList = ({ getUsersAction }) => {
   useEffect(() => {
     getAllUsers().catch(err => console.log(err.message));
   }, []);
-  
-  console.log(searchResults)
+
+  console.log(searchResults);
 
   return (
     <div className={classes.root}>

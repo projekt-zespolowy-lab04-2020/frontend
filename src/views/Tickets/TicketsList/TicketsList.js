@@ -135,13 +135,15 @@ const TicketsList = ({
       {!searchResults.length && !hasTickets && <Spinner />}
       <div className={classes.content}>
         <Grid className={classes.tickets} container spacing={3}>
-          {searchResults.map((data, index) => {
-            return (
-              <Grid item key={index} lg={12} md={12} xs={12}>
-                <TicketsCard data={data} isTrip={false} />
-              </Grid>
-            );
-          })}
+          {searchResults
+            .filter(obj => !obj.ticket.closed)
+            .map((data, index) => {
+              return (
+                <Grid item key={index} lg={12} md={12} xs={12}>
+                  <TicketsCard data={data} isTrip={false} />
+                </Grid>
+              );
+            })}
         </Grid>
       </div>
     </div>
