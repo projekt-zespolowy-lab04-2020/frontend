@@ -15,7 +15,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TablePagination
+  TablePagination,
+  Tooltip,
+  TableSortLabel,
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
 import ManagementsButtons from './ManagementButtons/ManagementsButtons';
@@ -56,12 +58,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UsersTable = props => {
-  const { className, users, ...rest } = props;
+const UsersTable = props => {  
+  const { className, users, setUsers, ...rest } = props;  
   const classes = useStyles();
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+  const [sortByIdDesc, setSortByIdDesc] = useState(true)
+  const [sortByNameDesc, setSortByNameDesc] = useState(true)
+  
 
   const handleSelectAll = event => {
     const { users } = props;
@@ -105,6 +110,23 @@ const UsersTable = props => {
     setRowsPerPage(event.target.value);
   };
 
+  const handleSortById = () => {
+    const sortedById = [...users.sort((u1, u2) => sortByIdDesc ? u1.id - u2.id : u2.id - u1.id)];
+    setUsers(sortedById)
+    setSortByIdDesc(!sortByIdDesc)
+  }
+  
+  const handleSortByName = () => {    
+    const sortedById = [...users.sort((u1, u2) => {
+      const firstFullName = u1.firstName + u1.lastName;
+      const secondFullName = u2.firstName + u2.lastName;
+
+      return sortByNameDesc ? firstFullName.localeCompare(secondFullName) : secondFullName.localeCompare(firstFullName);
+    })];
+    setUsers(sortedById)
+    setSortByNameDesc(!sortByNameDesc)
+  }
+
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent className={classes.content}>
@@ -127,10 +149,29 @@ const UsersTable = props => {
                         onChange={handleSelectAll}
                       />
                     </TableCell>
-                    <TableCell>Name</TableCell>
+                    <TableCell sortDirection="desc">
+                      <Tooltip enterDelay={300} title="Sort">
+                        <TableSortLabel
+                          active
+                          direction={sortByNameDesc ? 'desc' : 'asc'}
+                          onClick={handleSortByName}>
+                          Name
+                        </TableSortLabel>
+                      </Tooltip>
+                    </TableCell>
                     <TableCell>Email</TableCell>
                     <TableCell>Roles</TableCell>
-                    <TableCell>ID</TableCell>
+                    <TableCell sortDirection="desc">
+                      <Tooltip enterDelay={300} title="Sort">
+                        <TableSortLabel
+                          active
+                          direction={sortByIdDesc ? 'desc' : 'asc'}
+                          onClick={handleSortById}>
+                          Id
+                        </TableSortLabel>
+                      </Tooltip>
+                    </TableCell>
+
                     <TableCell>Registration date</TableCell>
                     <TableCell>Status</TableCell>
                     <TableCell className={classes.management}>
@@ -212,7 +253,8 @@ const UsersTable = props => {
 
 UsersTable.propTypes = {
   className: PropTypes.string,
-  users: PropTypes.array.isRequired
+  setUsers: PropTypes.func.isRequired,
+  users: PropTypes.array.isRequired,
 };
 
 export default UsersTable;
