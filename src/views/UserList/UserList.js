@@ -50,12 +50,14 @@ const UserList = ({ getUsersAction }) => {
   useEffect(() => {
     getAllUsers().catch(err => console.log(err.message));
   }, []);
+  
+  console.log(searchResults)
 
   return (
     <div className={classes.root}>
       <UsersToolbar onSearchChange={onSearchChange} />
       <div className={classes.content}>
-        <UsersTable users={searchResults} />
+        <UsersTable setUsers={setSearchResults} users={searchResults} />
       </div>
     </div>
   );
