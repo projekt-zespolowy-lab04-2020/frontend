@@ -67,5 +67,5 @@
     "lodash": "latest",
     "@material-ui/pickers": "latest"
   },
-  "proxy": "http://149.156.146.249:60001"
+  "proxy": "http://188.68.236.128/"
 }

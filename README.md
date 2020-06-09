@@ -2,7 +2,12 @@
 
 Open [Swagger](http://149.156.146.249:60001/api/swagger/index.html)
 
+
 WWW [Here](http://149.156.146.249:60001/sign-in)
+
+Temporary Url [Swagger](http://188.68.236.128/api/swagger/index.html)
+
+Temporary Url [WWW](http://188.68.236.128/sign-in)
 
 ## Quick start
 
