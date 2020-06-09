@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
-import { AccountProfile, AccountDetails } from './components';
+import { AccountProfile, AccountDetails, AccountManagement } from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,6 +22,9 @@ const Account = () => {
         </Grid>
         <Grid item lg={8} md={6} xl={8} xs={12}>
           <AccountDetails setProfileCompleteness={setProfileCompleteness} />
+        </Grid>
+        <Grid item lg={12} md={12} xl={12} xs={12}>
+          <AccountManagement />
         </Grid>
       </Grid>
     </div>
