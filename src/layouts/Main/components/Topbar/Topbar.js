@@ -9,6 +9,8 @@ import InputIcon from '@material-ui/icons/Input';
 import { setCurrentUser } from '../../../../redux/authReducer';
 import { connect } from 'react-redux';
 import { clearTickets } from '../../../../redux/ticketsReducer';
+import { checkUserRole } from 'helpers/checkUserRole';
+import { USER, ADMIN } from 'helpers/types';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,7 +36,6 @@ const Topbar = props => {
 
   //TODO Find better solution to get out with staticContext Warning
   delete rest.staticContext;
-
   const classes = useStyles();
 
   const handleSignOut = event => {
@@ -49,10 +50,23 @@ const Topbar = props => {
     history.push('/sign-in');
   };
 
+  const determineHomepage = () => {
+    const role = checkUserRole();
+
+    switch (role) {
+      case ADMIN:
+        return '/dashboard';
+      case USER:
+        return '/account';
+      default:
+        return '/';
+    }
+  };
+
   return (
     <AppBar {...rest} className={clsx(classes.root, className)}>
       <Toolbar>
-        <RouterLink to="/">
+        <RouterLink to={determineHomepage}>
           <img alt="Logo" src="/images/logos/logo--white.svg" />
         </RouterLink>
         <div className={classes.flexGrow} />

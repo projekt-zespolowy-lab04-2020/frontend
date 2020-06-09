@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
 import CustomAvatar from '../../../../layouts/Main/components/Sidebar/components/Profile/Avatar/';
@@ -16,9 +15,14 @@ import {
   TableHead,
   TableRow,
   Typography,
-  TablePagination
+  TablePagination,
+  Tooltip,
+  TableSortLabel
 } from '@material-ui/core';
 import { green } from '../../../../theme/palette';
+import ManagementsButtons from './ManagementButtons/ManagementsButtons';
+import StatusBullet from '../../../../components/StatusBullet';
+import Spinner from 'components/Spinner/Spinner';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -40,17 +44,28 @@ const useStyles = makeStyles(theme => ({
   },
   actions: {
     justifyContent: 'flex-end'
+  },
+  management: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  },
+  statusContainer: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  status: {
+    marginRight: theme.spacing(1)
   }
 }));
 
 const UsersTable = props => {
-  const { className, users, ...rest } = props;
-
+  const { className, users, setUsers, ...rest } = props;
   const classes = useStyles();
-
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+  const [sortByIdDesc, setSortByIdDesc] = useState(true);
+  const [sortByNameDesc, setSortByNameDesc] = useState(true);
 
   const handleSelectAll = event => {
     const { users } = props;
@@ -94,71 +109,135 @@ const UsersTable = props => {
     setRowsPerPage(event.target.value);
   };
 
+  const handleSortById = () => {
+    const sortedById = [
+      ...users.sort((u1, u2) => (sortByIdDesc ? u1.id - u2.id : u2.id - u1.id))
+    ];
+    setUsers(sortedById);
+    setSortByIdDesc(!sortByIdDesc);
+  };
+
+  const handleSortByName = () => {
+    const sortedById = [
+      ...users.sort((u1, u2) => {
+        const firstFullName = u1.firstName + u1.lastName;
+        const secondFullName = u2.firstName + u2.lastName;
+
+        return sortByNameDesc
+          ? firstFullName.localeCompare(secondFullName)
+          : secondFullName.localeCompare(firstFullName);
+      })
+    ];
+    setUsers(sortedById);
+    setSortByNameDesc(!sortByNameDesc);
+  };
+
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={selectedUsers.length === users.length}
-                      color="primary"
-                      indeterminate={
-                        selectedUsers.length > 0 &&
-                        selectedUsers.length < users.length
-                      }
-                      onChange={handleSelectAll}
-                    />
-                  </TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Location</TableCell>
-                  <TableCell>Phone</TableCell>
-                  <TableCell>Registration date</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.slice(0, rowsPerPage).map(user => (
-                  <TableRow
-                    className={classes.tableRow}
-                    hover
-                    key={user.id}
-                    selected={selectedUsers.indexOf(user.id) !== -1}>
+            {users.length === 0 ? (
+              <Spinner />
+            ) : (
+              <Table>
+                <TableHead>
+                  <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={selectedUsers.indexOf(user.id) !== -1}
+                        checked={selectedUsers.length === users.length}
                         color="primary"
-                        onChange={event => handleSelectOne(event, user.id)}
-                        value="true"
+                        indeterminate={
+                          selectedUsers.length > 0 &&
+                          selectedUsers.length < users.length
+                        }
+                        onChange={handleSelectAll}
                       />
                     </TableCell>
-                    <TableCell>
-                      <div className={classes.nameContainer}>
-                        <CustomAvatar
-                          to="#"
-                          firstName={user.firstName}
-                          lastName={user.lastName}
-                          className={classes.avatar}
-                        />
-                        <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
-                      </div>
+                    <TableCell sortDirection="desc">
+                      <Tooltip enterDelay={300} title="Sort">
+                        <TableSortLabel
+                          active
+                          direction={sortByNameDesc ? 'desc' : 'asc'}
+                          onClick={handleSortByName}>
+                          Name
+                        </TableSortLabel>
+                      </Tooltip>
                     </TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      {user.address.city}, {user.address.state},{' '}
-                      {user.address.country}
+                    <TableCell>Email</TableCell>
+                    <TableCell>Roles</TableCell>
+                    <TableCell sortDirection="desc">
+                      <Tooltip enterDelay={300} title="Sort">
+                        <TableSortLabel
+                          active
+                          direction={sortByIdDesc ? 'desc' : 'asc'}
+                          onClick={handleSortById}>
+                          Id
+                        </TableSortLabel>
+                      </Tooltip>
                     </TableCell>
-                    <TableCell>{user.phone}</TableCell>
-                    <TableCell>
-                      {moment(user.createdAt).format('DD/MM/YYYY')}
+
+                    <TableCell>Registration date</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell className={classes.management}>
+                      Management
                     </TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHead>
+                <TableBody>
+                  {users
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map(user => (
+                      <TableRow
+                        className={classes.tableRow}
+                        hover
+                        key={user.id}
+                        selected={selectedUsers.indexOf(user.id) !== -1}>
+                        <TableCell padding="checkbox">
+                          <Checkbox
+                            checked={selectedUsers.indexOf(user.id) !== -1}
+                            color="primary"
+                            onChange={event => handleSelectOne(event, user.id)}
+                            value="true"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className={classes.nameContainer}>
+                            <CustomAvatar
+                              to="#"
+                              firstName={user.firstName}
+                              lastName={user.lastName}
+                              className={classes.avatar}
+                            />
+                            <Typography variant="body1">{`${user.firstName} ${user.lastName}`}</Typography>
+                          </div>
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          {!user.roles.length
+                            ? '----------'
+                            : user.roles.join(', ')}
+                        </TableCell>
+                        <TableCell>{user.id}</TableCell>
+                        <TableCell>{user.createDate}</TableCell>
+                        <TableCell>
+                          <div className={classes.statusContainer}>
+                            <StatusBullet
+                              className={classes.status}
+                              color={user.disabled ? 'danger' : 'success'}
+                              size="sm"
+                            />
+                            {user.disabled ? 'Disabled' : 'Active'}
+                          </div>
+                        </TableCell>
+                        <TableCell className={classes.management}>
+                          <ManagementsButtons user={user} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </PerfectScrollbar>
       </CardContent>
@@ -179,6 +258,7 @@ const UsersTable = props => {
 
 UsersTable.propTypes = {
   className: PropTypes.string,
+  setUsers: PropTypes.func.isRequired,
   users: PropTypes.array.isRequired
 };
 
