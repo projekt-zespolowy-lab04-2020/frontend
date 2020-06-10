@@ -51,8 +51,6 @@ const UserList = ({ getUsersAction }) => {
     getAllUsers().catch(err => console.log(err.message));
   }, []);
 
-  console.log(searchResults);
-
   return (
     <div className={classes.root}>
       <UsersToolbar onSearchChange={onSearchChange} />

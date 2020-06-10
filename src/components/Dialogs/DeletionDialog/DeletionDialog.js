@@ -34,7 +34,7 @@ const DeletionDialog = ({
 
   const handleChange = event => {
     setEmailConfirmation(event.target.value);
-  }
+  };
 
   return (
     <div>
@@ -49,15 +49,15 @@ const DeletionDialog = ({
             {content}
           </DialogContentText>
           <TextField
-                  fullWidth
-                  label="Email Address"
-                  margin="dense"
-                  name="email"
-                  onChange={handleChange}
-                  required
-                  value={emailConfirmation || ''}
-                  variant="outlined"
-                />
+            fullWidth
+            label="Email Address"
+            margin="dense"
+            name="email"
+            onChange={handleChange}
+            required
+            value={emailConfirmation || ''}
+            variant="outlined"
+          />
         </DialogContent>
         <DialogActions>
           <Button color="primary" onClick={handleCloseAbort}>
@@ -69,8 +69,7 @@ const DeletionDialog = ({
             id="agree"
             value
             disabled={emailConfirmation !== userEmail}
-            onClick={handleCloseDelete}
-            >
+            onClick={handleCloseDelete}>
             Delete
           </Button>
         </DialogActions>

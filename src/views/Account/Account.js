@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 
-import { AccountProfile, AccountDetails, AccountManagement } from './components';
+import {
+  AccountProfile,
+  AccountDetails,
+  AccountManagement
+} from './components';
 
 const useStyles = makeStyles(theme => ({
   root: {
