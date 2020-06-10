@@ -10,7 +10,6 @@ import {
   TotalUsers,
   TasksProgress,
   TotalProfit,
-  LatestSales,
   LatestSupportTickets
 } from './components';
 import { setUsersCount } from '../../redux/usersCountReducer';
@@ -63,9 +62,6 @@ const Dashboard = props => {
         </Grid>
         <Grid item lg={3} sm={6} xl={3} xs={12}>
           <TotalProfit />
-        </Grid>
-        <Grid item lg={12} md={12} xl={12} xs={12}>
-          <LatestSales />
         </Grid>
         <Grid item lg={12} md={12} xl={12} xs={12}>
           <LatestSupportTickets />
