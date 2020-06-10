@@ -19,11 +19,12 @@ const useStyles = makeStyles(theme => ({
   root: {},
   details: {
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    height: 224
   },
   avatar: {
     marginLeft: 'auto',
-    height: 110,
+    height: 100,
     display: 'flex',
     alignItems: 'center',
     backgroundColor: green,

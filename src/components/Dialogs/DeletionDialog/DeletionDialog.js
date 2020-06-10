@@ -65,7 +65,6 @@ const DeletionDialog = ({
           </Button>
           <Button
             autoFocus
-            color="warning"
             id="agree"
             value
             disabled={emailConfirmation !== userEmail}

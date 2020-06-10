@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -6,13 +6,12 @@ import { getUsers } from 'actions/getUsers';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import {
-  Budget,
+  TotalCreatedTrips,
   TotalUsers,
-  TasksProgress,
-  TotalProfit,
   LatestSupportTickets
 } from './components';
 import { setUsersCount } from '../../redux/usersCountReducer';
+import { getUserTrips } from '../../actions/users/getUserTrips';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -22,8 +21,13 @@ const useStyles = makeStyles(theme => ({
 
 const Dashboard = props => {
   const classes = useStyles();
-  const { getUsersAction, setUsersCountAction, usersCount } = props;
-
+  const {
+    getUsersAction,
+    setUsersCountAction,
+    usersCount,
+    getUserTripsAction
+  } = props;
+  const [createdTrips, setCreatedTrips] = useState(0);
   const getUsers = async () => {
     const token = localStorage.getItem('jwtToken');
 
@@ -46,22 +50,33 @@ const Dashboard = props => {
     }
   };
 
-  useEffect(getUserNumber, []);
+  const getUserTripsList = async () => {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+      const response = await getUserTripsAction(token);
+      const res = await response.json();
+
+      if (response.status === 200) {
+        setCreatedTrips(res.length);
+      } else {
+        throw new Error('Error during getting user trips.');
+      }
+    }
+  };
+
+  useEffect(() => {
+    getUserNumber();
+    getUserTripsList().catch(e => console.error(e.message));
+  }, []);
 
   return (
     <div className={classes.root}>
       <Grid container spacing={4}>
-        <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <Budget />
+        <Grid item lg={6} sm={6} xl={6} xs={12}>
+          <TotalCreatedTrips createdTrips={createdTrips} />
         </Grid>
-        <Grid item lg={3} sm={6} xl={3} xs={12}>
+        <Grid item lg={6} sm={6} xl={6} xs={12}>
           <TotalUsers totalUsers={usersCount} />
-        </Grid>
-        <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TasksProgress />
-        </Grid>
-        <Grid item lg={3} sm={6} xl={3} xs={12}>
-          <TotalProfit />
         </Grid>
         <Grid item lg={12} md={12} xl={12} xs={12}>
           <LatestSupportTickets />
@@ -72,6 +87,7 @@ const Dashboard = props => {
 };
 
 Dashboard.propTypes = {
+  getUserTripsAction: PropTypes.func,
   getUsersAction: PropTypes.func,
   setUsersCountAction: PropTypes.func,
   usersCount: PropTypes.number
@@ -84,5 +100,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   getUsersAction: getUsers,
-  setUsersCountAction: setUsersCount
+  setUsersCountAction: setUsersCount,
+  getUserTripsAction: getUserTrips
 })(withRouter(Dashboard));

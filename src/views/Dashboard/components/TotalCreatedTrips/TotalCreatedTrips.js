@@ -2,7 +2,14 @@ import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
+import {
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  Avatar,
+  CircularProgress
+} from '@material-ui/core';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import MoneyIcon from '@material-ui/icons/Money';
 
@@ -40,31 +47,28 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Budget = props => {
-  const { className, ...rest } = props;
+const TotalCreatedTrips = props => {
+  const { className, createdTrips, ...rest } = props;
 
   const classes = useStyles();
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent>
-        <Grid
-          container
-          justify="space-between"
-        >
+        <Grid container justify="space-between">
           <Grid item>
             <Typography
               className={classes.title}
               color="textSecondary"
               gutterBottom
-              variant="body2"
-            >
-              BUDGET
+              variant="body2">
+              TOTAL CREATED TRIPS
             </Typography>
-            <Typography variant="h3">$24,000</Typography>
+            {!createdTrips ? (
+              <CircularProgress />
+            ) : (
+              <Typography variant="h3">{createdTrips}</Typography>
+            )}
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -72,28 +76,14 @@ const Budget = props => {
             </Avatar>
           </Grid>
         </Grid>
-        <div className={classes.difference}>
-          <ArrowDownwardIcon className={classes.differenceIcon} />
-          <Typography
-            className={classes.differenceValue}
-            variant="body2"
-          >
-            12%
-          </Typography>
-          <Typography
-            className={classes.caption}
-            variant="caption"
-          >
-            Since last month
-          </Typography>
-        </div>
       </CardContent>
     </Card>
   );
 };
 
-Budget.propTypes = {
-  className: PropTypes.string
+TotalCreatedTrips.propTypes = {
+  className: PropTypes.string,
+  createdTrips: PropTypes.number
 };
 
-export default Budget;
+export default TotalCreatedTrips;

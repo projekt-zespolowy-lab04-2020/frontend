@@ -27,6 +27,9 @@ const AccountManagement = props => {
     ...rest
   } = props;
 
+  //TODO Find better solution to get out with staticContext Warning
+  delete rest.staticContext;
+
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteAccount, setDeleteAccount] = useState(false);
@@ -96,7 +99,6 @@ const AccountManagement = props => {
           <CardActions>
             <Button
               className={classes.button}
-              color="warning"
               onClick={handleDeleteAccount}
               variant="contained">
               Delete account
@@ -110,10 +112,11 @@ const AccountManagement = props => {
 
 AccountManagement.propTypes = {
   className: PropTypes.string,
-  userObject: PropTypes.object,
   clearTicketsAction: PropTypes.func,
   history: PropTypes.object,
-  patchAction: PropTypes.func
+  patchAction: PropTypes.func,
+  setCurrentUserAction: PropTypes.func,
+  userObject: PropTypes.object
 };
 
 const mapStateToProps = state => {
